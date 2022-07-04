@@ -28,15 +28,31 @@ namespace SuperUltra
         // Start is called before the first frame update
         void Start()
         {
+            PrintProfile();
             Debug.Log($"Caching.cacheCount {Caching.cacheCount}");
-            // if(Caching.cacheCount > 0 && _deleteCache)
-            // {
-            //     Caching.ClearCache();
-            // }
+            if(Caching.cacheCount > 0 && _deleteCache)
+            {
+                Debug.Log($"deleteing cache");
+                Caching.ClearCache();
+            }
             
             Addressables.InitializeAsync().Completed += (obj) =>
             {
                 DownloadScene();
+            };
+        }
+
+        void PrintProfile()
+        {
+            Addressables.InternalIdTransformFunc += location =>
+            {
+                if (location.InternalId.StartsWith("http://") && location.InternalId.EndsWith(".json"))
+                {
+                    //Do something with remote catalog location.
+                }
+                Debug.Log("location.InternalId  " + location.InternalId);
+
+                return location.InternalId;
             };
         }
 

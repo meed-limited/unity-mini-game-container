@@ -312,6 +312,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shouldDownload: 1
+  _deleteCache: 1
   m_loadButton: {fileID: 9164893303032637256, guid: 785154ecdb577f946ab978a6898c6a58,
     type: 3}
   _progressText: {fileID: 1104003054}

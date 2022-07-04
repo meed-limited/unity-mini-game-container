@@ -88,7 +88,7 @@ MonoBehaviour:
       - m_Id: 6dd20316846a7c6459e7a8f77838884b
         m_Value: ServerData/[BuildTarget]
       - m_Id: fcb012811df2cad4c842223092916d47
-        m_Value: https://ultra-game-board.s3.amazonaws.com
+        m_Value: https://ultra-game-board.s3.amazonaws.com/ServerData/[BuildTarget]
     m_ProfileEntryNames:
     - m_Id: 1d868e6717862094c8c2161d32349827
       m_Name: BuildTarget
@@ -123,7 +123,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 79006d0bce5ddff42a43494cac078e34, type: 2}
   - {fileID: 11400000, guid: efa02b96fa06942458bf59a9ebfb4861, type: 2}
   - {fileID: 11400000, guid: 7570dd3f27a2a364bbeb904a94f37ed0, type: 2}
-  m_ActiveProfileId: 2fac2f7184aab2742b532da5d48f2838
+  m_ActiveProfileId: 2637a74fdf7baf94094c40f0983cde6c
   m_HostingServicesManager:
     m_HostingServiceInfos:
     - classRef: UnityEditor.AddressableAssets.HostingServices.HttpHostingService,

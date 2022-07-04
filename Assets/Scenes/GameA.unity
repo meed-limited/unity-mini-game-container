@@ -416,7 +416,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.061409745, g: 0.08435027, b: 0.18867922, a: 0}
+  m_BackGroundColor: {r: 0.4716981, g: 0.43844607, b: 0.22917409, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -571,7 +571,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6869608, g: 0.4117647, b: 0.8980392, a: 1}
+  m_Color: {r: 0.8980392, g: 0.4117647, b: 0.4935686, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -873,6 +873,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shouldDownload: 0
+  _deleteCache: 0
   m_loadButton: {fileID: 0}
   _progressText: {fileID: 0}
   m_buttonContainer: {fileID: 0}
