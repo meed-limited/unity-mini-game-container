@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace SuperUltra
+namespace SuperUltra.Container
 {
     
     public class CubeControl : MonoBehaviour

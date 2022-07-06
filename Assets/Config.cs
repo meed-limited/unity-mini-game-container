@@ -2,7 +2,7 @@ namespace SuperUltra.Container
 {
     public static class Config
     {
-        public static string CatalogName = "catalog_2022.07.06.02.29.53.json";
+        public static string CatalogName = "catalog_2022.07.06.07.21.04.json";
         public static string RemoteDevelopCatalogUrl = "http://192.168.56.1:61303";
         public static string RemoteStagingCatalogUrl = "https://ultra-game-board.s3.amazonaws.com";
 #if UNITY_ANDROID
