@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using TMPro;
 
-namespace SuperUltra
+namespace SuperUltra.Container
 {
 
     public class SceneLoader : MonoBehaviour
@@ -137,18 +137,10 @@ namespace SuperUltra
                 }
             };
         }
-        
-        void OnSceneLoaded(AsyncOperationHandle<SceneInstance> obj)
-        {
-            if(obj.Status == AsyncOperationStatus.Succeeded)
-            {
-                Debug.Log(obj.Result.Scene.name + " Load Success");
-            }
-        }
 
         void DownloadRemoteCatalog()
         {
-            Addressables.LoadContentCatalogAsync("http://192.168.56.1:61303/catalog_2022.07.05.05.30.57.json", true).Completed += (obj) =>
+            Addressables.LoadContentCatalogAsync($"{Config.RemoteStagingCatalogUrl}/poke-a-mango/{Config.BuildTarget}/{Config.CatalogName}", true).Completed += (obj) =>
             {
                 if (obj.Status == AsyncOperationStatus.Succeeded)
                 {
@@ -161,46 +153,6 @@ namespace SuperUltra
                 }
             };
         }
-        
-        // void DownloadPrefab(string key)
-        // {
-        //     AsyncOperationHandle<IList<IResourceLocation>> op = Addressables.LoadResourceLocationsAsync(key);
-        //     Addressables.GetDownloadSizeAsync(key).Completed += (obj) =>
-        //     {
-        //         Debug.Log($"DownloadPrefab DownloadSizeAsync status: {obj.Status}");
-        //         Debug.Log($"Download size: " + obj.Result + " bytes");
-        //     };
-        //     _op = op;
-        //     op.Completed += (obj) =>
-        //     {
-        //         foreach (IResourceLocation item in obj.Result)
-        //         {
-        //             Debug.Log(item.PrimaryKey);
-        //             Addressables.DownloadDependenciesAsync(item.PrimaryKey).Completed += (obj2) =>
-        //             {
-        //                 if (obj2.Status == AsyncOperationStatus.Succeeded)
-        //                 {
-        //                     Debug.Log("DownloadPrefab DownloadDependenciesAsync Success");
-        //                     Addressables.InstantiateAsync(item.PrimaryKey).Completed += (obj3) =>
-        //                     {
-        //                         if (obj3.Status == AsyncOperationStatus.Succeeded)
-        //                         {
-        //                             Debug.Log("InstantiateAsync Success");
-        //                         }
-        //                         else
-        //                         {
-        //                             Debug.Log("InstantiateAsync Failed");
-        //                         }
-        //                     };
-        //                 }
-        //                 else
-        //                 {
-        //                     Debug.Log("DownloadPrefab DownloadDependenciesAsync Failed");
-        //                 }
-        //             };
-        //         }
-        //     };
-        // }
 
         public void ToMenu()
         {
