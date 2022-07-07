@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
+using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -18,13 +19,18 @@ namespace SuperUltra.Container
         MenuUIManager _menuUIManager;
         [SerializeField]
         Map<string, string> _gameList;
+        static bool _intialized = false;
         AsyncOperationHandle _op;
         static AsyncOperationHandle _currentSceneHandle;
+
+        void OnEnable()
+        {
+            ContainerInterface.OnReturnMenu += UnloadScene;
+        }
 
         void Start()
         {
             // PrintProfile();
-            ContainerInterface.OnReturnMenu += UnloadScene;
             Debug.Log($"Caching.cacheCount {Caching.cacheCount}");
             if (Caching.cacheCount > 0 && _deleteCache)
             {
@@ -32,13 +38,21 @@ namespace SuperUltra.Container
                 Caching.ClearCache();
             }
 
-            Addressables.InitializeAsync().Completed += (obj) =>
+            if (!_intialized)
             {
-                foreach (Map<string, string>.KeyPair item in _gameList.list)
+                _intialized = true;
+                Addressables.InitializeAsync().Completed += (obj) =>
                 {
-                    DownloadRemoteCatalog(item.key, item.value);
-                }
-            };
+                    foreach (Map<string, string>.KeyPair item in _gameList.list)
+                    {
+                        DownloadRemoteCatalog(item.key, item.value);
+                    }
+                };
+            }
+            else
+            {
+                DownloadScene("MainScene");
+            }
         }
 
         void PrintProfile()
@@ -159,10 +173,14 @@ namespace SuperUltra.Container
 
         void UnloadScene()
         {
-            if (_currentSceneHandle.IsValid())
+            AsyncOperation operation = SceneManager.LoadSceneAsync("MenuScene");
+            operation.completed += (obj) =>
             {
-                Addressables.UnloadSceneAsync(_currentSceneHandle);
-            }
+                if (_currentSceneHandle.IsValid())
+                {
+                    Addressables.UnloadSceneAsync(_currentSceneHandle);
+                }
+            };
         }
 
     }
