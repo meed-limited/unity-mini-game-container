@@ -1,11 +1,9 @@
-using UnityEngine.UI;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 
 namespace SuperUltra.Container
 {
@@ -17,18 +15,16 @@ namespace SuperUltra.Container
         [SerializeField]
         bool _deleteCache;
         [SerializeField]
-        RectTransform _loadButton;
+        MenuUIManager _menuUIManager;
         [SerializeField]
-        TMP_Text _progressText;
-        [SerializeField]
-        Image _progressBar;
-        [SerializeField]
-        RectTransform _buttonContainer;
+        Map<string, string> _gameList;
         AsyncOperationHandle _op;
+        static AsyncOperationHandle _currentSceneHandle;
 
         void Start()
         {
             // PrintProfile();
+            ContainerInterface.OnReturnMenu += UnloadScene;
             Debug.Log($"Caching.cacheCount {Caching.cacheCount}");
             if (Caching.cacheCount > 0 && _deleteCache)
             {
@@ -38,8 +34,10 @@ namespace SuperUltra.Container
 
             Addressables.InitializeAsync().Completed += (obj) =>
             {
-                // DownloadScene("GameScene");
-                DownloadRemoteCatalog();
+                foreach (Map<string, string>.KeyPair item in _gameList.list)
+                {
+                    DownloadRemoteCatalog(item.key, item.value);
+                }
             };
         }
 
@@ -60,11 +58,7 @@ namespace SuperUltra.Container
         // Update is called once per frame
         void Update()
         {
-            // show _op progress
-            if (_op.IsValid())
-            {
-                _progressText.text = $"Loading... {_op.PercentComplete:P0}";
-            }
+
         }
 
         void DownloadScene(string key)
@@ -75,11 +69,6 @@ namespace SuperUltra.Container
             }
 
             AsyncOperationHandle<IList<IResourceLocation>> operationHandle = Addressables.LoadResourceLocationsAsync(key);
-            Addressables.GetDownloadSizeAsync(key).Completed += (obj) =>
-            {
-                Debug.Log($"GetDownloadSizeAsync status: {obj.Status}");
-                Debug.Log($"Download size: " + obj.Result + " bytes");
-            };
             operationHandle.Completed += (obj) =>
             {
                 if (obj.Status == AsyncOperationStatus.Succeeded)
@@ -93,17 +82,16 @@ namespace SuperUltra.Container
         {
             foreach (IResourceLocation item in locations)
             {
-                RectTransform loadButton = Instantiate(_loadButton, _buttonContainer);
-                Button button = loadButton.GetComponentInChildren<Button>();
-                TMP_Text text = loadButton.GetComponentsInChildren<TMP_Text>()[1];
-                button.onClick.AddListener(() =>
-                {
-                    DownloadDependeny(item);
-                });
-                button.GetComponentInChildren<TMP_Text>().text = $"{item.PrimaryKey}";
                 Addressables.GetDownloadSizeAsync(item.PrimaryKey).Completed += (obj) =>
                 {
-                    text.text = $"Download size: " + obj.Result + " bytes";
+                    _menuUIManager.CreateButtons(
+                        item.PrimaryKey,
+                        obj.Result,
+                        () =>
+                        {
+                            DownloadDependeny(item);
+                        }
+                    );
                 };
             }
         }
@@ -117,7 +105,7 @@ namespace SuperUltra.Container
                 if (obj2.Status == AsyncOperationStatus.Succeeded)
                 {
                     LoadGameScene(item);
-                    UpdateResult("Downloading dependencies...", true);
+                    _menuUIManager.UpdateResult("Downloading dependencies...", true);
                 }
             };
         }
@@ -125,10 +113,11 @@ namespace SuperUltra.Container
         void LoadGameScene(IResourceLocation item)
         {
             AsyncOperationHandle operationHandle = Addressables.LoadSceneAsync(item.PrimaryKey);
-            operationHandle.Completed += (AsyncOperationHandle<ScneeIns> obj) =>
+            operationHandle.Completed += (AsyncOperationHandle obj) =>
             {
                 if (obj.Status == AsyncOperationStatus.Succeeded)
                 {
+                    _currentSceneHandle = obj;
                     Debug.Log("Load Success");
                 }
                 else
@@ -138,22 +127,23 @@ namespace SuperUltra.Container
             };
         }
 
-        void DownloadRemoteCatalog()
+        void DownloadRemoteCatalog(string gameName, string catalogName)
         {
             AsyncOperationHandle operationHandle = Addressables.LoadContentCatalogAsync(
-                $"{Config.RemoteStagingCatalogUrl}/poke-a-mango/{Config.BuildTarget}/{Config.CatalogName}", true
+                $"{Config.RemoteStagingCatalogUrl}/{gameName}/{Config.BuildTarget}/{catalogName}", true
             );
-            StartCoroutine(UpdateProgress(operationHandle, "Retrive data from aws"));
+            Debug.Log($"{Config.RemoteStagingCatalogUrl}/{gameName}/{Config.BuildTarget}/{catalogName}");
+            StartCoroutine(UpdateProgress(operationHandle, $"Retrive {gameName} {catalogName} data from aws"));
             operationHandle.Completed += (obj) =>
             {
                 if (obj.Status == AsyncOperationStatus.Succeeded)
                 {
                     DownloadScene("MainScene");
-                    UpdateResult("Retrive data from aws", true);
+                    _menuUIManager.UpdateResult($"Retrive {gameName} {catalogName} data from aws", true);
                 }
                 else
                 {
-                    UpdateResult("Retrive data from aws", false);
+                    _menuUIManager.UpdateResult($"Retrive {gameName} {catalogName} data from aws", false);
                 }
             };
         }
@@ -162,16 +152,17 @@ namespace SuperUltra.Container
         {
             while (op.IsValid() && op.PercentComplete < 1)
             {
-                _progressBar.fillAmount = op.PercentComplete;
-                _progressText.text = taskName;
+                _menuUIManager.UpdateProgress(op.PercentComplete, taskName);
                 yield return null;
             }
         }
 
-        void UpdateResult(string taskName, bool result)
+        void UnloadScene()
         {
-            _progressBar.fillAmount = 1;
-            _progressText.text = $"{taskName} {(result ? "Success" : "Failed")}";
+            if (_currentSceneHandle.IsValid())
+            {
+                Addressables.UnloadSceneAsync(_currentSceneHandle);
+            }
         }
 
     }
