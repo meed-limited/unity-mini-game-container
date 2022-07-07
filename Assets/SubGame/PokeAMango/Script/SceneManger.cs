@@ -2,17 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using SuperUltra.Container;
 
 public class SceneManger : MonoBehaviour
 {
-    public void RestartSenece() 
+    public void RestartSenece()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene(0);
         Time.timeScale = 1;
     }
-
-    public void LoadGameScene()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-    }
+   
 }
+
+

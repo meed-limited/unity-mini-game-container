@@ -1178,7 +1178,7 @@ MonoBehaviour:
   shouldDownload: 1
   _deleteCache: 0
   _menuUIManager: {fileID: 2018665486}
-  _gameList: {fileID: 11400000, guid: ed8fde0a1267ce64a80383db2b8045c8, type: 2}
+  _gameList: {fileID: 11400000, guid: 652b3e7bb2459424cabb2e7e73d489e0, type: 2}
 --- !u!4 &1116389703
 Transform:
   m_ObjectHideFlags: 0

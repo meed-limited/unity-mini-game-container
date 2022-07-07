@@ -24,25 +24,15 @@ public class GameStat : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _endScoreText;
 
-
-    private void Start()
+    private void Awake()
     {
-
-        _switchTimer = Random.Range(2f, 10f);
-
-        
         _bestText.text = PlayerPrefs.GetInt("Best").ToString();
         Time.timeScale = 0;
-        
     }
-    public void GetSocre()
+    private void Start()
     {
-        _score += 1;
-        if (_score > PlayerPrefs.GetInt("Best"))
-            PlayerPrefs.SetInt("Best", _score);
+        _switchTimer = Random.Range(2f, 10f);
     }
-
-
 
     private void Update()
     {
@@ -69,6 +59,14 @@ public class GameStat : MonoBehaviour
         }
         
     }
+    public void GetSocre()
+    {
+        _score += 1;
+        if (_score > PlayerPrefs.GetInt("Best"))
+            PlayerPrefs.SetInt("Best", _score);
+    }
+
+
 
 
 }

@@ -19,12 +19,17 @@ public class DeadClicker : MonoBehaviour
         transform.Rotate(0, 0, zvalue * Time.deltaTime);
 
     }
+    IEnumerator PauseGame()
+    {
+        yield return new WaitForSeconds(0.5f);
+        Time.timeScale = 0;
 
+    }
     public void GameEnd()
     {
-        Time.timeScale = 0;
         _deadUI.SetActive(true);
         _endSfx.Play();
+        StartCoroutine(PauseGame());
 
     }
 }
