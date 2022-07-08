@@ -7,7 +7,7 @@ namespace SuperUltra.Container
 #if UNITY_ANDROID
         public static string BuildTarget = "Android";
 #elif UNITY_IOS
-        public static string BuildTarget = "IOS";
+        public static string BuildTarget = "iOS";
 #else
         public static string BuildTarget = "StandaloneWindows64";
 #endif
