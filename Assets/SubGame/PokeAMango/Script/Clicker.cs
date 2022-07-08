@@ -20,7 +20,7 @@ public class Clicker : MonoBehaviour
     private AudioSource _sfx;
     [SerializeField]
     ParticleSystem _clickeffect;
-    Transform _transform;
+    
  
 
 
@@ -30,7 +30,7 @@ public class Clicker : MonoBehaviour
         _anim = gameObject.GetComponent<Animator>();
         _sfx = gameObject.GetComponent<AudioSource>();
    
-        _transform = gameObject.transform;
+        
         
     }
 
@@ -43,7 +43,7 @@ public class Clicker : MonoBehaviour
     {
         gameman.GetComponent<GameStat>().GetSocre();
         m_camera.GetComponent<Camera>().backgroundColor = new Color(_colorValueX, _colorValueY, _colorValueZ);
-        Vibration.Vibrate(5000);
+        Vibration.Vibrate(50);
         
         var _coin = Instantiate(_clickeffect, transform.position, Quaternion.identity);
         _coin.transform.localScale = new Vector3(0.6f,0.7f,1);

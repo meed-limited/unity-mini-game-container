@@ -18,9 +18,10 @@ namespace SuperUltra.Container
         [SerializeField]
         MenuUIManager _menuUIManager;
         [SerializeField]
-        Map<string, string> _gameList;
+        Map<string, string> _gameListAndroid;
+        [SerializeField]
+        Map<string, string> _gameListIOS;
         static bool _intialized = false;
-        AsyncOperationHandle _op;
         static AsyncOperationHandle _currentSceneHandle;
 
         void OnEnable()
@@ -38,12 +39,13 @@ namespace SuperUltra.Container
                 Caching.ClearCache();
             }
 
+
             if (!_intialized)
             {
                 _intialized = true;
                 Addressables.InitializeAsync().Completed += (obj) =>
                 {
-                    foreach (Map<string, string>.KeyPair item in _gameList.list)
+                    foreach (Map<string, string>.KeyPair item in GetGameList().list)
                     {
                         DownloadRemoteCatalog(item.key, item.value);
                     }
@@ -73,6 +75,18 @@ namespace SuperUltra.Container
         void Update()
         {
 
+        }
+
+        Map<string, string> GetGameList()
+        {
+#if UNITY_ANDROID
+            Map<string, string> _gameList = _gameListAndroid;
+#elif UNITY_IOS
+            Map<string, string> _gameList = _gameListIOS;
+#else
+            Map<string, string> _gameList = _gameListAndroid;
+#endif      
+            return _gameList;
         }
 
         void DownloadScene(string key)

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af2d868aae50b02459856d837585b335, type: 3}
-  m_Name: mango
+  m_Name: mango-android
   m_EditorClassIdentifier: 
   list:
   - key: poke-a-mango

@@ -8,6 +8,9 @@ public class DeadClicker : MonoBehaviour
     GameObject _deadUI;
     private float zvalue = 50;
     AudioSource _endSfx;
+    [SerializeField]
+    GameObject _gv;
+    
 
     private void Start()
     {
@@ -27,9 +30,12 @@ public class DeadClicker : MonoBehaviour
     }
     public void GameEnd()
     {
+        EffectControl _ef = _gv.GetComponent<EffectControl>();
+        _ef.DofOn();
         _deadUI.SetActive(true);
         _endSfx.Play();
         StartCoroutine(PauseGame());
+
 
     }
 }

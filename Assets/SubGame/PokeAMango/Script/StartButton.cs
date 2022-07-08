@@ -7,22 +7,16 @@ using UnityEngine.Rendering.PostProcessing;
 public class StartButton : MonoBehaviour
 {
     [SerializeField]
-    GameObject _Volume;
-    Volume _v;
-    DepthOfField _df;
-
-    private void Start()
-    {
-        _v = _Volume.GetComponent<Volume>();
-        //_v.profile.TryGet(out _df);
-        
-    }
+    GameObject _gv;
+    
+    
     public void OnClick()
     {
         
 
         Time.timeScale = 1;
-        //_df.active = false;
+        EffectControl _ef = _gv.GetComponent<EffectControl>();
+        _ef.DofOff();
         gameObject.SetActive(false);
     }
 }
