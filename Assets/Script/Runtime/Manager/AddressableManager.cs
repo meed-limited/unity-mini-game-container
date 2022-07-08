@@ -22,11 +22,16 @@ namespace SuperUltra.Container
         [SerializeField]
         Map<string, string> _gameListIOS;
         static bool _intialized = false;
+        static bool _hasSubscribed = false;
         static AsyncOperationHandle _currentSceneHandle;
 
         void OnEnable()
         {
-            ContainerInterface.OnReturnMenu += UnloadScene;
+            if (!_hasSubscribed)
+            {
+                ContainerInterface.OnReturnMenu += UnloadScene;
+                _hasSubscribed = true;
+            }
         }
 
         void Start()
