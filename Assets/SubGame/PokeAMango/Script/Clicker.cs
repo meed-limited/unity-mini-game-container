@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Lofelt.NiceVibrations;
 
 
 public class Clicker : MonoBehaviour
@@ -20,6 +21,8 @@ public class Clicker : MonoBehaviour
     private AudioSource _sfx;
     [SerializeField]
     ParticleSystem _clickeffect;
+    [SerializeField]
+    HapticClip _vir;
     
  
 
@@ -43,7 +46,7 @@ public class Clicker : MonoBehaviour
     {
         gameman.GetComponent<GameStat>().GetSocre();
         m_camera.GetComponent<Camera>().backgroundColor = new Color(_colorValueX, _colorValueY, _colorValueZ);
-        Vibration.Vibrate(50);
+        HapticController.Play(_vir);
         
         var _coin = Instantiate(_clickeffect, transform.position, Quaternion.identity);
         _coin.transform.localScale = new Vector3(0.6f,0.7f,1);
