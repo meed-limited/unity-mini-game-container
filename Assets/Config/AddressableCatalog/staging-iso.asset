@@ -10,8 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af2d868aae50b02459856d837585b335, type: 3}
-  m_Name: mango-android
+  m_Name: staging-iso
   m_EditorClassIdentifier: 
   list:
+  - key: demo
+    value: catalog_2022.07.07.07.46.19.hash
   - key: poke-a-mango
-    value: catalog_2022.07.08.08.56.52.json
+    value: catalog_2022.07.12.07.02.39.hash
