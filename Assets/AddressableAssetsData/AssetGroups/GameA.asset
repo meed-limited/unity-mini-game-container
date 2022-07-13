@@ -20,8 +20,7 @@ MonoBehaviour:
   - m_GUID: 9fc0d4010bbf28b4594072e72b8655ab
     m_Address: Assets/Scenes/GameA.unity
     m_ReadOnly: 0
-    m_SerializedLabels:
-    - GameScene
+    m_SerializedLabels: []
   - m_GUID: 3a6cb2ed4e2f2774480a6b130aaf9ab2
     m_Address: Assets/Prefab/Cube.prefab
     m_ReadOnly: 0
