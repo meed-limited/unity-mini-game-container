@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Lofelt.NiceVibrations;
+using UnityEngine.Animations;
+using DG.Tweening;
 
 
 public class Clicker : MonoBehaviour
@@ -21,10 +23,18 @@ public class Clicker : MonoBehaviour
     private AudioSource _sfx;
     [SerializeField]
     ParticleSystem _clickeffect;
-    [SerializeField]
-    HapticClip _vir;
     
+    bool _rotating = true; ///change before launch
+    [SerializeField]
+    GameObject _runner;
+    Animator _runnerAni;
+    [SerializeReference]
+    private float _stopCount = 0.3f;
  
+    public float _moveValue = -2f;
+
+
+
 
 
 
@@ -32,21 +42,31 @@ public class Clicker : MonoBehaviour
     {
         _anim = gameObject.GetComponent<Animator>();
         _sfx = gameObject.GetComponent<AudioSource>();
-   
-        
+        _runnerAni = _runner.GetComponent<Animator>();
+       
         
     }
 
     void Update()
     {
-        transform.Rotate(0, 0, zvalue * Time.deltaTime);
+        //Debug.Log(Time.deltaTime);
+        if(_rotating)
+            transform.Rotate(0, 0, zvalue * Time.deltaTime);
+        _stopCount -= Time.deltaTime;
+        if (_stopCount < 0)
+        {
+            _runnerAni.SetBool("runningtri", false);
+            _stopCount = 0;
+        }
+
     }
 
     public void OnClick()
     {
+        RunningAni();
         gameman.GetComponent<GameStat>().GetSocre();
         m_camera.GetComponent<Camera>().backgroundColor = new Color(_colorValueX, _colorValueY, _colorValueZ);
-        HapticController.Play(_vir);
+        
         
         var _coin = Instantiate(_clickeffect, transform.position, Quaternion.identity);
         _coin.transform.localScale = new Vector3(0.6f,0.7f,1);
@@ -93,5 +113,23 @@ public class Clicker : MonoBehaviour
         }
     }
 
+    public void StartRotate()
+    {
+        _rotating = true;
+    }
 
+    private void RunningAni()
+    {
+        _runnerAni.SetBool("runningtri", true);
+        _runner.transform.DOMoveX(_moveValue, 0.2f, false);
+
+        //_runner.transform.position += new Vector3(_moveValue, 0, 0);
+        _stopCount = 0.3f;
+        _moveValue += 0.05f;
+
+        if(_moveValue >= 2.13)
+        {
+            _moveValue = -2f;
+        }
+    }
 }

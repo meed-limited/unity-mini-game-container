@@ -12,13 +12,17 @@ public class Timer : MonoBehaviour
     private TextMeshProUGUI _timeText;
     [SerializeField]
     private GameObject _end;
+    [SerializeField]
     DeadClicker _deadclicker;
+    [SerializeField]
+    private GameObject _yesButton;
 
     private void Start()
     {
         // Starts the timer automatically
         _timerIsRunning = true;
         _deadclicker = _end.GetComponent<DeadClicker>();
+        
     }
     void Update()
     {
@@ -33,6 +37,8 @@ public class Timer : MonoBehaviour
             {
                 _timeRemaining = 0;
                 _timerIsRunning = false;
+                _end.SetActive(true);
+                _yesButton.SetActive(false);
                 _deadclicker.GameEnd();
             }
         }

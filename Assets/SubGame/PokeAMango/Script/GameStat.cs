@@ -7,8 +7,8 @@ public class GameStat : MonoBehaviour
 {
     [SerializeField]
     private TextMeshProUGUI scoreText;
-    [SerializeField]
-    private int _score = 0;
+    
+    public int _score = 0;
     [SerializeField]
     private float _switchTimer;
     [SerializeField]
@@ -23,11 +23,12 @@ public class GameStat : MonoBehaviour
     private TextMeshProUGUI _endBestText;
     [SerializeField]
     private TextMeshProUGUI _endScoreText;
+    public bool _isSwitching = true;
 
     private void Awake()
     {
         _bestText.text = PlayerPrefs.GetInt("Best").ToString();
-        Time.timeScale = 0;
+        
     }
     private void Start()
     {
@@ -42,21 +43,26 @@ public class GameStat : MonoBehaviour
         _endBestText.text = PlayerPrefs.GetInt("Best").ToString();
         _switchTimer -= Time.deltaTime;
         _timerText.text = _switchTimer.ToString();
-        if (_switchTimer <= 0)
-        {
-            if (_yesButton.activeSelf)
+        if (_isSwitching)
+            if (_switchTimer <= 0)
             {
-                _yesButton.SetActive(false);
-                _noButton.SetActive(true);
+                if (_yesButton.activeSelf)
+                {
+                    _yesButton.SetActive(false);
+                    _noButton.SetActive(true);
+                    _switchTimer = Random.Range(2f, 4f);
+                }
+                else
+                {
+                    _yesButton.SetActive(true);
+                    _noButton.SetActive(false);
+                    _switchTimer = Random.Range(3f, 8f);
+                }
+            
+            
+            
+                //function
             }
-            else
-            {
-                _yesButton.SetActive(true);
-                _noButton.SetActive(false);
-            }
-            _switchTimer = Random.Range(2f, 10f);
-            //function
-        }
         
     }
     public void GetSocre()
