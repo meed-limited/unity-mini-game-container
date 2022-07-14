@@ -7,9 +7,14 @@ namespace SuperUltra.Container
     public class SceneLoader : MonoBehaviour
     {
 
-        public void ToMenu()
+        public static void ToMenu()
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene(SceneConst.MainMenuSceneIndex);
+        }
+
+        public static void ToLogin()
+        {
+            SceneManager.LoadScene(SceneConst.LoginSceneIndex);
         }
 
     }

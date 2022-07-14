@@ -7,14 +7,10 @@ using TMPro;
 
 public class MenuUIManager : MonoBehaviour
 {
-    [SerializeField]
-    RectTransform _loadButton;
-    [SerializeField]
-    TMP_Text _progressText;
-    [SerializeField]
-    Image _progressBar;
-    [SerializeField]
-    RectTransform _buttonContainer;
+    [SerializeField] RectTransform _loadButton;
+    [SerializeField] TMP_Text _progressText;
+    [SerializeField] Image _progressBar;
+    [SerializeField] RectTransform _buttonContainer;
 
     public void CreateButtons(string key, float downloadSize, UnityAction callback)
     {

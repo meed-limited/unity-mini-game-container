@@ -19,7 +19,7 @@ namespace SuperUltra.Demo
 
         public void ToGameScene()
         {
-            AsyncOperationHandle<SceneInstance> operationHandle = Addressables.LoadSceneAsync("GameScene");
+            AsyncOperationHandle<SceneInstance> operationHandle = Addressables.LoadSceneAsync("DemoGameScene");
             Debug.Log("DEMO");
             operationHandle.Completed += OnSceneLoaded;
         }

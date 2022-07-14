@@ -11,16 +11,11 @@ namespace SuperUltra.Container
 
     public class AddressableManager : MonoBehaviour
     {
-        [SerializeField]
-        bool shouldDownload;
-        [SerializeField]
-        bool _deleteCache;
-        [SerializeField]
-        MenuUIManager _menuUIManager;
-        [SerializeField]
-        Map<string, string> _gameListAndroid;
-        [SerializeField]
-        Map<string, string> _gameListIOS;
+        [SerializeField] bool shouldDownload;
+        [SerializeField] bool _deleteCache;
+        [SerializeField] MenuUIManager _menuUIManager;
+        [SerializeField] Map<string, string> _gameListAndroid;
+        [SerializeField] Map<string, string> _gameListIOS;
         Dictionary<string, string> _gameLanding;
         static bool _intialized = false;
         static bool _hasSubscribed = false;
@@ -121,6 +116,10 @@ namespace SuperUltra.Container
         void CreateButtons(string gameName, IList<IResourceLocation> locations)
         {
             string landingScene = _gameLanding[gameName];
+            foreach (IResourceLocation item in locations)
+            {
+                Debug.Log($"{gameName} {item.PrimaryKey}");
+            }
             Addressables.GetDownloadSizeAsync(locations).Completed += (obj) =>
             {
                 if(obj.Status == AsyncOperationStatus.Succeeded)
