@@ -15,7 +15,7 @@ namespace SuperUltra.Container
 
     public class LoginManager : MonoBehaviour
     {
-        UserData _userData;
+        static UserData _userData;
         [SerializeField] LoginUI _loginUI;
         [SerializeField] RegisterUI _registerUI;
         [SerializeField] EnterNameUI _enterNameUI;
@@ -32,6 +32,13 @@ namespace SuperUltra.Container
             _enterNameUI.gameObject.SetActive(false);
             _forgotPasswordUI.gameObject.SetActive(false);
             ToLoginSelection();
+            LoginWithToken();
+        }
+
+        public void LoginWithToken()
+        {
+            PlayerPrefs.HasKey("token");
+            string token = PlayerPrefs.GetString("token");
         }
 
         public void OnClickFacebookLogin()
@@ -66,7 +73,7 @@ namespace SuperUltra.Container
             _currentUI = target.GetComponent<RectTransform>();
         }
 
-        public void ToEmailRegister()
+        public void ToRegister()
         {
             ToPage(_registerUI);
         }

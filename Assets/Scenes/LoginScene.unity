@@ -421,9 +421,9 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 96
-  m_fontSizeBase: 14
+  m_fontSizeBase: 96
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 96
   m_fontStyle: 2
@@ -938,6 +938,7 @@ GameObject:
   - component: {fileID: 335699630}
   - component: {fileID: 335699629}
   - component: {fileID: 335699633}
+  - component: {fileID: 335699634}
   m_Layer: 5
   m_Name: LoginCanvas
   m_TagString: Untagged
@@ -1046,6 +1047,18 @@ MonoBehaviour:
   _passwordInput: {fileID: 1247262211}
   _errorText: {fileID: 492598869}
   _loginManager: {fileID: 1770948359}
+--- !u!114 &335699634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 335699628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd88192f10a9a714c95396f73128c170, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &372068810
 GameObject:
   m_ObjectHideFlags: 0
@@ -1722,7 +1735,7 @@ MonoBehaviour:
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 7
   m_RegexValue: 
-  m_GlobalPointSize: 14
+  m_GlobalPointSize: 96
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
@@ -2660,9 +2673,9 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 96
-  m_fontSizeBase: 14
+  m_fontSizeBase: 96
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 96
   m_fontStyle: 2
@@ -3739,7 +3752,7 @@ MonoBehaviour:
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 0
   m_RegexValue: 
-  m_GlobalPointSize: 14
+  m_GlobalPointSize: 96
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
@@ -4096,9 +4109,9 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 96
-  m_fontSizeBase: 14
+  m_fontSizeBase: 96
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 96
   m_fontStyle: 0
@@ -5315,9 +5328,9 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 96
-  m_fontSizeBase: 14
+  m_fontSizeBase: 96
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 96
   m_fontStyle: 0
@@ -6366,7 +6379,7 @@ MonoBehaviour:
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 0
   m_RegexValue: 
-  m_GlobalPointSize: 14
+  m_GlobalPointSize: 96
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
@@ -7015,7 +7028,7 @@ MonoBehaviour:
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 0
   m_RegexValue: 
-  m_GlobalPointSize: 14
+  m_GlobalPointSize: 96
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
@@ -7302,9 +7315,9 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 96
-  m_fontSizeBase: 14
+  m_fontSizeBase: 96
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 96
   m_fontStyle: 2
@@ -7686,9 +7699,9 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 96
-  m_fontSizeBase: 14
+  m_fontSizeBase: 96
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 96
   m_fontStyle: 2
@@ -8165,9 +8178,9 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 96
-  m_fontSizeBase: 14
+  m_fontSizeBase: 96
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 96
   m_fontStyle: 0
@@ -8302,9 +8315,9 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 96
-  m_fontSizeBase: 14
+  m_fontSizeBase: 96
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 96
   m_fontStyle: 0
@@ -8554,7 +8567,7 @@ MonoBehaviour:
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 7
   m_RegexValue: 
-  m_GlobalPointSize: 14
+  m_GlobalPointSize: 96
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
@@ -8663,9 +8676,9 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 96
-  m_fontSizeBase: 14
+  m_fontSizeBase: 96
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 96
   m_fontStyle: 0
@@ -8873,7 +8886,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 960, y: 150}
+  m_SizeDelta: {x: 960, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8636458875511034261
 MonoBehaviour:
@@ -8925,9 +8938,9 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 96
-  m_fontSizeBase: 14
+  m_fontSizeBase: 96
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 96
   m_fontStyle: 2
@@ -9352,7 +9365,7 @@ MonoBehaviour:
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 0
   m_RegexValue: 
-  m_GlobalPointSize: 14
+  m_GlobalPointSize: 96
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:

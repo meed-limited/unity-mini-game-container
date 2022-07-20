@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -32,19 +33,31 @@ namespace SuperUltra.Container
         public void OnSubmit()
         {
             if (CheckAccountInfo())
-                _loginManager.ToEnterUserName();
+            {
+                PlayFabLogin.RegisterWithEmail(
+                    _loginManager.userData.email, 
+                    _loginManager.userData.password, 
+                    () => _loginManager.ToEnterUserName()
+                );
+            }
         }
-        
+
         public void Back()
         {
             _loginManager.ToLoginSelection();
         }
 
-        bool CheckPassword()
+        bool CheckPassword(string password, string confirmPassword)
         {
-            if (_passwordInput.text != _confirmPasswordInput.text)
+            if (!password.Equals(confirmPassword))
             {
                 _errorText.text = "Password does not match";
+                return false;
+            }
+            // check password has to be 6 to 100 character
+            if (password.Length < 6 || confirmPassword.Length > 100)
+            {
+                _errorText.text = "Password must be 6 to 100 characters";
                 return false;
             }
             else
@@ -54,6 +67,18 @@ namespace SuperUltra.Container
             return true;
         }
 
+        bool CheckEmail(string email)
+        {
+            // use regex to check email format
+            Regex validateEmailRegex = new Regex("^\\S+@\\S+\\.\\S+$");
+            bool result = validateEmailRegex.IsMatch(email);
+            if(!result)
+            {
+                _errorText.text = "Email is not valid";
+            }
+            return result;
+        }
+
         bool CheckAccountInfo()
         {
             if (_loginManager.userData.email == null || _loginManager.userData.password == null)
@@ -61,9 +86,12 @@ namespace SuperUltra.Container
                 _errorText.text = ("Account info is not complete");
                 return false;
             }
-            if (!CheckPassword())
+            if(!CheckEmail(_loginManager.userData.email))
             {
-                _errorText.text = ("Password does not match");
+                return false;
+            }
+            if (!CheckPassword(_passwordInput.text, _confirmPasswordInput.text))
+            {
                 return false;
             }
             _errorText.text = ("Account info is complete");

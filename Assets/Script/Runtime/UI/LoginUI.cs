@@ -43,9 +43,8 @@ namespace SuperUltra.Container
             return true;
         }
 
-
         public void OnClickFacebookLogin() => _loginManager.OnClickFacebookLogin();
-        public void OnClickRegister() => _loginManager.ToEmailRegister();
+        public void OnClickRegister() => _loginManager.ToRegister();
     }
 
 }
