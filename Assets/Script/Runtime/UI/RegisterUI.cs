@@ -15,38 +15,6 @@ namespace SuperUltra.Container
         [SerializeField] TMP_Text _errorText;
         [SerializeField] LoginManager _loginManager;
 
-        public void UpdateEmail(string email)
-        {
-            _loginManager.UpdateEmail(email);
-        }
-
-        public void UpdatePassword(string password)
-        {
-            _loginManager.UpdatePassword(password);
-        }
-
-        public void OnClickLogin() 
-        {
-            _loginManager.ToLoginSelection();
-        } 
-
-        public void OnSubmit()
-        {
-            if (CheckAccountInfo())
-            {
-                PlayFabLogin.RegisterWithEmail(
-                    _loginManager.userData.email, 
-                    _loginManager.userData.password, 
-                    () => _loginManager.ToEnterUserName()
-                );
-            }
-        }
-
-        public void Back()
-        {
-            _loginManager.ToLoginSelection();
-        }
-
         bool CheckPassword(string password, string confirmPassword)
         {
             if (!password.Equals(confirmPassword))
@@ -81,12 +49,12 @@ namespace SuperUltra.Container
 
         bool CheckAccountInfo()
         {
-            if (_loginManager.userData.email == null || _loginManager.userData.password == null)
+            if (PlayfabLogin.userData.email == null || PlayfabLogin.userData.password == null)
             {
                 _errorText.text = ("Account info is not complete");
                 return false;
             }
-            if(!CheckEmail(_loginManager.userData.email))
+            if(!CheckEmail(PlayfabLogin.userData.email))
             {
                 return false;
             }
@@ -97,7 +65,32 @@ namespace SuperUltra.Container
             _errorText.text = ("Account info is complete");
             return true;
         }
-    
+
+        public void UpdateEmail(string email)
+        {
+            PlayfabLogin.UpdateEmail(email);
+        }
+
+        public void UpdatePassword(string password)
+        {
+            PlayfabLogin.UpdatePassword(password);
+        }
+
+        public void ToLoginPage()
+        {
+            _loginManager.ToLoginSelection();
+        }
+
+        public void OnClickRegister()
+        {
+            if (CheckAccountInfo())
+            {
+                _loginManager.OnClickEmailRegister();
+            }
+        }
+
+        public void OnClickFacebookRegister() => _loginManager.OnClickFacebookRegister();
+
     }
 
 }

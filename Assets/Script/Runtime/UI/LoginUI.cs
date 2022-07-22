@@ -14,6 +14,16 @@ namespace SuperUltra.Container
         [SerializeField] TMP_Text _errorText;
         [SerializeField] LoginManager _loginManager;
 
+        bool CheckValidInput()
+        {
+            if (_emailInput.text.Length == 0 || _passwordInput.text.Length == 0)
+            {
+                _errorText.text = "Account info is not complete";
+                return false;
+            }
+            return true;
+        }
+
         public void OnClickEmailLogin()
         {
             if (CheckValidInput())
@@ -33,18 +43,10 @@ namespace SuperUltra.Container
             _loginManager.ToForgotPasword();
         }
 
-        bool CheckValidInput()
-        {
-            if (_emailInput.text.Length == 0 || _passwordInput.text.Length == 0)
-            {
-                _errorText.text = "Account info is not complete";
-                return false;
-            }
-            return true;
-        }
-
         public void OnClickFacebookLogin() => _loginManager.OnClickFacebookLogin();
         public void OnClickRegister() => _loginManager.ToRegister();
+
+
     }
 
 }

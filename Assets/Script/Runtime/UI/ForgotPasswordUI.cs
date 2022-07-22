@@ -12,11 +12,6 @@ namespace SuperUltra.Container
         [SerializeField] TMP_InputField _email;
         [SerializeField] LoginManager _loginManager;
 
-        public void UpdateUsername(string name)
-        {
-            _loginManager.UpdateUsername(name);
-        }
-
         public void Back()
         {
             _loginManager.ToLoginSelection();

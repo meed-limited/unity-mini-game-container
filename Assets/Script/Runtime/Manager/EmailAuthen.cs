@@ -1,23 +1,67 @@
 using System;
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
+using PlayFab;
+using PlayFab.ClientModels;
 
 namespace SuperUltra.Container
 {
 
-    public class EmailAuthen
+    public static class EmailAuthen
     {
-        public static void Login(string name, string password)
+        public static void Login(string email, string password, Action successCallback = null, Action<string> errorCallback = null)
         {
-            // TODO : make calls to server to login
-            SceneLoader.ToMenu();
+            LoginWithEmailAddressRequest request = new LoginWithEmailAddressRequest()
+            {
+                Email = email, // Email address for the account
+                Password = password, // Password for the new account
+            };
+            PlayFabClientAPI.LoginWithEmailAddress(
+                request,
+                (result) =>
+                {
+                    PlayfabLogin.UpdatePlayFabId(result.PlayFabId);
+                    SceneLoader.ToMenu();
+                },
+                (result) => { errorCallback(result.ErrorMessage); }
+            );
         }
 
-        public static void Register()
+        public static void Register(string email, string password, Action successCallback = null, Action<string> errorCallback = null)
         {
-            SceneLoader.ToMenu();
+            RegisterPlayFabUserRequest request = new RegisterPlayFabUserRequest()
+            {
+                Email = email, // Email address for the account
+                Password = password, // Password for the new account
+                RequireBothUsernameAndEmail = false // Require both userName and email to be passed to register an account
+            };
+            PlayFabClientAPI.RegisterPlayFabUser(
+                request,
+                (result) =>
+                {
+                    OnRegisterSuccess(result);
+                    successCallback();
+                },
+                (result) => { 
+                    OnRegisterFailure(result); 
+                    errorCallback(result.ErrorMessage); 
+                }
+            );
         }
+
+        static void OnRegisterSuccess(RegisterPlayFabUserResult result)
+        {
+            Debug.Log($"Register Successful {result.PlayFabId} {result.Username} {result}");
+            PlayfabLogin.UpdatePlayFabId(result.PlayFabId);
+        }
+
+        private static void OnRegisterFailure(PlayFabError error)
+        {
+            Debug.LogWarning("Something went wrong with your first API call.  :(");
+            Debug.LogError("Here's some debug information:");
+            Debug.LogError(error.GenerateErrorReport());
+        }
+
     }
 
 }

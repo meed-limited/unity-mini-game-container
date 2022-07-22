@@ -4,14 +4,6 @@ using UnityEngine;
 
 namespace SuperUltra.Container
 {
-    [Serializable]
-    public struct UserData 
-    {
-        public string username;
-        public string email;
-        public string password;
-        public string token;
-    }    
 
     public class LoginManager : MonoBehaviour
     {
@@ -20,22 +12,54 @@ namespace SuperUltra.Container
         [SerializeField] RegisterUI _registerUI;
         [SerializeField] EnterNameUI _enterNameUI;
         [SerializeField] ForgotPasswordUI _forgotPasswordUI;
+        [SerializeField] MessagePopUpUI _messagePopUpUI;
         RectTransform _currentUI;
-        public UserData userData { 
-            get { return _userData; } 
+
+        void ToPage(MonoBehaviour target)
+        {
+            if (_currentUI)
+            {
+                _currentUI.gameObject.SetActive(false);
+            }
+            target.gameObject.SetActive(true);
+            _currentUI = target.GetComponent<RectTransform>();
+        }
+
+        bool CheckInternetConnection()
+        {
+            if (
+                !Application.internetReachability.Equals(NetworkReachability.ReachableViaLocalAreaNetwork)
+                && !Application.internetReachability.Equals(NetworkReachability.ReachableViaCarrierDataNetwork)
+            )
+            {
+                _messagePopUpUI.Show("No Connection", "Retry", () => { CheckInternetConnection(); }, false);
+                return false;
+            }
+            return true;
         }
 
         void Start()
         {
+            FacebookAuthen.Initialize();
             _loginUI.gameObject.SetActive(false);
             _registerUI.gameObject.SetActive(false);
             _enterNameUI.gameObject.SetActive(false);
             _forgotPasswordUI.gameObject.SetActive(false);
+            _messagePopUpUI.gameObject.SetActive(false);
+            if (!CheckInternetConnection())
+            {
+                return;
+            }
             ToLoginSelection();
-            LoginWithToken();
+            AutoLoginWithToken();
         }
 
-        public void LoginWithToken()
+        public void ReTryConnection()
+        {
+            Start();
+        }
+
+        public void AutoLoginWithToken()
         {
             PlayerPrefs.HasKey("token");
             string token = PlayerPrefs.GetString("token");
@@ -43,34 +67,49 @@ namespace SuperUltra.Container
 
         public void OnClickFacebookLogin()
         {
-            Debug.Log("Facebook login");
-            FacebookAuthen.Login((bool result) => {
-                if (result)
+            FacebookAuthen.Login(
+                () => { SceneLoader.ToMenu(); },
+                (string errorMessage) =>
                 {
-                    Debug.Log("Facebook login success");
-                    ToEnterUserName();
-                }
-                else
+                    _messagePopUpUI.gameObject.SetActive(true);
+                    _messagePopUpUI.Show(errorMessage, "OK", null, true);
+                },
+                false
+            );
+        }
+
+        public void OnClickFacebookRegister()
+        {
+            FacebookAuthen.Login(
+                () => { ToEnterUserName(); },
+                (string errorMessage) =>
                 {
-                    Debug.Log("Facebook login failed");
-                }
-            });
+                    _messagePopUpUI.gameObject.SetActive(true);
+                    _messagePopUpUI.Show(errorMessage, "OK", null, true);
+                },
+                true
+            );
         }
 
         public void OnClickEmailLogin(string email, string password)
         {
-            Debug.Log("Email login");
-            EmailAuthen.Login(email, password);
+            EmailAuthen.Login(email, password, null, (string errorMessage) =>
+            {
+                _messagePopUpUI.Show(errorMessage, "OK", null, true);
+            });
         }
 
-        void ToPage(MonoBehaviour target)
+        public void OnClickEmailRegister()
         {
-            if(_currentUI)
-            {
-                _currentUI.gameObject.SetActive(false);
-            }
-            target.gameObject.SetActive(true);
-            _currentUI = target.GetComponent<RectTransform>();
+            EmailAuthen.Register(
+                PlayfabLogin.userData.email,
+                PlayfabLogin.userData.password,
+                () => ToEnterUserName(),
+                (string errorMessage) =>
+                {
+                    _messagePopUpUI.Show(errorMessage, "OK", null, true);
+                }
+            );
         }
 
         public void ToRegister()
@@ -91,21 +130,6 @@ namespace SuperUltra.Container
         public void ToForgotPasword()
         {
             ToPage(_forgotPasswordUI);
-        }
-
-        public void UpdateEmail(string email)
-        {
-            _userData.email = email;
-        }
-
-        public void UpdatePassword(string password)
-        {
-            _userData.password = password;
-        }
-
-        public void UpdateUsername(string username)
-        {
-            _userData.username = username;
         }
 
     }

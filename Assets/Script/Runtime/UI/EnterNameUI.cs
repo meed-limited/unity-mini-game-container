@@ -2,7 +2,8 @@ using System;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-
+using PlayFab;
+using PlayFab.ClientModels;
 
 namespace SuperUltra.Container
 {
@@ -10,13 +11,9 @@ namespace SuperUltra.Container
     public class EnterNameUI : MonoBehaviour
     {
         [SerializeField] TMP_InputField _name;
+        [SerializeField] TMP_Text _statusText;
         [SerializeField] Button _submit;
         [SerializeField] LoginManager _loginManager;
-
-        public void UpdateUsername(string name)
-        {
-            _loginManager.UpdateUsername(name);
-        }
 
         public void Back()
         {
@@ -25,12 +22,29 @@ namespace SuperUltra.Container
 
         public void OnSubmit()
         {
-            if (_name.text.Length > 0)
+            if (!(_name.text.Length >= 6 || _name.text.Length < 100))
             {
-                PlayerPrefs.SetString("name", _name.text);
-                SceneLoader.ToMenu();
+                _statusText.text = "Username must be between 6 and 99 characters";
+                return;
             }
+            
+            PlayFabClientAPI.UpdateUserTitleDisplayName(
+                new UpdateUserTitleDisplayNameRequest()
+                {
+                    DisplayName = _name.text
+                },
+                (result) =>
+                {
+                    PlayfabLogin.UpdateUserName(_name.text);
+                    SceneLoader.ToMenu();
+                },
+                (error) =>
+                {
+                    _statusText.text = error.ErrorMessage;
+                }
+            );
+            
         }
     }
-    
+
 }
