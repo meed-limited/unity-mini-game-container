@@ -24,18 +24,6 @@ namespace SuperUltra.Container
             get { return _userData; }
         }
 
-        public static void GetPlayerInfo(Action<GetPlayerCombinedInfoResult> callback)
-        {
-            PlayFabClientAPI.GetPlayerCombinedInfo(
-                new GetPlayerCombinedInfoRequest() {
-                    InfoRequestParameters = new GetPlayerCombinedInfoRequestParams {GetPlayerProfile = true, GetUserAccountInfo = true },
-                    PlayFabId = _userData.playFabId
-                },
-                (GetPlayerCombinedInfoResult result) => callback(result),
-                (result) => Debug.Log(result.ErrorMessage)
-            );
-        }
-
         public static void UpdateUserName(string name)
         {
             _userData.userName = name;

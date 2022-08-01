@@ -61,8 +61,10 @@ namespace SuperUltra.Container
 
         public void AutoLoginWithToken()
         {
-            PlayerPrefs.HasKey("token");
-            string token = PlayerPrefs.GetString("token");
+            if (PlayerPrefs.HasKey("token"))
+            {
+                string token = PlayerPrefs.GetString("token");
+            }
         }
 
         public void OnClickFacebookLogin()

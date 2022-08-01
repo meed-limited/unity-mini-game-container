@@ -81,6 +81,10 @@ namespace SuperUltra.Container
             _loginManager.ToLoginSelection();
         }
 
+        public void ToTermsAndCondition() => Application.OpenURL("https://www.youtube.com/channel/UC-lHJZR3Gqxm24_Vd_AJ5Yw");
+        
+        public void ToPrivacy() => Application.OpenURL("https://www.facebook.com/PlayFab-Games-116495690789896/");
+
         public void OnClickRegister()
         {
             if (CheckAccountInfo())
@@ -90,6 +94,7 @@ namespace SuperUltra.Container
         }
 
         public void OnClickFacebookRegister() => _loginManager.OnClickFacebookRegister();
+
 
     }
 
