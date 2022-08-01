@@ -1,9 +1,9 @@
 fileFormatVersion: 2
-guid: 35a6726adf03479eb04b8c082346d551
+guid: af375ab7a7be496495fce13d2f5d8f21
 labels:
 - gvh
-- gvh_version-1.2.166
-- gvhp_exportpath-ExternalDependencyManager/Editor/LICENSE
+- gvh_version-1.2.172
+- gvhp_exportpath-ExternalDependencyManager/Editor/README.md
 timeCreated: 1584567712
 licenseType: Pro
 TextScriptImporter:
