@@ -66,7 +66,7 @@ namespace SuperUltra.Container
                     }, 
                     (result) => {
                         OnPlayfabFacebookAuthFailed(result);
-                        failureCallback(result.GenerateErrorReport());
+                        failureCallback(result.Error.ToString());
                     }
                 );
             }

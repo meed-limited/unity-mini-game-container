@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using DG.Tweening;
 
 namespace SuperUltra.Container
 {
@@ -12,16 +14,38 @@ namespace SuperUltra.Container
         [SerializeField] RegisterUI _registerUI;
         [SerializeField] EnterNameUI _enterNameUI;
         [SerializeField] ForgotPasswordUI _forgotPasswordUI;
+        [SerializeField] VerifyUI _verifyUI;
         [SerializeField] MessagePopUpUI _messagePopUpUI;
+        [SerializeField] ResetPasswordUI _resetPasswordUI;
         RectTransform _currentUI;
+
+        void SwitchRayCastOnOff(Transform transform, bool isOn = true)
+        {
+            GraphicRaycaster graphicRaycaster = transform.GetComponent<GraphicRaycaster>();
+            if (graphicRaycaster == null)
+            {
+                return;
+            }
+            graphicRaycaster.enabled = isOn;
+        }
 
         void ToPage(MonoBehaviour target)
         {
             if (_currentUI)
             {
-                _currentUI.gameObject.SetActive(false);
+                RectTransform current = _currentUI; // cache current UI, because it will be modified to target beofre animation ends
+                ISlidable currentSlidable = current.GetComponent<ISlidable>();
+                SwitchRayCastOnOff(current, false);
+                currentSlidable.SlideOut().OnComplete(() =>
+                {
+                    current.gameObject.SetActive(false);
+                });
             }
             target.gameObject.SetActive(true);
+            ISlidable targetSlidable = target.GetComponent<ISlidable>();
+            targetSlidable.SlideIn().OnComplete(
+                () => SwitchRayCastOnOff(target.transform, true)
+            );
             _currentUI = target.GetComponent<RectTransform>();
         }
 
@@ -41,17 +65,34 @@ namespace SuperUltra.Container
         void Start()
         {
             FacebookAuthen.Initialize();
-            _loginUI.gameObject.SetActive(false);
-            _registerUI.gameObject.SetActive(false);
-            _enterNameUI.gameObject.SetActive(false);
-            _forgotPasswordUI.gameObject.SetActive(false);
-            _messagePopUpUI.gameObject.SetActive(false);
+            // HidePanel(_loginUI.transform);
+            HidePanel(_registerUI.transform);
+            HidePanel(_enterNameUI.transform);
+            HidePanel(_forgotPasswordUI.transform);
+            HidePanel(_messagePopUpUI.transform);
+            HidePanel(_resetPasswordUI.transform);
+            HidePanel(_verifyUI.transform);
             if (!CheckInternetConnection())
             {
                 return;
             }
             ToLoginSelection();
             AutoLoginWithToken();
+        }
+
+
+        void HidePanel(Transform transform)
+        {
+            ISlidable slidable = transform.GetComponent<ISlidable>();
+            if(slidable != null)
+            {
+                slidable.SlideOut(0f).OnComplete(
+                    () => transform.gameObject.SetActive(false)
+                );
+            }else
+            {
+                transform.gameObject.SetActive(false);
+            }
         }
 
         public void ReTryConnection()
@@ -74,7 +115,7 @@ namespace SuperUltra.Container
                 (string errorMessage) =>
                 {
                     _messagePopUpUI.gameObject.SetActive(true);
-                    _messagePopUpUI.Show(errorMessage, "OK", null, true);
+                    _messagePopUpUI.Show(errorMessage, "", null, true);
                 },
                 false
             );
@@ -87,7 +128,7 @@ namespace SuperUltra.Container
                 (string errorMessage) =>
                 {
                     _messagePopUpUI.gameObject.SetActive(true);
-                    _messagePopUpUI.Show(errorMessage, "OK", null, true);
+                    _messagePopUpUI.Show(errorMessage, "", null, true);
                 },
                 true
             );
@@ -95,10 +136,15 @@ namespace SuperUltra.Container
 
         public void OnClickEmailLogin(string email, string password)
         {
-            EmailAuthen.Login(email, password, null, (string errorMessage) =>
-            {
-                _messagePopUpUI.Show(errorMessage, "OK", null, true);
-            });
+            EmailAuthen.Login(
+                email,
+                password,
+                null,
+                (string errorMessage) =>
+                {
+                    _messagePopUpUI.Show(errorMessage, "", null, true);
+                }
+            );
         }
 
         public void OnClickEmailRegister()
@@ -109,7 +155,49 @@ namespace SuperUltra.Container
                 () => ToEnterUserName(),
                 (string errorMessage) =>
                 {
-                    _messagePopUpUI.Show(errorMessage, "OK", null, true);
+                    _messagePopUpUI.Show(errorMessage, "", null, true);
+                }
+            );
+        }
+
+        public void OnClickForgotPassword(string email)
+        {
+            EmailAuthen.ForgotPassword(
+                email,
+                () => ToPage(_verifyUI),
+                (string errorMessage) =>
+                {
+                    _messagePopUpUI.Show(errorMessage, "", null, true);
+                }
+            );
+        }
+
+        public void OnClickVerify(string code)
+        {
+            EmailAuthen.Verify(
+                code,
+                () => ToPage(_resetPasswordUI),
+                (string errorMessage) =>
+                {
+                    _messagePopUpUI.Show(errorMessage, "", null, true);
+                }
+            );
+        }
+
+        public void OnClickResetPassword(string password)
+        {
+            EmailAuthen.ResetPassword(
+                password,
+                () =>
+                {
+                    _messagePopUpUI.Show("Password has been reset", "Sign In", () =>
+                    {
+                        ToLoginSelection();
+                    }, true, false);
+                },
+                (string errorMessage) =>
+                {
+                    _messagePopUpUI.Show(errorMessage, "", null, true);
                 }
             );
         }

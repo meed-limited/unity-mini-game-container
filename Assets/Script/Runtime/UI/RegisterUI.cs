@@ -2,36 +2,48 @@ using System;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using TMPro;
+using DG.Tweening;
 using UnityEngine.UI;
 
 namespace SuperUltra.Container
 {
-    
-    public class RegisterUI : MonoBehaviour
+
+    public class RegisterUI : MonoBehaviour, ISlidable
     {
         [SerializeField] TMP_InputField _emailInput;
         [SerializeField] TMP_InputField _passwordInput;
         [SerializeField] TMP_InputField _confirmPasswordInput;
-        [SerializeField] TMP_Text _errorText;
+        [SerializeField] TMP_Text _passwordErrorText;
+        [SerializeField] TMP_Text _emailErrorText;
+        [SerializeField] Toggle _termsAndConditionsToggle;
+        [SerializeField] TMP_Text _termsAndConditionsErrorText;
         [SerializeField] LoginManager _loginManager;
+        [SerializeField] RectTransform _panel;
+        Color _errorColor = new Color(0.96f, 0.4f, 0);
+        Color _normalColor = new Color(0.4f, 0.45f, 0.52f);
 
         bool CheckPassword(string password, string confirmPassword)
         {
+            Regex validatePasswordRegex = new Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&\\*])(?=.{8,})");
+            bool result = validatePasswordRegex.IsMatch(password);
+            if (!result)
+            {
+                _passwordErrorText.text = "Use 8 or more characters with a mix of leter & symbols";
+                _passwordErrorText.color = _errorColor;
+                _passwordInput.targetGraphic.color = _errorColor;
+                return false;
+            }
             if (!password.Equals(confirmPassword))
             {
-                _errorText.text = "Password does not match";
+                _passwordErrorText.text = "Password does not match";
+                _passwordErrorText.color = _errorColor;
+                _passwordInput.targetGraphic.color = _errorColor;
+                _confirmPasswordInput.targetGraphic.color = _errorColor;
                 return false;
             }
-            // check password has to be 6 to 100 character
-            if (password.Length < 6 || confirmPassword.Length > 100)
-            {
-                _errorText.text = "Password must be 6 to 100 characters";
-                return false;
-            }
-            else
-            {
-                _errorText.text = "";
-            }
+            _passwordErrorText.text = "";
+            _passwordInput.targetGraphic.color = _normalColor;
+            _confirmPasswordInput.targetGraphic.color = _normalColor;
             return true;
         }
 
@@ -40,21 +52,14 @@ namespace SuperUltra.Container
             // use regex to check email format
             Regex validateEmailRegex = new Regex("^\\S+@\\S+\\.\\S+$");
             bool result = validateEmailRegex.IsMatch(email);
-            if(!result)
-            {
-                _errorText.text = "Email is not valid";
-            }
+            _emailErrorText.text = result ? "" : "Email is not valid";
+            _emailErrorText.color = result ? _normalColor : _errorColor;
             return result;
         }
 
         bool CheckAccountInfo()
         {
-            if (PlayfabLogin.userData.email == null || PlayfabLogin.userData.password == null)
-            {
-                _errorText.text = ("Account info is not complete");
-                return false;
-            }
-            if(!CheckEmail(PlayfabLogin.userData.email))
+            if (!CheckEmail(PlayfabLogin.userData.email))
             {
                 return false;
             }
@@ -62,7 +67,19 @@ namespace SuperUltra.Container
             {
                 return false;
             }
-            _errorText.text = ("Account info is complete");
+            return true;
+        }
+
+        bool CheckTermsAndConditions()
+        {
+            if (!_termsAndConditionsToggle.isOn)
+            {
+                _termsAndConditionsErrorText.text = "Please accept terms and conditions";
+                _termsAndConditionsErrorText.color = _errorColor;
+                return false;
+            }
+            _termsAndConditionsErrorText.text = "";
+            _termsAndConditionsErrorText.color = _normalColor;
             return true;
         }
 
@@ -81,13 +98,25 @@ namespace SuperUltra.Container
             _loginManager.ToLoginSelection();
         }
 
+        public Tween SlideIn(float duration = 0.5f)
+        {
+            if (_panel == null) return null;
+            return _panel.DOAnchorPos(Vector2.zero, duration);
+        }
+
+        public Tween SlideOut(float duration = 0.5f)
+        {
+            if (_panel == null) return null;
+            return _panel.DOAnchorPos(new Vector2(0, -1920f), duration);
+        }
+
         public void ToTermsAndCondition() => Application.OpenURL("https://www.youtube.com/channel/UC-lHJZR3Gqxm24_Vd_AJ5Yw");
-        
+
         public void ToPrivacy() => Application.OpenURL("https://www.facebook.com/PlayFab-Games-116495690789896/");
 
         public void OnClickRegister()
         {
-            if (CheckAccountInfo())
+            if (CheckAccountInfo() && CheckTermsAndConditions())
             {
                 _loginManager.OnClickEmailRegister();
             }

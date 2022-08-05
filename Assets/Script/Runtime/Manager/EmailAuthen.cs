@@ -49,6 +49,24 @@ namespace SuperUltra.Container
             );
         }
 
+        public static void ForgotPassword(string email, Action successCallback = null, Action<string> errorCallback = null)
+        {
+            // TODO
+            successCallback();
+        }
+
+        public static void Verify(string code, Action successCallback = null, Action<string> errorCallback = null)
+        {
+            // TODO
+            successCallback();
+        }
+        
+        public static void ResetPassword(string password, Action successCallback = null, Action<string> errorCallback = null)
+        {
+            // TODO
+            successCallback();
+        }
+
         static void OnRegisterSuccess(RegisterPlayFabUserResult result)
         {
             Debug.Log($"Register Successful {result.PlayFabId} {result.Username} {result}");

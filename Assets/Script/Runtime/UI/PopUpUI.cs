@@ -21,12 +21,32 @@ namespace SuperUltra.Container
                 _rectTransform.localScale = Vector3.zero;
         }
 
+        bool TryGetRectTransform(out RectTransform rectTransform)
+        {
+            rectTransform = GetComponent<RectTransform>();
+            if (rectTransform == null)
+            {
+                Debug.LogError("PopUpUI requires a RectTransform component");
+                return false;
+            }
+            return true;
+        }
+
         public Tween Show(string message = "")
         {
+            if (TryGetRectTransform(out RectTransform rectTransform))
+            {
+                _rectTransform = rectTransform;
+            }
+            else
+            {
+                return null;
+            }
+
             TMP_Text text = GetComponentInChildren<TMP_Text>();
             if (text)
                 text.text = message;
-                
+
             return DOTween.To(
                 () => _rectTransform.localScale,
                 x => _rectTransform.localScale = x,
@@ -37,6 +57,15 @@ namespace SuperUltra.Container
 
         public Tween Hide()
         {
+            if (TryGetRectTransform(out RectTransform rectTransform))
+            {
+                _rectTransform = rectTransform;
+            }
+            else
+            {
+                return null;
+            }
+
             return DOTween.To(
                 () => _rectTransform.localScale,
                 x => _rectTransform.localScale = x,
