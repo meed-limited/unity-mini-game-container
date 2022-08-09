@@ -17,6 +17,7 @@ namespace SuperUltra.Container
         [SerializeField] VerifyUI _verifyUI;
         [SerializeField] MessagePopUpUI _messagePopUpUI;
         [SerializeField] ResetPasswordUI _resetPasswordUI;
+        [SerializeField] AvatarSelectionUI _avatarSelectionUI;
         RectTransform _currentUI;
 
         void SwitchRayCastOnOff(Transform transform, bool isOn = true)
@@ -65,6 +66,7 @@ namespace SuperUltra.Container
         void Start()
         {
             FacebookAuthen.Initialize();
+            Application.targetFrameRate = 60;
             // HidePanel(_loginUI.transform);
             HidePanel(_registerUI.transform);
             HidePanel(_enterNameUI.transform);
@@ -72,6 +74,7 @@ namespace SuperUltra.Container
             HidePanel(_messagePopUpUI.transform);
             HidePanel(_resetPasswordUI.transform);
             HidePanel(_verifyUI.transform);
+            HidePanel(_avatarSelectionUI.transform);
             if (!CheckInternetConnection())
             {
                 return;
@@ -184,6 +187,11 @@ namespace SuperUltra.Container
             );
         }
 
+        public void OnSelectAvatar(Sprite avatar)
+        {
+            _enterNameUI.SetAvatar(avatar);
+        }
+
         public void OnClickResetPassword(string password)
         {
             EmailAuthen.ResetPassword(
@@ -220,6 +228,11 @@ namespace SuperUltra.Container
         public void ToForgotPasword()
         {
             ToPage(_forgotPasswordUI);
+        }
+
+        public void ToAvatarSelection()
+        {
+            ToPage(_avatarSelectionUI);
         }
 
     }

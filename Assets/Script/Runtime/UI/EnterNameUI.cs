@@ -11,11 +11,14 @@ namespace SuperUltra.Container
 
     public class EnterNameUI : MonoBehaviour, ISlidable
     {
-        [SerializeField] TMP_InputField _name;
+        [SerializeField] TMP_InputField _nameInput;
         [SerializeField] TMP_Text _statusText;
+        [SerializeField] Image _iconPreview;
         [SerializeField] Button _submit;
         [SerializeField] LoginManager _loginManager;
         [SerializeField] RectTransform _panel;
+        Color _errorColor = new Color(0.96f, 0.4f, 0);
+        Color _normalColor = new Color(0.4f, 0.45f, 0.52f);
 
         public void Back()
         {
@@ -34,27 +37,44 @@ namespace SuperUltra.Container
             return _panel.DOLocalMoveX(Screen.height, duration);
         }
 
+        public void SetAvatar(Sprite avatar)
+        {
+            _iconPreview.sprite = avatar;
+        }
+
         public void OnSubmit()
         {
-            if (!(_name.text.Length >= 6 || _name.text.Length < 100))
+            if (!(_nameInput.text.Length >= 6 || _nameInput.text.Length < 100))
             {
                 _statusText.text = "Username must be between 6 and 99 characters";
+                _statusText.color = _errorColor;
+                _nameInput.targetGraphic.color = _errorColor;
                 return;
             }
+
+            _statusText.text = "";
+            _statusText.color = _normalColor;
+            _nameInput.targetGraphic.color = _normalColor;
             
             PlayFabClientAPI.UpdateUserTitleDisplayName(
                 new UpdateUserTitleDisplayNameRequest()
                 {
-                    DisplayName = _name.text
+                    DisplayName = _nameInput.text
                 },
                 (result) =>
                 {
-                    PlayfabLogin.UpdateUserName(_name.text);
+                    _statusText.text = "";
+                    _statusText.color = _normalColor;
+                    _nameInput.targetGraphic.color = _normalColor;
+                    PlayfabLogin.UpdateUserName(_nameInput.text);
                     SceneLoader.ToMenu();
                 },
                 (error) =>
                 {
+
                     _statusText.text = error.ErrorMessage;
+                    _statusText.color = _errorColor;
+                    _nameInput.targetGraphic.color = _errorColor;
                 }
             );
             

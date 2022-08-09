@@ -26,11 +26,11 @@ namespace SuperUltra.Container
 
         bool CheckPassword(string password, string confirmPassword)
         {
-            Regex validatePasswordRegex = new Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&\\*])(?=.{8,})");
+            Regex validatePasswordRegex = new Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])");
             bool result = validatePasswordRegex.IsMatch(password);
             if (!result)
             {
-                _passwordErrorText.text = "Use 8 or more characters with a mix of leter & symbols";
+                _passwordErrorText.text = "Use 8 or more characters with mix of leters & numbers";
                 _passwordErrorText.color = _errorColor;
                 _password.targetGraphic.color = _errorColor;
                 return false;
