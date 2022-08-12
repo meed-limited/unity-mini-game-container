@@ -85,12 +85,12 @@ namespace SuperUltra.Container
 
         public void UpdateEmail(string email)
         {
-            PlayfabLogin.UpdateEmail(email);
+            UserData.UpdateEmail(email);
         }
 
         public void UpdatePassword(string password)
         {
-            PlayfabLogin.UpdatePassword(password);
+            UserData.UpdatePassword(password);
         }
 
         public void ToLoginPage()

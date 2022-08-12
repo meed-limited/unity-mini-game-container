@@ -7,43 +7,33 @@ namespace SuperUltra.Container
 {
 
     [Serializable]
-    public struct UserData
+    public static class UserData
     {
-        public string userName;
-        public string email;
-        public string password;
-        public string token;
-        public string playFabId;
-    }
-
-    public static class PlayfabLogin
-    {
-        static UserData _userData;
-        public static UserData userData
-        {
-            get { return _userData; }
-        }
+        public static string userName { get; private set; }
+        public static string email { get; private set; }
+        public static string password { get; private set; }
+        public static string token { get; private set; }
+        public static string playFabId { get; private set; }
 
         public static void UpdateUserName(string name)
         {
-            _userData.userName = name;
+            UserData.userName = name;
         }
 
         public static void UpdateEmail(string email)
         {
-            _userData.email = email;
+            UserData.email = email;
         }
 
         public static void UpdatePassword(string password)
         {
-            _userData.password = password;
+            UserData.password = password;
         }
 
         public static void UpdatePlayFabId(string id)
         {
-            _userData.playFabId = id;
+            UserData.playFabId = id;
         }
-
     }
 
 }

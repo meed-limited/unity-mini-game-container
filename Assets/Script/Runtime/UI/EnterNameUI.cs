@@ -66,7 +66,7 @@ namespace SuperUltra.Container
                     _statusText.text = "";
                     _statusText.color = _normalColor;
                     _nameInput.targetGraphic.color = _normalColor;
-                    PlayfabLogin.UpdateUserName(_nameInput.text);
+                    UserData.UpdateUserName(_nameInput.text);
                     SceneLoader.ToMenu();
                 },
                 (error) =>

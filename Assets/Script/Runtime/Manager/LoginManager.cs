@@ -9,7 +9,6 @@ namespace SuperUltra.Container
 
     public class LoginManager : MonoBehaviour
     {
-        static UserData _userData;
         [SerializeField] LoginUI _loginUI;
         [SerializeField] RegisterUI _registerUI;
         [SerializeField] EnterNameUI _enterNameUI;
@@ -153,8 +152,8 @@ namespace SuperUltra.Container
         public void OnClickEmailRegister()
         {
             EmailAuthen.Register(
-                PlayfabLogin.userData.email,
-                PlayfabLogin.userData.password,
+                UserData.email,
+                UserData.password,
                 () => ToEnterUserName(),
                 (string errorMessage) =>
                 {

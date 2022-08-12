@@ -23,7 +23,7 @@ namespace SuperUltra.Container
                 new GetPlayerCombinedInfoRequest()
                 {
                     InfoRequestParameters = new GetPlayerCombinedInfoRequestParams { GetPlayerProfile = true, GetUserAccountInfo = true },
-                    PlayFabId = PlayfabLogin.userData.playFabId
+                    PlayFabId = UserData.playFabId
                 },
                 (GetPlayerCombinedInfoResult result) =>
                 {

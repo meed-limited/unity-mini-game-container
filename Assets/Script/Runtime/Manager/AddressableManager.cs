@@ -11,12 +11,11 @@ namespace SuperUltra.Container
 
     public class AddressableManager : MonoBehaviour
     {
-        [SerializeField] bool shouldDownload;
+        [SerializeField] bool _shouldDownload;
         [SerializeField] bool _deleteCache;
         [SerializeField] MenuUIManager _menuUIManager;
-        [SerializeField] Map<string, string> _gameListAndroid;
-        [SerializeField] Map<string, string> _gameListIOS;
-        Dictionary<string, string> _gameLanding;
+        [SerializeField] GameInfoList _gameInfoListAndroid;
+        [SerializeField] GameInfoList _gameInfoListIOS;
         static bool _intialized = false;
         static bool _hasSubscribed = false;
         static AsyncOperationHandle _currentSceneHandle;
@@ -28,38 +27,35 @@ namespace SuperUltra.Container
                 ContainerInterface.OnReturnMenu += UnloadScene;
                 _hasSubscribed = true;
             }
-            _gameLanding = new Dictionary<string, string>();
-            _gameLanding.Add("poke-a-mango", "MainScene");
-            _gameLanding.Add("demo", "DemoMainScene");
         }
 
         void Start()
         {
             // PrintProfile();
             Debug.Log($"Caching.cacheCount {Caching.cacheCount}");
+
             if (Caching.cacheCount > 0 && _deleteCache)
             {
                 Debug.Log($"deleteing cache");
                 Caching.ClearCache();
             }
 
-
             if (!_intialized)
             {
                 _intialized = true;
                 Addressables.InitializeAsync().Completed += (obj) =>
                 {
-                    foreach (Map<string, string>.KeyPair item in GetGameList().list)
+                    foreach (GameInfo item in GetGameList())
                     {
-                        DownloadRemoteCatalog(item.key, item.value);
+                        DownloadRemoteCatalog(item.gameName, item.catalogName, item.mainSceneName);
                     }
                 };
             }
             else
             {
-                foreach (Map<string, string>.KeyPair item in GetGameList().list)
+                foreach (GameInfo item in GetGameList())
                 {
-                    DownloadRemoteCatalog(item.key, item.value);
+                    DownloadRemoteCatalog(item.gameName, item.catalogName, item.mainSceneName);
                 }
             }
         }
@@ -84,21 +80,22 @@ namespace SuperUltra.Container
 
         }
 
-        Map<string, string> GetGameList()
+        List<GameInfo> GetGameList()
         {
+            List<GameInfo> gameInfoList;
 #if UNITY_ANDROID
-            Map<string, string> _gameList = _gameListAndroid;
+            gameInfoList = _gameInfoListAndroid.list;
 #elif UNITY_IOS
-            Map<string, string> _gameList = _gameListIOS;
+            gameInfoList = _gameInfoListIOS.list;
 #else
-            Map<string, string> _gameList = _gameListAndroid;
+            gameInfoList = _gameInfoListAndroid.list;
 #endif      
-            return _gameList;
+            return gameInfoList;
         }
 
-        void DownloadScene(string gameName)
+        void DownloadScene(string gameName, string landingSceneName)
         {
-            if (!shouldDownload)
+            if (!_shouldDownload)
             {
                 return;
             }
@@ -108,14 +105,13 @@ namespace SuperUltra.Container
             {
                 if (obj.Status == AsyncOperationStatus.Succeeded)
                 {
-                    CreateButtons(gameName, obj.Result);
+                    CreateButtons(gameName, obj.Result, landingSceneName);
                 }
             };
         }
 
-        void CreateButtons(string gameName, IList<IResourceLocation> locations)
+        void CreateButtons(string gameName, IList<IResourceLocation> locations, string landingSceneName)
         {
-            string landingScene = _gameLanding[gameName];
             foreach (IResourceLocation item in locations)
             {
                 Debug.Log($"{gameName} {item.PrimaryKey}");
@@ -129,14 +125,14 @@ namespace SuperUltra.Container
                         obj.Result,
                         () =>
                         {
-                            DownloadDependeny(locations, landingScene);
+                            DownloadDependeny(locations, landingSceneName);
                         }
                     );
                 }
             };
         }
 
-        void DownloadDependeny(IList<IResourceLocation> item, string landingScene)
+        void DownloadDependeny(IList<IResourceLocation> item, string landingSceneName)
         {
             AsyncOperationHandle operationHandle = Addressables.DownloadDependenciesAsync(item);
             StartCoroutine(UpdateProgress(operationHandle, "Downloading dependencies..."));
@@ -144,15 +140,15 @@ namespace SuperUltra.Container
             {
                 if (obj2.Status == AsyncOperationStatus.Succeeded)
                 {
-                    LoadGameScene(landingScene);
+                    LoadGameScene(landingSceneName);
                     _menuUIManager.UpdateResult("Downloading dependencies...", true);
                 }
             };
         }
 
-        void LoadGameScene(string landingScene)
+        void LoadGameScene(string landingSceneName)
         {
-            AsyncOperationHandle operationHandle = Addressables.LoadSceneAsync(landingScene);
+            AsyncOperationHandle operationHandle = Addressables.LoadSceneAsync(landingSceneName);
             operationHandle.Completed += (AsyncOperationHandle obj) =>
             {
                 if (obj.Status == AsyncOperationStatus.Succeeded)
@@ -167,7 +163,7 @@ namespace SuperUltra.Container
             };
         }
 
-        void DownloadRemoteCatalog(string gameName, string catalogName)
+        void DownloadRemoteCatalog(string gameName, string catalogName, string landingSceneName)
         {
             AsyncOperationHandle operationHandle = Addressables.LoadContentCatalogAsync(
                 $"{Config.RemoteStagingCatalogUrl}/{gameName}/{Config.BuildTarget}/{catalogName}", true
@@ -178,7 +174,7 @@ namespace SuperUltra.Container
             {
                 if (obj.Status == AsyncOperationStatus.Succeeded)
                 {
-                    DownloadScene(gameName);
+                    DownloadScene(gameName, landingSceneName);
                     _menuUIManager.UpdateResult($"Retrive {gameName} {catalogName} data from aws", true);
                 }
                 else

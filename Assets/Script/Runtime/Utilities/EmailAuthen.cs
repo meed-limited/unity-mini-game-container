@@ -20,7 +20,7 @@ namespace SuperUltra.Container
                 request,
                 (result) =>
                 {
-                    PlayfabLogin.UpdatePlayFabId(result.PlayFabId);
+                    UserData.UpdatePlayFabId(result.PlayFabId);
                     SceneLoader.ToMenu();
                 },
                 (result) => { errorCallback(result.ErrorMessage); }
@@ -70,7 +70,7 @@ namespace SuperUltra.Container
         static void OnRegisterSuccess(RegisterPlayFabUserResult result)
         {
             Debug.Log($"Register Successful {result.PlayFabId} {result.Username} {result}");
-            PlayfabLogin.UpdatePlayFabId(result.PlayFabId);
+            UserData.UpdatePlayFabId(result.PlayFabId);
         }
 
         private static void OnRegisterFailure(PlayFabError error)
