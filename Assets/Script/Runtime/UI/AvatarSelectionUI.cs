@@ -39,6 +39,8 @@ namespace SuperUltra.Container
             return _panel.DOLocalMoveX(Screen.height, duration);
         }
 
+        public void ChangeSlideDirection(SlideDirection direction) { }
+
         void CreateSelectionList()
         {
             if (_avatarSelection == null || _avatarPrefab == null)

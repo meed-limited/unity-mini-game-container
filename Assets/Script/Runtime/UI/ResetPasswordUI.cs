@@ -61,6 +61,8 @@ namespace SuperUltra.Container
             return _panel.DOAnchorPos(new Vector2(0, -1920f), duration);
         }
 
+        public void ChangeSlideDirection(SlideDirection direction) { }
+
     }
     
 }

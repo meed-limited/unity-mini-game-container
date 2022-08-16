@@ -14,7 +14,7 @@ namespace SuperUltra.Container
         public int score;
     }
 
-    public class LeaderBoardUI : MonoBehaviour
+    public class LeaderboardUI : MonoBehaviour
     {
         [SerializeField] RankingItemUI _rankingItemUI;
         [SerializeField] RectTransform _rankingItemContainer;

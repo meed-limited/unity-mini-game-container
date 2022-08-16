@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using System.Text.RegularExpressions;
-using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 
@@ -39,6 +38,8 @@ namespace SuperUltra.Container
             if (_panel == null) return null;
             return _panel.DOAnchorPos(new Vector2(0, -1920f), duration);
         }
+
+        public void ChangeSlideDirection(SlideDirection direction) { }
 
         public void Back()
         {

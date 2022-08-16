@@ -110,6 +110,8 @@ namespace SuperUltra.Container
             return _panel.DOAnchorPos(new Vector2(0, -1920f), duration);
         }
 
+        public void ChangeSlideDirection(SlideDirection direction) {}
+
         public void ToTermsAndCondition() => Application.OpenURL("https://www.youtube.com/channel/UC-lHJZR3Gqxm24_Vd_AJ5Yw");
 
         public void ToPrivacy() => Application.OpenURL("https://www.facebook.com/PlayFab-Games-116495690789896/");

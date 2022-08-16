@@ -1,6 +1,7 @@
 using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 
 namespace SuperUltra.Container
@@ -14,6 +15,9 @@ namespace SuperUltra.Container
         public static string password { get; private set; }
         public static string token { get; private set; }
         public static string playFabId { get; private set; }
+        public static Texture2D profilePic { get; private set; }
+        public static int level { get; private set; }
+        public static int rank { get; private set; }
 
         public static void UpdateUserName(string name)
         {
@@ -33,6 +37,11 @@ namespace SuperUltra.Container
         public static void UpdatePlayFabId(string id)
         {
             UserData.playFabId = id;
+        }
+
+        public static void UpdateProfilePicture(Texture2D pic)
+        {
+            UserData.profilePic = pic;
         }
     }
 

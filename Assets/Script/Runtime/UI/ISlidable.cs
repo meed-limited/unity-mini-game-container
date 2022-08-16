@@ -8,6 +8,7 @@ namespace SuperUltra.Container
     {
         Tween SlideOut(float animationTime = 0.2f);
         Tween SlideIn(float animationTime = 0.5f);
+        void ChangeSlideDirection(SlideDirection direction);
     }
 
 }

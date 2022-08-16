@@ -13,7 +13,7 @@ namespace SuperUltra.Container
     {
         [SerializeField] bool _shouldDownload;
         [SerializeField] bool _deleteCache;
-        [SerializeField] MenuUIManager _menuUIManager;
+        [SerializeField] GameListUI _menuUIManager;
         [SerializeField] GameInfoList _gameInfoListAndroid;
         [SerializeField] GameInfoList _gameInfoListIOS;
         static bool _intialized = false;
@@ -68,7 +68,6 @@ namespace SuperUltra.Container
                 {
                     //Do something with remote catalog location.
                 }
-                Debug.Log("location.InternalId  " + location.InternalId);
 
                 return location.InternalId;
             };

@@ -37,6 +37,8 @@ namespace SuperUltra.Container
             return _panel.DOLocalMoveX(Screen.height, duration);
         }
 
+        public void ChangeSlideDirection(SlideDirection direction) { }
+
         public void SetAvatar(Sprite avatar)
         {
             _iconPreview.sprite = avatar;

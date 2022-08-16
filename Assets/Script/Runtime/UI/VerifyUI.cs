@@ -43,6 +43,8 @@ namespace SuperUltra.Container
             return _panel.DOAnchorPos(new Vector2(0, -1920f), duration);
         }
 
+        public void ChangeSlideDirection(SlideDirection direction) { }
+
         bool CheckCode()
         {
             if (_codeOne.text.Length == 0 || _codeTwo.text.Length == 0 || _codeThree.text.Length == 0 || _codeFour.text.Length == 0)

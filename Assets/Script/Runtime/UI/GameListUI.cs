@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
@@ -8,7 +6,7 @@ using TMPro;
 namespace SuperUltra.Container
 {
     
-    public class MenuUIManager : MonoBehaviour
+    public class GameListUI : MonoBehaviour
     {
         [SerializeField] RectTransform _loadButton;
         [SerializeField] TMP_Text _progressText;
@@ -23,7 +21,7 @@ namespace SuperUltra.Container
             button.GetComponentInChildren<TMP_Text>().text = key;
             button.onClick.AddListener(callback);
             text.text = $"Download size: {downloadSize} bytes";
-        }
+        }        
 
         public void UpdateProgress(float percentComplete, string taskName)
         {
