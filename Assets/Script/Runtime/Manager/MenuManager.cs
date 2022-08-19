@@ -36,6 +36,18 @@ namespace SuperUltra.Container
             _pageToCanvas.Add(_avatarSelectPage, 41);
             _prevUI = _gameListPage.GetComponent<RectTransform>();
             _prevPagenumber = 0;
+
+            _leaderboardUI.gameObject.SetActive(false);
+            _seasonPassPage.gameObject.SetActive(false);
+            _walletPage.gameObject.SetActive(false);
+            _newsPage.gameObject.SetActive(false);
+            _settingPage.gameObject.SetActive(false);
+            _profilePage.gameObject.SetActive(false);
+            _profileEditPage.gameObject.SetActive(false);
+            _avatarSelectPage.gameObject.SetActive(false);
+
+            _navigationPage.gameObject.SetActive(true);
+            _gameListPage.gameObject.SetActive(true);
         }
 
         void SwitchRayCastOnOff(Transform transform, bool isOn = true)
@@ -125,7 +137,7 @@ namespace SuperUltra.Container
             // for current page, set slide direction to opposite of previous page
             targetSlideUI.ChangeSlideDirection(
                 _prevPagenumber < targetPageNumber ? SlideDirection.Right : SlideDirection.Left
-            );        
+            );
         }
 
         void ToggelNavigation(Canvas target)
@@ -154,6 +166,16 @@ namespace SuperUltra.Container
                 return;
             }
 
+            if (!_pageToCanvas.TryGetValue(target, out int targetPageNumber))
+            {
+                return;
+            }
+
+            if (targetPageNumber == _prevPagenumber)
+            {
+                return;
+            }
+
             if (_prevUI)
             {
                 SetPrevPageDirection(target);
@@ -167,15 +189,12 @@ namespace SuperUltra.Container
             SlideInCurrentUI(target);
 
             _prevUI = target.GetComponent<RectTransform>();
-            if (_pageToCanvas.TryGetValue(target, out int targetPageNumber))
-            {
-                _prevPagenumber = targetPageNumber;
-            }
+            _prevPagenumber = targetPageNumber;
         }
 
         public void ChangeAvatar(Sprite sprite)
         {
-            UserData.UpdateProfilePicture(sprite.texture);
+            UserData.profilePic = sprite.texture;
         }
 
         public void ToNewsPage() => ToPage(_newsPage);

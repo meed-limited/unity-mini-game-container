@@ -9,7 +9,7 @@ namespace SuperUltra.Container
 
     public static class EmailAuthen
     {
-        public static void Login(string email, string password, Action successCallback = null, Action<string> errorCallback = null)
+        public static void Login(string email, string password, Action<LoginResult> successCallback = null, Action<string> errorCallback = null)
         {
             LoginWithEmailAddressRequest request = new LoginWithEmailAddressRequest()
             {
@@ -18,16 +18,16 @@ namespace SuperUltra.Container
             };
             PlayFabClientAPI.LoginWithEmailAddress(
                 request,
-                (result) =>
+                (LoginResult result) =>
                 {
-                    UserData.UpdatePlayFabId(result.PlayFabId);
-                    SceneLoader.ToMenu();
+                    UserData.playFabId = result.PlayFabId;
+                    successCallback(result);
                 },
                 (result) => { errorCallback(result.ErrorMessage); }
             );
         }
 
-        public static void Register(string email, string password, Action successCallback = null, Action<string> errorCallback = null)
+        public static void Register(string email, string password, Action<string> successCallback = null, Action<string> errorCallback = null)
         {
             RegisterPlayFabUserRequest request = new RegisterPlayFabUserRequest()
             {
@@ -40,7 +40,7 @@ namespace SuperUltra.Container
                 (result) =>
                 {
                     OnRegisterSuccess(result);
-                    successCallback();
+                    successCallback(result.PlayFabId);
                 },
                 (result) => { 
                     OnRegisterFailure(result); 
@@ -70,7 +70,7 @@ namespace SuperUltra.Container
         static void OnRegisterSuccess(RegisterPlayFabUserResult result)
         {
             Debug.Log($"Register Successful {result.PlayFabId} {result.Username} {result}");
-            UserData.UpdatePlayFabId(result.PlayFabId);
+            UserData.playFabId = result.PlayFabId;
         }
 
         private static void OnRegisterFailure(PlayFabError error)

@@ -86,12 +86,13 @@ namespace SuperUltra.Container
         void HidePanel(Transform transform)
         {
             ISlidable slidable = transform.GetComponent<ISlidable>();
-            if(slidable != null)
+            if (slidable != null)
             {
                 slidable.SlideOut(0f).OnComplete(
                     () => transform.gameObject.SetActive(false)
                 );
-            }else
+            }
+            else
             {
                 transform.gameObject.SetActive(false);
             }
@@ -113,7 +114,7 @@ namespace SuperUltra.Container
         public void OnClickFacebookLogin()
         {
             FacebookAuthen.Login(
-                () => { SceneLoader.ToMenu(); },
+                () => { ToMenu(); },
                 (string errorMessage) =>
                 {
                     _messagePopUpUI.gameObject.SetActive(true);
@@ -141,7 +142,10 @@ namespace SuperUltra.Container
             EmailAuthen.Login(
                 email,
                 password,
-                null,
+                (result) =>
+                {
+                    ToMenu();
+                },
                 (string errorMessage) =>
                 {
                     _messagePopUpUI.Show(errorMessage, "", null, true);
@@ -149,15 +153,27 @@ namespace SuperUltra.Container
             );
         }
 
-        public void OnClickEmailRegister()
+        public void OnClickEmailRegister(string email, string password)
         {
             EmailAuthen.Register(
-                UserData.email,
-                UserData.password,
-                () => ToEnterUserName(),
+                email,
+                password,
+                OnEmailRegisterRequestFinished,
                 (string errorMessage) =>
                 {
                     _messagePopUpUI.Show(errorMessage, "", null, true);
+                }
+            );
+        }
+
+        void OnEmailRegisterRequestFinished(string playFabId)
+        {
+            NetworkManager.CreateUser(
+                playFabId,
+                () => ToEnterUserName(),
+                () =>
+                {
+                    _messagePopUpUI.Show("Register fail", "", null, true);
                 }
             );
         }
@@ -206,6 +222,17 @@ namespace SuperUltra.Container
                 {
                     _messagePopUpUI.Show(errorMessage, "", null, true);
                 }
+            );
+        }
+
+        public void ToMenu()
+        {
+            NetworkManager.LoginRequest(
+                () =>
+                {
+                    SceneLoader.ToMenu();
+                },
+                () => { }
             );
         }
 

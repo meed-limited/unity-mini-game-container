@@ -82,6 +82,7 @@ namespace SuperUltra.Container
         private static void OnPlayfabFacebookAuthComplete(LoginResult result)
         {
             SetMessage("PlayFab Facebook Auth Complete. Session ticket: " + result.SessionTicket);
+            UserData.playFabId = result.PlayFabId;
         }
 
         private static void OnPlayfabFacebookAuthFailed(PlayFabError error)

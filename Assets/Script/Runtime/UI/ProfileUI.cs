@@ -1,9 +1,11 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using PlayFab;
 using PlayFab.ClientModels;
+using BestHTTP;
 
 namespace SuperUltra.Container
 {
@@ -11,55 +13,47 @@ namespace SuperUltra.Container
     {
 
         [SerializeField] TMP_Text _displayName;
-        [SerializeField] TMP_Text _email;
-        [SerializeField] TMP_Text _scoreText;
-        [SerializeField] TMP_Text _highSCore;
-        int _score;
+        [SerializeField] TMP_Text _rankLevel;
+        [SerializeField] TMP_Text _rankName;
+        [SerializeField] TMP_Text _pointsToNextRank;
+        [SerializeField] TMP_Text _totalTokenNumber;
+        [SerializeField] Image _profilePic; 
+        [SerializeField] int _score;
 
         public void Start()
         {
-            _score = 0;
-            PlayFabClientAPI.GetPlayerCombinedInfo(
-                new GetPlayerCombinedInfoRequest()
-                {
-                    InfoRequestParameters = new GetPlayerCombinedInfoRequestParams { GetPlayerProfile = true, GetUserAccountInfo = true },
-                    PlayFabId = UserData.playFabId
-                },
-                (GetPlayerCombinedInfoResult result) =>
-                {
-                    _displayName.text = result.InfoResultPayload.AccountInfo.TitleInfo.DisplayName;
-                },
-                (result) => Debug.Log(result.ErrorMessage)
-            );
-            PlayFabClientAPI.GetPlayerStatistics(
-                new GetPlayerStatisticsRequest(),
-                OnGetStatistics,
-                error => Debug.LogError(error.GenerateErrorReport())
-            );
-
+            SetUserName(UserData.userName);
+            SetUserRankInfo(UserData.rankLevel, UserData.rankTitle, UserData.pointsToNextRank, UserData.pointsInCurrentRank);
+            // GetUserProfilePic(UserData.profilePic);
+            SetNumberOfToken(UserData.totalTokenNumber);
         }
 
-        void OnGetStatistics(GetPlayerStatisticsResult result)
+        void GetUserProfilePic(string url)
         {
-            foreach (var stat in result.Statistics)
+            NetworkManager.GetImage(url, (Texture2D texture) =>
             {
-                Debug.Log(stat.StatisticName + ": " + stat.Value);
-                if (stat.StatisticName == "Score")
-                {
-                    _highSCore.text = _score.ToString();
-                }
+                _profilePic.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            });
+        }
+
+        void SetUserRankInfo(int level, string name, int pointsToNextRank, int pointsInCurrentRank)
+        {
+            _rankLevel.text = level.ToString();
+            _rankName.text = name;
+            _pointsToNextRank.text = $"{pointsInCurrentRank.ToString()}/{pointsToNextRank.ToString()}";
+        }
+
+        void SetNumberOfToken(int number)
+        {
+            _totalTokenNumber.text = number.ToString();
+        }
+
+        void SetUserName(string name = "")
+        {
+            if (_displayName != null)
+            {
+                _displayName.text = name;
             }
-        }
-
-        public void Back()
-        {
-            SceneLoader.ToMenu();
-        }
-
-        public void IncreaseScore()
-        {
-            _score++;
-            _scoreText.text = $"{_score}";
         }
 
         public void PostScore()

@@ -68,12 +68,11 @@ namespace SuperUltra.Container
                     _statusText.text = "";
                     _statusText.color = _normalColor;
                     _nameInput.targetGraphic.color = _normalColor;
-                    UserData.UpdateUserName(_nameInput.text);
-                    SceneLoader.ToMenu();
+                    UserData.userName = _nameInput.text;
+                    _loginManager.ToMenu();
                 },
                 (error) =>
                 {
-
                     _statusText.text = error.ErrorMessage;
                     _statusText.color = _errorColor;
                     _nameInput.targetGraphic.color = _errorColor;

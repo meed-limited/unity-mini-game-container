@@ -69,7 +69,7 @@ namespace SuperUltra.Container
                 _loginManager.OnClickEmailLogin(
                     _emailInput.text,
                     _passwordInput.text
-                );
+            );
         }
 
         public Tween SlideIn(float duration = 0.5f)

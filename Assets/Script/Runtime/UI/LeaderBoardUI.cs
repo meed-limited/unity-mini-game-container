@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using BestHTTP;
 
 namespace SuperUltra.Container
@@ -22,7 +23,11 @@ namespace SuperUltra.Container
         [SerializeField] RectTransform _gameBannerContainer;
         [SerializeField] StickyScrollUI _gameBannerStickyScroll;
         [SerializeField] RankingItemUI _userRankingUI;
+        [SerializeField] TMP_Text _gameName;
+        [SerializeField] TMP_Text _poolSize;
+        [SerializeField] TMP_Text _timeLeft;
         Dictionary<int, List<RankingInfo>> _gameToRankingInfoMap = new Dictionary<int, List<RankingInfo>>();
+        int _currentGameId = -1;
         float _listSpacing = 0;
         float _itemHeight = 0;
         Dictionary<int, int> _pageToGameMap = new Dictionary<int, int>();
@@ -30,10 +35,14 @@ namespace SuperUltra.Container
         // Start is called before the first frame update
         void Start()
         {
-            CreateGameList();
-            CreateRankingList();
             CacheSpacingAndheight();
+            CreateGameList();
             CreateUserRank();
+        }
+
+        void Update()
+        {
+            UpdateTournamentInfo(_currentGameId);
         }
 
         void CreateUserRank()
@@ -42,21 +51,21 @@ namespace SuperUltra.Container
             {
                 return;
             }
-            RankingInfo userRank = new RankingInfo(){ 
-                rank = 45, 
-                image = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f)),
-                name = "LiftTastic", 
-                score = 608 
+            LeaderboardUserData userRank = new LeaderboardUserData()
+            {
+                rankPosition = 45,
+                avatarUrl = "",
+                name = "LiftTastic",
+                score = 608
             };
             _userRankingUI.SetData(userRank);
         }
 
         void CreateGameList()
         {
-            // TODO : create game list from API
-            var gameList = new List<int>() { 1024, 162, 783, 8 };
             int pageCount = 0;
-            foreach (var game in gameList)
+            Debug.Log($"CreateGameList {GameData.gameDataList.Count}");
+            foreach (var game in GameData.gameDataList)
             {
                 RectTransform gameBanner = Instantiate(_gameBannerPrefab, _gameBannerContainer);
                 gameBanner.GetComponent<Image>().sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f));
@@ -65,17 +74,18 @@ namespace SuperUltra.Container
                 float value2 = UnityEngine.Random.Range(0.1f, 0.9f);
 
                 gameBanner.GetComponent<Image>().color = new Color(value, value1, value2);
-                _pageToGameMap.Add(pageCount, game);
+                _pageToGameMap.Add(pageCount, game.Key);
+                CreateRankingList(game.Key);
                 pageCount++;
             }
             _gameBannerStickyScroll.Initialize();
             _gameBannerStickyScroll.OnItemChange.AddListener(OnGameChange);
         }
 
-        void OnGameChange(float a)
+        void OnGameChange(float page)
         {
-            Debug.Log("OnGameChange : " + a + " / " + _pageToGameMap[(int)a]);
-            RefreshLeaderboard(_pageToGameMap[(int)a]);
+            RefreshLeaderboard(_pageToGameMap[(int)page]);
+            _currentGameId = _pageToGameMap[(int)page];
         }
 
         void CacheSpacingAndheight()
@@ -104,98 +114,53 @@ namespace SuperUltra.Container
 
         void CreateRankingList(int gameID = 0)
         {
-            GetRankingList(gameID, (List<RankingInfo> list) =>
+            Debug.Log($"CreateRankingList {gameID} {GameData.gameDataList[gameID]}");
+            if (!GameData.gameDataList.TryGetValue(gameID, out GameData gameData))
             {
-                foreach (var item in list)
-                {
-                    RankingItemUI rankingItemUI = Instantiate(_rankingItemUI, _rankingItemContainer);
-                    rankingItemUI.SetData(item);
-                    _rankingItemContainer.sizeDelta += new Vector2(
-                        0,
-                        _itemHeight + _listSpacing
-                    );
-                }
-            });
-        }
-
-        void GetRankingList(int gameID, Action<List<RankingInfo>> callback)
-        {
-            // download texture with BestHTTP
-            HTTPRequest request = new HTTPRequest(
-                new Uri("https://img.favpng.com/24/13/11/spider-man-2099-miles-morales-spider-verse-ultimate-marvel-png-favpng-4fdqqJRkK38KvXgNLMA5rhshE.jpg"),
-                HTTPMethods.Get,
-                (request, response) => OnRequestFinished(request, response, callback, gameID)
-            );
-            request.Send();
-        }
-
-        List<RankingInfo> GetPlayerList(Sprite sprite, int gameID = 0)
-        {
-            List<RankingInfo> rankingList = new List<RankingInfo>();
-            switch (gameID)
-            {
-                case 162:
-                    rankingList.Add(new RankingInfo { rank = 1, image = sprite, name = "John", score = 100 });
-                    rankingList.Add(new RankingInfo { rank = 2, image = sprite, name = "Jane", score = 90 });
-                    rankingList.Add(new RankingInfo { rank = 3, image = sprite, name = "Jack", score = 80 });
-                    rankingList.Add(new RankingInfo { rank = 4, image = sprite, name = "Jill", score = 70 });
-                    rankingList.Add(new RankingInfo { rank = 5, image = sprite, name = "Joe", score = 60 });
-                    rankingList.Add(new RankingInfo { rank = 1, image = sprite, name = "John", score = 100 });
-                    rankingList.Add(new RankingInfo { rank = 2, image = sprite, name = "Jane", score = 90 });
-                    break;
-                case 783:
-                    rankingList.Add(new RankingInfo { rank = 1, image = sprite, name = "John", score = 100 });
-                    rankingList.Add(new RankingInfo { rank = 2, image = sprite, name = "Jane", score = 90 });
-                    rankingList.Add(new RankingInfo { rank = 3, image = sprite, name = "Jack", score = 80 });
-                    rankingList.Add(new RankingInfo { rank = 4, image = sprite, name = "Jill", score = 70 });
-                    break;
-                default:
-                case 1024:
-                    rankingList.Add(new RankingInfo { rank = 1, image = sprite, name = "John", score = 100 });
-                    rankingList.Add(new RankingInfo { rank = 2, image = sprite, name = "Jane", score = 90 });
-                    rankingList.Add(new RankingInfo { rank = 3, image = sprite, name = "Jack", score = 80 });
-                    rankingList.Add(new RankingInfo { rank = 4, image = sprite, name = "Jill", score = 70 });
-                    rankingList.Add(new RankingInfo { rank = 5, image = sprite, name = "Joe", score = 60 });
-                    rankingList.Add(new RankingInfo { rank = 1, image = sprite, name = "John", score = 100 });
-                    rankingList.Add(new RankingInfo { rank = 2, image = sprite, name = "Jane", score = 90 });
-                    rankingList.Add(new RankingInfo { rank = 1, image = sprite, name = "John", score = 100 });
-                    rankingList.Add(new RankingInfo { rank = 2, image = sprite, name = "Jane", score = 90 });
-                    rankingList.Add(new RankingInfo { rank = 3, image = sprite, name = "Jack", score = 80 });
-                    rankingList.Add(new RankingInfo { rank = 4, image = sprite, name = "Jill", score = 70 });
-                    rankingList.Add(new RankingInfo { rank = 5, image = sprite, name = "Joe", score = 60 });
-                    rankingList.Add(new RankingInfo { rank = 1, image = sprite, name = "John", score = 100 });
-                    rankingList.Add(new RankingInfo { rank = 2, image = sprite, name = "Jane", score = 90 });
-                    break;
-            }
-            return rankingList;
-        }
-
-        void OnRequestFinished(HTTPRequest request, HTTPResponse response, Action<List<RankingInfo>> callback, int gameID)
-        {
-            if (response == null)
-            {
-                Debug.Log("Request Finished, but received no response.");
                 return;
             }
 
-            if (response.IsSuccess)
+            Debug.Log($"CreateRankingList {gameData.leaderboard.Count}");
+            foreach (var item in gameData.leaderboard)
             {
-                Debug.Log("Request Finished Successfully! " + response.DataAsTexture2D);
-                Texture2D texture = response.DataAsTexture2D;
-                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-                callback(GetPlayerList(sprite, gameID));
+                RankingItemUI rankingItemUI = Instantiate(_rankingItemUI, _rankingItemContainer);
+                rankingItemUI.SetData(item);
+                _rankingItemContainer.sizeDelta += new Vector2(
+                    0,
+                    _itemHeight + _listSpacing
+                );
             }
-            else
-            {
-                Debug.Log("Request Finished Successfully, but with Error! " + response.StatusCode + " " + response.Message);
-            }
-
         }
 
         public void RefreshLeaderboard(int gameID = 0)
         {
             ClearLeaderBoard();
             CreateRankingList(gameID);
+        }
+
+        public void UpdateTournamentInfo(int gameId)
+        {
+            if (!GameData.gameDataList.TryGetValue(gameId, out GameData data))
+            {
+                return;
+            }
+
+            if (_gameName != null)
+            {
+                _gameName.text = data.name;
+            }
+            if (_poolSize != null)
+            {
+
+                _poolSize.text = data.tournament.prizePool.ToString();
+            }
+            if (_timeLeft != null)
+            {
+                // calculate time left using tounament.endTime and Date.now()
+                TimeSpan timeLeft = data.tournament.endTime - DateTime.Now;
+                string timeText = $"{timeLeft.Days}d {timeLeft.Hours}h {timeLeft.Minutes}m {timeLeft.Seconds}s";
+                _timeLeft.text = timeText;
+            }
         }
 
     }

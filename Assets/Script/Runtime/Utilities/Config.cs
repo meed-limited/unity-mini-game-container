@@ -15,6 +15,7 @@ namespace SuperUltra.Container
                 
         public static string RemoteDevelopCatalogUrl = "http://192.168.56.1:61303";
         public static string RemoteStagingCatalogUrl = "https://ultra-game-board.s3.amazonaws.com";
+        public static string Domain = "https://ultranova.lepricon.city/api/v1/platform/";
 
         #endregion
 

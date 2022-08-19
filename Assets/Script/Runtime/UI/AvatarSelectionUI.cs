@@ -23,7 +23,10 @@ namespace SuperUltra.Container
 
         void Start()
         {
-            _backButton.onClick.AddListener(() => _backButtonAction.Invoke());
+            if (_backButton != null)
+            {
+                _backButton.onClick.AddListener(() => _backButtonAction.Invoke());
+            }
             CreateSelectionList();
         }
 
