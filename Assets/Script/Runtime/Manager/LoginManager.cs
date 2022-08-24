@@ -225,6 +225,11 @@ namespace SuperUltra.Container
             );
         }
 
+        public void UpdateUserProfile()
+        {
+            
+        }
+
         public void ToMenu()
         {
             NetworkManager.LoginRequest(

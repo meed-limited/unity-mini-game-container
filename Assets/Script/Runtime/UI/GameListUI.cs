@@ -8,16 +8,16 @@ namespace SuperUltra.Container
     
     public class GameListUI : MonoBehaviour
     {
-        [SerializeField] RectTransform _loadButton;
+        [SerializeField] RectTransform _gameInfoButtonPrefab;
         [SerializeField] TMP_Text _progressText;
         [SerializeField] Image _progressBar;
         [SerializeField] RectTransform _buttonContainer;
 
         public void CreateButtons(string key, float downloadSize, UnityAction callback)
         {
-            RectTransform loadButton = Instantiate(_loadButton, _buttonContainer);
-            Button button = loadButton.GetComponentInChildren<Button>();
-            TMP_Text text = loadButton.GetComponentsInChildren<TMP_Text>()[1];
+            RectTransform gameInfoButton = Instantiate(_gameInfoButtonPrefab, _buttonContainer);
+            Button button = gameInfoButton.GetComponentInChildren<Button>();
+            TMP_Text text = gameInfoButton.GetComponentsInChildren<TMP_Text>()[1];
             button.GetComponentInChildren<TMP_Text>().text = key;
             button.onClick.AddListener(callback);
             text.text = $"Download size: {downloadSize} bytes";

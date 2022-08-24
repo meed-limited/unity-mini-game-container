@@ -10,6 +10,7 @@ namespace SuperUltra.Container
     public static class NetworkManager
     {
         static bool _isUserDataRequested = false;
+        static bool _isAvatarImageRequested = false;
         static bool _isUserSeasonDataRequested = false;
         static Action _onCompleteLoginRequest;
         static int _requestedLeaderboardCount;
@@ -31,6 +32,7 @@ namespace SuperUltra.Container
         {
             if (response == null || response.IsSuccess == false)
             {
+                Debug.Log("respons is fail " + response.Message);
                 return false;
             }
 
@@ -70,6 +72,7 @@ namespace SuperUltra.Container
 
         static void GetLeaderboardList(Action callback)
         {
+            Debug.Log("GameData.gameDataList " + GameData.gameDataList.Count);
             foreach (var item in GameData.gameDataList)
             {
                 int id = item.Value.id;
@@ -80,9 +83,8 @@ namespace SuperUltra.Container
         static void GetLeaderboard(int gameId, Action callback)
         {
             // get all th game list from api from Config.domain
-            Debug.Log("GetLeaderboard");
             HTTPRequest request = new HTTPRequest(
-                new Uri(Config.Domain + "systems/leaderboard"),
+                new Uri(Config.Domain + "systems/leaderboardandbonus"),
                 HTTPMethods.Post,
                 (req, res) =>
                 {
@@ -100,7 +102,7 @@ namespace SuperUltra.Container
             request.Send();
         }
 
-        static void GetUserData(Action callback)
+        static void GetUserData(Action callback, Action avatarRequestCallback)
         {
             HTTPRequest request = new HTTPRequest(
                 new Uri(Config.Domain + $"users/{UserData.playFabId}"),
@@ -108,7 +110,7 @@ namespace SuperUltra.Container
                 (req, res) =>
                 {
                     Debug.Log("GetUserData response");
-                    OnUserDataRequestFinished(req, res);
+                    OnUserDataRequestFinished(req, res, avatarRequestCallback);
                     callback();
                 }
             );
@@ -117,18 +119,55 @@ namespace SuperUltra.Container
             request.Send();
         }
 
-        static void OnUserDataRequestFinished(HTTPRequest request, HTTPResponse response)
+        static void OnUserDataRequestFinished(HTTPRequest request, HTTPResponse response, Action callback)
         {
             if (ValidateResponse(response))
             {
                 JSONNode json = JSON.Parse(response.DataAsText);
+                Debug.Log("OnUserDataRequestFinished " + response.DataAsText);
                 UserData.email = json["emailAddress"];
+                UserData.userName = json["username"];
                 UserData.totalTokenNumber = json["totalTokenNumber"];
-                UserData.pointsInCurrentRank = json["pointsInCurrentRank"];
+                UserData.walletAddress = json["walletAddress"];
+                UserData.pointsInCurrentRank = json["experiencePoints"];
                 UserData.pointsToNextRank = json["pointsToNextRank"];
                 UserData.rankLevel = json["rankLevel"];
-                UserData.rankTitle = json["rankTitle"];
+                UserData.rankTitle = json["rank"];
+                // GetAvatar(json["avatarUrl"]);
+                GetAvatar("https://ultra-game-board.s3.amazonaws.com/avatar-image/spider.jpg", callback);
             }
+            else
+            {
+                callback?.Invoke();
+            }
+        }
+
+        static void GetAvatar(string avatarUrl, Action callback = null)
+        {
+            if (string.IsNullOrEmpty(avatarUrl)
+                || avatarUrl.Equals("NA")
+                || !Uri.IsWellFormedUriString(avatarUrl, UriKind.RelativeOrAbsolute)
+            )
+            {
+                callback?.Invoke();
+                return;
+            }
+            HTTPRequest request = new HTTPRequest(
+                new Uri(avatarUrl),
+                HTTPMethods.Get,
+                (req, res) =>
+                {
+                    Debug.Log($"GetAvatar response {res.IsSuccess} {res.Data != null}");
+                    if (res.IsSuccess && res.Data != null)
+                    {
+                        UserData.profilePic = res.DataAsTexture2D;
+                        Debug.Log(UserData.profilePic);
+                    }
+                    callback?.Invoke();
+                }
+            );
+            request.Timeout = TimeSpan.FromSeconds(_timeOut);
+            request.Send();
         }
 
         static void GetSeasonPass(Action callback)
@@ -145,33 +184,31 @@ namespace SuperUltra.Container
 
             if (ValidateResponse(response))
             {
-                Debug.Log("OnLeaderBoardRequestFinished");
                 JSONNode json = JSON.Parse(response.DataAsText);
                 Debug.Log("OnLeaderBoardRequestFinished " + json.ToString());
-                if (json["users"] == null || !json["users"].IsArray)
+                if (json["users"] != null && json["users"].IsArray)
                 {
-                    return;
-                }
-
-                foreach (JSONNode item in json["users"].AsArray)
-                {
-                    LeaderboardUserData data = new LeaderboardUserData()
+                    foreach (JSONNode item in json["users"].AsArray)
                     {
-                        rankPosition = item["position"].AsInt,
-                        avatarUrl = item["avatarUrl"],
-                        name = item["name"].ToString(),
-                        score = item["score"],
-                        reward = item["reward"],
-                    };
-                    gameData.leaderboard.Add(data);
+                        LeaderboardUserData data = new LeaderboardUserData()
+                        {
+                            rankPosition = item["position"].AsInt,
+                            avatarUrl = item["avatarUrl"],
+                            name = item["name"].ToString(),
+                            score = item["score"],
+                            reward = item["reward"],
+                        };
+                        gameData.leaderboard.Add(data);
+                    }
                 }
+                gameData.tournament.prizePool = json["bonus"];
             }
         }
 
         static void CompleteRequestList()
         {
-            Debug.Log($"CompleteRequestList {_isUserDataRequested} {_isUserSeasonDataRequested} {_requestedLeaderboardCount} {GameData.gameDataList.Count}");
             if (_isUserDataRequested
+                && _isAvatarImageRequested
                 && _isUserSeasonDataRequested
                 && GameData.gameDataList.Count != 0
                 && _requestedLeaderboardCount == GameData.gameDataList.Count
@@ -191,6 +228,7 @@ namespace SuperUltra.Container
 
             string data = response.DataAsText;
             JSONNode json = JSON.Parse(data);
+            Debug.Log("data " + data);
 
             if (json["games"] == null || !json["games"].IsArray)
             {
@@ -198,16 +236,15 @@ namespace SuperUltra.Container
                 return;
             }
 
-            Debug.Log("Game list found");
             JSONArray arr = json["games"].AsArray;
             foreach (JSONNode item in arr)
             {
                 Debug.Log($"item {item}");
-                if (item["identifier"] == null || item["title"] == null)
+                if (item["id"] == null || item["title"] == null)
                 {
                     continue;
                 }
-                int gameid = item["identifier"].AsInt;
+                int gameid = item["id"].AsInt;
                 GameData.gameDataList.Add(
                     gameid,
                     new GameData()
@@ -229,7 +266,8 @@ namespace SuperUltra.Container
 
             _onCompleteLoginRequest = success;
             _requestedLeaderboardCount = 0;
-            // request token from server
+            // request token from server, then use the token to request
+            // game list, user data and season data
             GetAuthToken(
                 () =>
                 {
@@ -246,6 +284,10 @@ namespace SuperUltra.Container
                     GetUserData(() =>
                     {
                         _isUserDataRequested = true;
+                        CompleteRequestList();
+                    },() =>
+                    {
+                        _isAvatarImageRequested = true;
                         CompleteRequestList();
                     });
                     // get season pass data
@@ -315,34 +357,48 @@ namespace SuperUltra.Container
             }
         }
 
-        public static void UpdateUser(string playFabId, string userName = "", Texture2D avatarImage = null, Action success = null)
+        #region Update User
+            
+    
+        public static void UpdateUserProfile(string playFabId, string userName, Texture2D texture2D, Action callback)
+        {
+            JSONObject json = new JSONObject();
+            string encodedImage = Convert.ToBase64String(texture2D.EncodeToPNG());
+            json.Add("avatarUrl", encodedImage);
+            json.Add("username", userName);
+            json.Add("platformId", playFabId);
+            UpdateUser(json, callback);
+        }
+
+        static void UpdateUser(JSONObject json, Action callback = null)
         {
             HTTPRequest request = new HTTPRequest(
                 new Uri(Config.Domain + "users"),
-                HTTPMethods.Post,
-                (req, res) => { OnUpdateUserRequestFinished(req, res); }
+                HTTPMethods.Put,
+                (req, res) => { 
+                    OnUpdateUserRequestFinished(req, res);
+                    callback?.Invoke();
+                }
             );
+            Debug.Log("json " + json.ToString());
+            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
             request.AddHeader("Content-Type", "application/json");
-            request.Timeout = TimeSpan.FromSeconds(_timeOut);
-            JSONObject json = new JSONObject();
-            json.Add("playFabId", playFabId);
-            json.Add("userName", userName);
-            if (avatarImage != null)
-            {
-                json.Add("avatarImage", Convert.ToBase64String(avatarImage.EncodeToPNG()));
-            }
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
+            request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.Send();
         }
 
         static void OnUpdateUserRequestFinished(HTTPRequest request, HTTPResponse response)
         {
+            Debug.Log("OnUpdateUserRequestFinished ");
             if (ValidateResponse(response))
             {
                 JSONNode json = JSON.Parse(response.DataAsText);
                 Debug.Log("OnUpdateUserRequestFinished " + json.ToString());
             }
         }
+
+        #endregion
 
     }
 

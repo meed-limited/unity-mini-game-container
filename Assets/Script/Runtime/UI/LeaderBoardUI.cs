@@ -38,11 +38,24 @@ namespace SuperUltra.Container
             CacheSpacingAndheight();
             CreateGameList();
             CreateUserRank();
+            SetDefaultLeaderboard();
+        }
+
+        void SetDefaultLeaderboard()
+        {
+            if (_currentGameId <= 0 && GameData.gameDataList.Count > 0)
+            {
+                var enumerator = GameData.gameDataList.GetEnumerator();
+                enumerator.MoveNext();
+                KeyValuePair<int, GameData> element = enumerator.Current;
+                _currentGameId = element.Value.id;
+                RefreshLeaderboard(_currentGameId);
+            }
         }
 
         void Update()
         {
-            UpdateTournamentInfo(_currentGameId);
+            UpdateTimeLeft(_currentGameId);
         }
 
         void CreateUserRank()
@@ -136,6 +149,23 @@ namespace SuperUltra.Container
         {
             ClearLeaderBoard();
             CreateRankingList(gameID);
+            UpdateTournamentInfo(gameID);
+        }
+
+        void UpdateTimeLeft(int gameId)
+        {
+            if (!GameData.gameDataList.TryGetValue(gameId, out GameData data))
+            {
+                return;
+            }
+
+            if (_timeLeft != null)
+            {
+                // calculate time left using tounament.endTime and Date.now()
+                TimeSpan timeLeft = data.tournament.endTime - DateTime.Now;
+                string timeText = timeLeft.ToString(@"dd\dhh\hmm\mss\s");
+                _timeLeft.text = timeText;
+            }
         }
 
         public void UpdateTournamentInfo(int gameId)
@@ -149,17 +179,10 @@ namespace SuperUltra.Container
             {
                 _gameName.text = data.name;
             }
+
             if (_poolSize != null)
             {
-
                 _poolSize.text = data.tournament.prizePool.ToString();
-            }
-            if (_timeLeft != null)
-            {
-                // calculate time left using tounament.endTime and Date.now()
-                TimeSpan timeLeft = data.tournament.endTime - DateTime.Now;
-                string timeText = $"{timeLeft.Days}d {timeLeft.Hours}h {timeLeft.Minutes}m {timeLeft.Seconds}s";
-                _timeLeft.text = timeText;
             }
         }
 

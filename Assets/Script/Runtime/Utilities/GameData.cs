@@ -21,6 +21,7 @@ namespace SuperUltra.Container
             }
             private set { _gameDataList = value; }
         }
+
         List<LeaderboardUserData> _leaderboard;
         /// <summary>
         /// a List of LeaderboardUserData
@@ -37,6 +38,7 @@ namespace SuperUltra.Container
             }
             private set { _leaderboard = value; }
         }
+
         Tournament _tournament;
         /// <summary>
         /// a Tournament object
@@ -53,6 +55,7 @@ namespace SuperUltra.Container
             }
             private set { _tournament = value; }
         }
+        
         public int id;
         public string name;
         public string description;

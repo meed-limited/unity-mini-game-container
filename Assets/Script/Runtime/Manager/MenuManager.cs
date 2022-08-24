@@ -31,8 +31,9 @@ namespace SuperUltra.Container
             _pageToCanvas.Add(_walletPage, 3);
 
             _pageToCanvas.Add(_profilePage, 21);
+            _pageToCanvas.Add(_newsPage, 22);
             _pageToCanvas.Add(_settingPage, 31);
-            _pageToCanvas.Add(_profileEditPage, 31);
+            _pageToCanvas.Add(_profileEditPage, 32);
             _pageToCanvas.Add(_avatarSelectPage, 41);
             _prevUI = _gameListPage.GetComponent<RectTransform>();
             _prevPagenumber = 0;
@@ -192,9 +193,45 @@ namespace SuperUltra.Container
             _prevPagenumber = targetPageNumber;
         }
 
-        public void ChangeAvatar(Sprite sprite)
+        public void UpdateUserProfileRequest(string userName, Texture2D texture2D)
         {
-            UserData.profilePic = sprite.texture;
+            NetworkManager.UpdateUserProfile(
+                UserData.playFabId,
+                userName,
+                texture2D,
+                () => { 
+                    ToProfilePage();
+                }
+            );
+        }
+
+        void UpdateUserAvatar(Texture2D texture2D)
+        {
+            MainGameUI mainGameUI = _gameListPage.GetComponent<MainGameUI>();
+            if (mainGameUI)
+            {
+                mainGameUI.SetAvatar(texture2D);
+            }
+            EditProfileUI editProfileUI = _profileEditPage.GetComponent<EditProfileUI>();
+            if(editProfileUI)
+            {
+                editProfileUI.SetAvatar(texture2D);
+            }
+        }
+
+        public void EditProfileUI(Sprite sprite)
+        {
+            if (!_profileEditPage || !sprite || !sprite.texture)
+            {
+                return;
+            }
+            EditProfileUI editProfileUI = _profileEditPage.GetComponent<EditProfileUI>();
+            if (!editProfileUI)
+            {
+                return;
+            }
+
+            editProfileUI.SetAvatar(sprite.texture);
         }
 
         public void ToNewsPage() => ToPage(_newsPage);

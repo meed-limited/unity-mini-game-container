@@ -17,23 +17,23 @@ namespace SuperUltra.Container
         [SerializeField] TMP_Text _rankName;
         [SerializeField] TMP_Text _pointsToNextRank;
         [SerializeField] TMP_Text _totalTokenNumber;
-        [SerializeField] Image _profilePic; 
+        [SerializeField] Image _profilePic;
         [SerializeField] int _score;
 
         public void Start()
         {
             SetUserName(UserData.userName);
             SetUserRankInfo(UserData.rankLevel, UserData.rankTitle, UserData.pointsToNextRank, UserData.pointsInCurrentRank);
-            // GetUserProfilePic(UserData.profilePic);
+            GetUserProfilePic(UserData.profilePic);
             SetNumberOfToken(UserData.totalTokenNumber);
         }
 
-        void GetUserProfilePic(string url)
+        void GetUserProfilePic(Texture2D texture)
         {
-            NetworkManager.GetImage(url, (Texture2D texture) =>
+            if (_profilePic)
             {
                 _profilePic.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            });
+            }
         }
 
         void SetUserRankInfo(int level, string name, int pointsToNextRank, int pointsInCurrentRank)

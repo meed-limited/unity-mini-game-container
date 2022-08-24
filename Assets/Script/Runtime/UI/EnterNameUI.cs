@@ -78,6 +78,8 @@ namespace SuperUltra.Container
                     _nameInput.targetGraphic.color = _errorColor;
                 }
             );
+
+            
             
         }
     }
