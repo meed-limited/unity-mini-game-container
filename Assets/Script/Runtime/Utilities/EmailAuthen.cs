@@ -71,6 +71,7 @@ namespace SuperUltra.Container
         {
             Debug.Log($"Register Successful {result.PlayFabId} {result.Username} {result}");
             UserData.playFabId = result.PlayFabId;
+            Debug.Log("OnRegisterSuccess " + UserData.playFabId);
         }
 
         private static void OnRegisterFailure(PlayFabError error)

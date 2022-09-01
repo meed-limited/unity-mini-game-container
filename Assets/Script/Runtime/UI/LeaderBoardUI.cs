@@ -17,7 +17,7 @@ namespace SuperUltra.Container
 
     public class LeaderboardUI : MonoBehaviour
     {
-        [SerializeField] RankingItemUI _rankingItemUI;
+        [SerializeField] RankingItemUI _rankingItemUIPrefab;
         [SerializeField] RectTransform _rankingItemContainer;
         [SerializeField] RectTransform _gameBannerPrefab;
         [SerializeField] RectTransform _gameBannerContainer;
@@ -97,8 +97,12 @@ namespace SuperUltra.Container
 
         void OnGameChange(float page)
         {
-            RefreshLeaderboard(_pageToGameMap[(int)page]);
-            _currentGameId = _pageToGameMap[(int)page];
+            Debug.Log("OnGameChange " + page);
+            if(_pageToGameMap.TryGetValue(Mathf.FloorToInt(page), out int id))
+            {
+                _currentGameId = id;
+                RefreshLeaderboard(_currentGameId);
+            }
         }
 
         void CacheSpacingAndheight()
@@ -109,7 +113,7 @@ namespace SuperUltra.Container
                 _listSpacing = verticalLayoutGroup.spacing;
             }
 
-            RectTransform itemRect = _rankingItemUI.GetComponent<RectTransform>();
+            RectTransform itemRect = _rankingItemUIPrefab.GetComponent<RectTransform>();
             if (itemRect)
             {
                 _itemHeight = itemRect.sizeDelta.y;
@@ -127,16 +131,14 @@ namespace SuperUltra.Container
 
         void CreateRankingList(int gameID = 0)
         {
-            Debug.Log($"CreateRankingList {gameID} {GameData.gameDataList[gameID]}");
             if (!GameData.gameDataList.TryGetValue(gameID, out GameData gameData))
             {
                 return;
             }
 
-            Debug.Log($"CreateRankingList {gameData.leaderboard.Count}");
             foreach (var item in gameData.leaderboard)
             {
-                RankingItemUI rankingItemUI = Instantiate(_rankingItemUI, _rankingItemContainer);
+                RankingItemUI rankingItemUI = Instantiate(_rankingItemUIPrefab, _rankingItemContainer);
                 rankingItemUI.SetData(item);
                 _rankingItemContainer.sizeDelta += new Vector2(
                     0,

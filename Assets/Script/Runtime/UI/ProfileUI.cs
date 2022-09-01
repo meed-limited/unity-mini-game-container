@@ -22,15 +22,20 @@ namespace SuperUltra.Container
 
         public void Start()
         {
+            Initialize();
+        }
+
+        public void Initialize()
+        {
             SetUserName(UserData.userName);
             SetUserRankInfo(UserData.rankLevel, UserData.rankTitle, UserData.pointsToNextRank, UserData.pointsInCurrentRank);
-            GetUserProfilePic(UserData.profilePic);
+            SetAvatar(UserData.profilePic);
             SetNumberOfToken(UserData.totalTokenNumber);
         }
 
-        void GetUserProfilePic(Texture2D texture)
+        public void SetAvatar(Texture2D texture)
         {
-            if (_profilePic)
+            if (_profilePic && texture)
             {
                 _profilePic.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
             }
@@ -48,7 +53,7 @@ namespace SuperUltra.Container
             _totalTokenNumber.text = number.ToString();
         }
 
-        void SetUserName(string name = "")
+        public void SetUserName(string name = "")
         {
             if (_displayName != null)
             {

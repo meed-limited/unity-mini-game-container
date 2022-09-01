@@ -58,6 +58,7 @@ namespace SuperUltra.Container
             _statusText.color = _normalColor;
             _nameInput.targetGraphic.color = _normalColor;
             
+            LoadingUI.Show();
             PlayFabClientAPI.UpdateUserTitleDisplayName(
                 new UpdateUserTitleDisplayNameRequest()
                 {
@@ -68,20 +69,27 @@ namespace SuperUltra.Container
                     _statusText.text = "";
                     _statusText.color = _normalColor;
                     _nameInput.targetGraphic.color = _normalColor;
-                    UserData.userName = _nameInput.text;
-                    _loginManager.ToMenu();
+                    // _loginManager.ToMenu();
                 },
                 (error) =>
                 {
+                    LoadingUI.Hide();
                     _statusText.text = error.ErrorMessage;
                     _statusText.color = _errorColor;
                     _nameInput.targetGraphic.color = _errorColor;
                 }
             );
-
-            
+            NetworkManager.UpdateUserProfile(
+                UserData.playFabId,
+                _nameInput.text,
+                _iconPreview.sprite.texture,
+                () => {
+                    _loginManager.ToMenu();
+                }
+            );
             
         }
+
     }
 
 }

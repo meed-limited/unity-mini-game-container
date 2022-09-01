@@ -33,7 +33,7 @@ namespace SuperUltra.Container
                 _navigationGroupUI.Enable(this);
             }else
             {
-                MoveText(new Vector2(0, -50f));
+                MoveText(new Vector2(0, -75f));
             }
         }
 
@@ -83,7 +83,7 @@ namespace SuperUltra.Container
             if(_state == State.Enabled) return;
             MoveActiveMarker();
             MoveAndResizeIcon(new Vector2(0, 15f), Vector3.one * 1.5f);
-            MoveText(new Vector2(0, 50f));
+            MoveText(new Vector2(0, 75f));
             _navigationGroupUI.Enable(this);
             _state = State.Enabled;
         }
@@ -92,7 +92,7 @@ namespace SuperUltra.Container
         {
             if (_state == State.Disable) return;
             MoveAndResizeIcon(new Vector2(0, -15f), Vector3.one);
-            MoveText(new Vector2(0, -50f));
+            MoveText(new Vector2(0, -75f));
             _state = State.Disable;
         }
 

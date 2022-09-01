@@ -6,8 +6,8 @@ namespace SuperUltra.Container
         #region Client
         
         public const float ReferenceScreenWidth = 1080f;
-
         public const float ReferenceScreenHeight = 2332f;
+        public const float WithDrawLimit = 750f;
 
         #endregion
         

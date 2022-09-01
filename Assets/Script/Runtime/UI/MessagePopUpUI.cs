@@ -12,7 +12,7 @@ namespace SuperUltra.Container
         [SerializeField] PopUpUI _popUpUI;
         [SerializeField] Button _actionButton;
         [SerializeField] Button _closeButton;
-
+        [SerializeField] RectTransform _contentContainer;
 
         public void Show(
             string message = "",
@@ -39,6 +39,24 @@ namespace SuperUltra.Container
             _popUpUI.Show(message);
         }
 
+        public void Show(
+            RectTransform content,
+            string actionButtonText = "",
+            Action actionButtonCallback = null,
+            bool shouldHideAfterAction = false
+        )
+        {
+            Instantiate(content, _contentContainer);
+            SetActionButtonListener(actionButtonCallback, shouldHideAfterAction);
+            _actionButton.gameObject.SetActive(!string.IsNullOrEmpty(actionButtonText));
+            TMP_Text text = _actionButton.GetComponentInChildren<TMP_Text>();
+            if (text)
+            {
+                text.text = actionButtonText;
+            }
+            _popUpUI.Show();
+        }
+
         void Hide()
         {
             _actionButton.onClick.RemoveAllListeners();
@@ -50,7 +68,7 @@ namespace SuperUltra.Container
             _closeButton.onClick.RemoveAllListeners();
             _closeButton.onClick.AddListener(() =>
             {
-                if(closeButtonCallback != null)
+                if (closeButtonCallback != null)
                 {
                     closeButtonCallback();
                 }
@@ -70,6 +88,10 @@ namespace SuperUltra.Container
                 if (shouldHideAfterAction)
                 {
                     Hide();
+                }
+                foreach (Transform item in _contentContainer)
+                {
+                    Destroy(item.gameObject);
                 }
             });
         }

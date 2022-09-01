@@ -12,39 +12,67 @@ namespace SuperUltra.Container
         [SerializeField] Image _avatarPreview;
         [SerializeField] TMP_InputField _userName;
         [SerializeField] MenuManager _menuManager;
+        Texture2D _previewTexture;
 
         // Start is called before the first frame update
         void Start()
         {
-            SetAvatar(UserData.profilePic);
+            Initialize();
+        }
+
+        public void Initialize()
+        {
+            SetAvatar(_previewTexture != null ? _previewTexture : UserData.profilePic);
             SetUserName(UserData.userName);
         }
 
         void SetUserName(string name)
         {
-            if(_userName != null)
+            if (_userName != null)
             {
                 _userName.text = name;
             }
         }
 
-        public void SetAvatar(Texture2D texture)
+        void SetAvatar(Texture2D texture)
         {
-            if(_avatarPreview)
+            if (_avatarPreview && texture)
             {
                 _avatarPreview.sprite = Sprite.Create(
-                    texture, 
-                    new Rect(0, 0, texture.width, texture.height), 
+                    texture,
+                    new Rect(0, 0, texture.width, texture.height),
                     new Vector2(0.5f, 0.5f)
                 );
             }
         }
 
+        public void Back()
+        {
+            _menuManager.ToProfilePage();
+            _previewTexture = null;
+        }
+
+        public void SetPreviewTexture(Sprite sprite)
+        {
+            _previewTexture = sprite.texture;
+        }
+
         public void SaveProfile()
         {
-            if(_avatarPreview && _avatarPreview.sprite && _userName)
+            if (_avatarPreview && _avatarPreview.sprite && _userName)
             {
-                _menuManager.UpdateUserProfileRequest(_userName.text, _avatarPreview.sprite.texture);
+                bool isAvatarChanged = !_avatarPreview.sprite.texture.Equals(UserData.profilePic);
+
+                if (isAvatarChanged)
+                {
+                    _menuManager.UpdateUserProfileRequest(_userName.text, _avatarPreview.sprite.texture);
+                }
+                else
+                {
+                    _menuManager.UpdateUserNameRequest(_userName.text);
+                }
+
+                _previewTexture = null;
             }
         }
 

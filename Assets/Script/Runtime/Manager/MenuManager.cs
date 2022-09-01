@@ -19,6 +19,7 @@ namespace SuperUltra.Container
         [SerializeField] Canvas _profileEditPage;
         [SerializeField] Canvas _avatarSelectPage;
         [SerializeField] Canvas _navigationPage;
+        [SerializeField] MessagePopUpUI _messagePopUpUI;
         RectTransform _prevUI;
         int _prevPagenumber;
         Dictionary<Canvas, int> _pageToCanvas = new Dictionary<Canvas, int>();
@@ -46,6 +47,7 @@ namespace SuperUltra.Container
             _profilePage.gameObject.SetActive(false);
             _profileEditPage.gameObject.SetActive(false);
             _avatarSelectPage.gameObject.SetActive(false);
+            _messagePopUpUI.gameObject.SetActive(false);
 
             _navigationPage.gameObject.SetActive(true);
             _gameListPage.gameObject.SetActive(true);
@@ -195,54 +197,72 @@ namespace SuperUltra.Container
 
         public void UpdateUserProfileRequest(string userName, Texture2D texture2D)
         {
+            LoadingUI.Show();
             NetworkManager.UpdateUserProfile(
                 UserData.playFabId,
                 userName,
                 texture2D,
-                () => { 
+                () => NetworkManager.GetUserData(null, () =>
+                {
                     ToProfilePage();
-                }
+                    LoadingUI.Hide();
+                })
             );
         }
 
-        void UpdateUserAvatar(Texture2D texture2D)
+        public void UpdateUserNameRequest(string userName)
         {
-            MainGameUI mainGameUI = _gameListPage.GetComponent<MainGameUI>();
-            if (mainGameUI)
-            {
-                mainGameUI.SetAvatar(texture2D);
-            }
-            EditProfileUI editProfileUI = _profileEditPage.GetComponent<EditProfileUI>();
-            if(editProfileUI)
-            {
-                editProfileUI.SetAvatar(texture2D);
-            }
+            LoadingUI.Show();
+            NetworkManager.UpdateUserName(
+                UserData.playFabId,
+                userName,
+                () => NetworkManager.GetUserData(() =>
+                {
+                    ToProfilePage();
+                    LoadingUI.Hide();
+                })
+            );
         }
 
-        public void EditProfileUI(Sprite sprite)
+        public void ShowPopUP(RectTransform content, string actionButtonMessage = "", Action actionButtonCallback = null, bool shouldHideAfterAction = true)
         {
-            if (!_profileEditPage || !sprite || !sprite.texture)
-            {
-                return;
-            }
-            EditProfileUI editProfileUI = _profileEditPage.GetComponent<EditProfileUI>();
-            if (!editProfileUI)
-            {
-                return;
-            }
-
-            editProfileUI.SetAvatar(sprite.texture);
+            _messagePopUpUI.gameObject.SetActive(true);
+            _messagePopUpUI.Show(content, actionButtonMessage, actionButtonCallback, shouldHideAfterAction);
         }
 
         public void ToNewsPage() => ToPage(_newsPage);
         public void ToSettingPage() => ToPage(_settingPage);
-        public void ToProfilePage() => ToPage(_profilePage);
+        public void ToProfilePage()
+        {
+            ProfileUI profileUI = _profilePage.GetComponent<ProfileUI>();
+            if (profileUI)
+            {
+                profileUI.Initialize();
+            }
+            ToPage(_profilePage);
+        }
+        public void ToProfileEditPage()
+        {
+            EditProfileUI editProfileUI = _profileEditPage.GetComponent<EditProfileUI>();
+            if (editProfileUI)
+            {
+                editProfileUI.Initialize();
+            }
+            ToPage(_profileEditPage);
+        }
         public void ToSeasonPage() => ToPage(_seasonPassPage);
-        public void ToProfileEditPage() => ToPage(_profileEditPage);
         public void ToGamePage() => ToPage(_gameListPage);
         public void ToAvatarSelectPage() => ToPage(_avatarSelectPage);
         public void ToLeaderboardPage() => ToPage(_leaderboardUI);
-        public void ToWalletPage() => ToPage(_walletPage);
+        public void ToWalletPage()
+        {
+            WalletUI walletUI = _walletPage.GetComponent<WalletUI>();
+            if (walletUI)
+            {
+                walletUI.Initialize();
+            }
+            ToPage(_walletPage);
+        }
 
     }
 
