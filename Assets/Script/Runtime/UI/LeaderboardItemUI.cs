@@ -7,7 +7,7 @@ using BestHTTP;
 namespace SuperUltra.Container
 {
 
-    public class RankingItemUI : MonoBehaviour
+    public class LeaderboardItemUI : MonoBehaviour
     {
         public TMP_Text rank;
         public Image image;

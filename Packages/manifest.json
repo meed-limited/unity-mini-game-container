@@ -2,7 +2,6 @@
   "dependencies": {
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.addressables": "1.19.19",
-    "com.unity.ads": "3.7.5",
     "com.unity.collab-proxy": "1.15.18",
     "com.unity.ide.rider": "3.0.14",
     "com.unity.ide.visualstudio": "2.0.15",
@@ -11,6 +10,7 @@
     "com.unity.mobile.notifications": "2.0.1",
     "com.unity.postprocessing": "3.2.2",
     "com.unity.render-pipelines.universal": "12.1.7",
+    "com.unity.services.mediation": "file:C:/Users/GameDeveloper/Downloads/98231542a8b0e65db4a115744545fdbf17d77371.tgz",
     "com.unity.test-framework": "1.1.31",
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.6.4",

@@ -6251,7 +6251,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &850467437
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6351,6 +6351,7 @@ MonoBehaviour:
   _actionButton: {fileID: 1975402498}
   _closeButton: {fileID: 22079615}
   _contentContainer: {fileID: 0}
+  _messageText: {fileID: 244567914}
 --- !u!1 &864989945
 GameObject:
   m_ObjectHideFlags: 0

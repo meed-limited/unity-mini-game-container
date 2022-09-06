@@ -895,7 +895,7 @@ PlayerSettings:
     Purchasing: 0
     UDP: 0
     UNet: 1
-    Unity Ads: 0
+    Unity Ads: 1
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -912,7 +912,7 @@ PlayerSettings:
   cloudProjectId: aef69070-08b7-4444-b85e-bf5e868e77b2
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: unity-container
+  projectName: Ultranova
   organizationId: shamrock-studios-limited
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0

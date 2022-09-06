@@ -74,11 +74,11 @@ namespace SuperUltra.Container
 
         static void GetLeaderboardList(Action callback)
         {
-            if(GameData.gameDataList.Count <= 0)
+            if (GameData.gameDataList.Count <= 0)
             {
                 callback?.Invoke();
             }
-            
+
             foreach (var item in GameData.gameDataList)
             {
                 int id = item.Value.id;
@@ -156,8 +156,8 @@ namespace SuperUltra.Container
             Debug.Log("GetAvatar " + avatarUrl);
             if (string.IsNullOrEmpty(avatarUrl)
                 || avatarUrl.Equals("NA")
-                // for extra checking
-                // || !Uri.IsWellFormedUriString(avatarUrl, UriKind.RelativeOrAbsolute)
+            // for extra checking
+            // || !Uri.IsWellFormedUriString(avatarUrl, UriKind.RelativeOrAbsolute)
             )
             {
                 Debug.Log($"GetAvatar {!Uri.IsWellFormedUriString(avatarUrl, UriKind.RelativeOrAbsolute)}");
@@ -175,7 +175,8 @@ namespace SuperUltra.Container
                     if (res.IsSuccess && res.Data != null)
                     {
                         UserData.profilePic = res.DataAsTexture2D;
-                    }else
+                    }
+                    else
                     {
                         Debug.LogError($"GetAvatar fail");
                     }
@@ -348,6 +349,33 @@ namespace SuperUltra.Container
             }
         }
 
+        public static void UpdateScore(float score, string playFabId, int gameId, Action callback)
+        {
+            HTTPRequest request = new HTTPRequest(
+                new Uri(Config.Domain + "users/submitscore"), 
+                HTTPMethods.Post, 
+                (req, res) => {
+                    OnUpdateScoreRequestFinished();
+                    callback?.Invoke();
+                }
+            );
+            JSONObject json = new JSONObject();
+            json.Add("fabId", playFabId);
+            json.Add("gameIdentifier", gameId);
+            json.Add("score", score);
+            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.AddHeader("Content-Type", "application/json");
+            request.RawData = Encoding.ASCII.GetBytes(json.ToString());
+            request.Timeout = TimeSpan.FromSeconds(_timeOut);
+            request.Send();
+        }
+
+        static void OnUpdateScoreRequestFinished()
+        { 
+            // TODO
+            Debug.Log("OnUpdateScoreRequestFinished");
+        }
+
         #region Update User
 
         public static void UpdateUserName(string playFabId, string userName, Action callback)
@@ -356,7 +384,7 @@ namespace SuperUltra.Container
             json.Add("username", userName);
             json.Add("platformId", playFabId);
             UpdateUser(json, callback);
-        } 
+        }
 
         public static void UpdateUserProfile(string playFabId, string userName, Texture2D texture2D, Action callback)
         {

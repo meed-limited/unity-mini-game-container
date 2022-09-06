@@ -13,6 +13,7 @@ namespace SuperUltra.Container
         [SerializeField] Button _actionButton;
         [SerializeField] Button _closeButton;
         [SerializeField] RectTransform _contentContainer;
+        [SerializeField] TMP_Text _messageText;
 
         public void Show(
             string message = "",
@@ -24,16 +25,11 @@ namespace SuperUltra.Container
         )
         {
             gameObject.SetActive(true);
-            TMP_Text text = _actionButton.GetComponentInChildren<TMP_Text>();
-
-            SetActionButtonListener(actionButtonCallback, shouldHideAfterAction);
-            _actionButton.gameObject.SetActive(!string.IsNullOrEmpty(actionButtonText));
-            if (text)
-            {
-                text.text = actionButtonText;
-            }
-
+            
+            SetActionButtonText(actionButtonText, actionButtonCallback, shouldHideAfterAction);
+            SetMessage(message);
             SetCloseButtonListener(closeButtonCallback);
+
             _closeButton.gameObject.SetActive(shouldShowCloseButton);
 
             _popUpUI.Show(message);
@@ -55,6 +51,26 @@ namespace SuperUltra.Container
                 text.text = actionButtonText;
             }
             _popUpUI.Show();
+        }
+
+        void SetActionButtonText(string message, Action callback, bool shouldHideAfterAction)
+        {
+            TMP_Text text = _actionButton.GetComponentInChildren<TMP_Text>();
+
+            SetActionButtonListener(callback, shouldHideAfterAction);
+            _actionButton.gameObject.SetActive(!string.IsNullOrEmpty(message));
+            if (text)
+            {
+                text.text = message;
+            }
+        }
+
+        void SetMessage(string message)
+        {
+            if(_messageText)
+            {
+                _messageText.text = message;
+            }
         }
 
         void Hide()

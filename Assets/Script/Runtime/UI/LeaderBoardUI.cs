@@ -7,26 +7,17 @@ using BestHTTP;
 
 namespace SuperUltra.Container
 {
-    public class RankingInfo
-    {
-        public int rank;
-        public Sprite image;
-        public string name;
-        public int score;
-    }
-
     public class LeaderboardUI : MonoBehaviour
     {
-        [SerializeField] RankingItemUI _rankingItemUIPrefab;
+        [SerializeField] LeaderboardItemUI _leaderboardUIPrefab;
         [SerializeField] RectTransform _rankingItemContainer;
         [SerializeField] RectTransform _gameBannerPrefab;
         [SerializeField] RectTransform _gameBannerContainer;
         [SerializeField] StickyScrollUI _gameBannerStickyScroll;
-        [SerializeField] RankingItemUI _userRankingUI;
+        [SerializeField] LeaderboardItemUI _userLeaderboardUI;
         [SerializeField] TMP_Text _gameName;
         [SerializeField] TMP_Text _poolSize;
         [SerializeField] TMP_Text _timeLeft;
-        Dictionary<int, List<RankingInfo>> _gameToRankingInfoMap = new Dictionary<int, List<RankingInfo>>();
         int _currentGameId = -1;
         float _listSpacing = 0;
         float _itemHeight = 0;
@@ -60,7 +51,7 @@ namespace SuperUltra.Container
 
         void CreateUserRank()
         {
-            if (_userRankingUI == null)
+            if (_userLeaderboardUI == null)
             {
                 return;
             }
@@ -71,13 +62,12 @@ namespace SuperUltra.Container
                 name = "LiftTastic",
                 score = 608
             };
-            _userRankingUI.SetData(userRank);
+            _userLeaderboardUI.SetData(userRank);
         }
 
         void CreateGameList()
         {
             int pageCount = 0;
-            Debug.Log($"CreateGameList {GameData.gameDataList.Count}");
             foreach (var game in GameData.gameDataList)
             {
                 RectTransform gameBanner = Instantiate(_gameBannerPrefab, _gameBannerContainer);
@@ -113,7 +103,7 @@ namespace SuperUltra.Container
                 _listSpacing = verticalLayoutGroup.spacing;
             }
 
-            RectTransform itemRect = _rankingItemUIPrefab.GetComponent<RectTransform>();
+            RectTransform itemRect = _leaderboardUIPrefab.GetComponent<RectTransform>();
             if (itemRect)
             {
                 _itemHeight = itemRect.sizeDelta.y;
@@ -138,7 +128,7 @@ namespace SuperUltra.Container
 
             foreach (var item in gameData.leaderboard)
             {
-                RankingItemUI rankingItemUI = Instantiate(_rankingItemUIPrefab, _rankingItemContainer);
+                LeaderboardItemUI rankingItemUI = Instantiate(_leaderboardUIPrefab, _rankingItemContainer);
                 rankingItemUI.SetData(item);
                 _rankingItemContainer.sizeDelta += new Vector2(
                     0,

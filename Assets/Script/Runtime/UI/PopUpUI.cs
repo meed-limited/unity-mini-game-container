@@ -43,10 +43,6 @@ namespace SuperUltra.Container
                 return null;
             }
 
-            TMP_Text text = GetComponentInChildren<TMP_Text>();
-            if (text)
-                text.text = message;
-
             return DOTween.To(
                 () => _rectTransform.localScale,
                 x => _rectTransform.localScale = x,

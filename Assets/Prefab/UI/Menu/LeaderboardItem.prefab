@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 1215569987170266545}
   - component: {fileID: 1215569987170266547}
   - component: {fileID: 1215569987170266544}
-  - component: {fileID: 493716675207146848}
+  - component: {fileID: 6350524141160046262}
   m_Layer: 5
-  m_Name: RankingItem
+  m_Name: LeaderboardItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82,7 +82,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 0.5
---- !u!114 &493716675207146848
+--- !u!114 &6350524141160046262
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -91,7 +91,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1215569987170266510}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c3f65a9c59c57f49836e41891ac998d, type: 3}
+  m_Script: {fileID: 11500000, guid: 0dfa0abcc7ef5ac4bb566a9b2ed0151e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   rank: {fileID: 1215569987572053889}

@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: android
   m_EditorClassIdentifier: 
   list:
-  - gameName: demo
+  - gameId: 0
+    gameName: demo
     catalogName: catalog_2022.07.07.07.46.19.hash
-    mainSceneName: DemoMainScene
+    mainSceneName: Assets/Scenes/DemoSampleScene.unity
     coverImage: {fileID: 21300000, guid: 8b9f8299721ba3648818517f092c851c, type: 3}
-  - gameName: poke-a-mango
+  - gameId: 0
+    gameName: poke-a-mango
     catalogName: catalog_2022.07.12.07.02.39.hash
     mainSceneName: MainScene
     coverImage: {fileID: 21300000, guid: 04f255cdff75eb4428dec0c245d377f9, type: 3}
