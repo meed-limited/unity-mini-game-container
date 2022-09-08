@@ -12,7 +12,8 @@ namespace SuperUltra.Container
         public static event Action OnPlayAgain;
         public static event Action OnClickHowToPlay;
         public static event Action OnGameOver;
-        public static event Action<float> OnSubmitScore;
+        public static event Action<Action<bool>> OnRequestRewardedAds;
+        /// <summary> When user finish watching a rewarded ads </summary>
         public static event Action<bool> OnMusicVolumeChange;
         public static event Action<bool> OnEffectVolumeChange;
 
@@ -29,8 +30,10 @@ namespace SuperUltra.Container
         public static void PlayAgain() => OnPlayAgain?.Invoke();
         /// <summary> Show How to play panel </summary>
         public static void HowToPlay() => OnClickHowToPlay?.Invoke();
-        /// <summary> When player fail to complete game </summary>
+        /// <summary> Player fail to complete game </summary>
         public static void GameOver() => OnGameOver?.Invoke();
+        /// <summary> Request Admanager to show a reward ads </summary>
+        public static void RequestRewardedAds(Action<bool> callback) => OnRequestRewardedAds?.Invoke(callback);
 
     }
 

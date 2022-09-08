@@ -65,7 +65,7 @@ namespace SuperUltra.Container
                     GameData.currentGameId,
                     () =>
                     {
-                        LoadingUI.Show();
+                        LoadingUI.Hide();
                         _completionLeaderboard.Show();
                         _canvas.gameObject.SetActive(false);
                     }
