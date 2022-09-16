@@ -18,6 +18,19 @@ namespace SuperUltra.Container
         public static int pointsToNextRank;
         public static int rankLevel;
         public static string rankTitle;
+        public static void ClearData()
+        {
+            playFabId = "";
+            userName = "";
+            profilePic = null;
+            email = "";
+            totalTokenNumber = -1;
+            walletAddress = "";
+            pointsInCurrentRank = -1;
+            pointsToNextRank = -1;
+            rankLevel = -1;
+            rankTitle = "";
+        }
     }
 
 }

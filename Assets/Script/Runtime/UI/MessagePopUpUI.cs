@@ -14,18 +14,30 @@ namespace SuperUltra.Container
         [SerializeField] Button _closeButton;
         [SerializeField] RectTransform _contentContainer;
         [SerializeField] TMP_Text _messageText;
+        static MessagePopUpUI _instance;
+
+        void Awake()
+        {
+            if (_instance != null)
+            {
+                Destroy(this.gameObject);
+                return;
+            }
+            _instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
 
         public void Show(
             string message = "",
             string actionButtonText = "",
             Action actionButtonCallback = null,
-            bool shouldHideAfterAction = false,
+            bool shouldHideAfterAction = true,
             bool shouldShowCloseButton = true,
             Action closeButtonCallback = null
         )
         {
             gameObject.SetActive(true);
-            
+
             SetActionButtonText(actionButtonText, actionButtonCallback, shouldHideAfterAction);
             SetMessage(message);
             SetCloseButtonListener(closeButtonCallback);
@@ -53,6 +65,16 @@ namespace SuperUltra.Container
             _popUpUI.Show();
         }
 
+        public void Hide()
+        {
+            foreach (Transform item in _contentContainer)
+            {
+                Destroy(item.gameObject);
+            }
+            _actionButton.onClick.RemoveAllListeners();
+            _popUpUI.Hide().OnComplete(() => gameObject.SetActive(false));
+        }
+        
         void SetActionButtonText(string message, Action callback, bool shouldHideAfterAction)
         {
             TMP_Text text = _actionButton.GetComponentInChildren<TMP_Text>();
@@ -67,17 +89,12 @@ namespace SuperUltra.Container
 
         void SetMessage(string message)
         {
-            if(_messageText)
+            if (_messageText)
             {
                 _messageText.text = message;
             }
         }
 
-        void Hide()
-        {
-            _actionButton.onClick.RemoveAllListeners();
-            _popUpUI.Hide().OnComplete(() => gameObject.SetActive(false));
-        }
 
         void SetCloseButtonListener(Action closeButtonCallback = null)
         {
@@ -92,7 +109,7 @@ namespace SuperUltra.Container
             });
         }
 
-        void SetActionButtonListener(Action actionButtonCallback = null, bool shouldHideAfterAction = false)
+        void SetActionButtonListener(Action actionButtonCallback = null, bool shouldHideAfterAction = true)
         {
             _actionButton.onClick.RemoveAllListeners();
             _actionButton.onClick.AddListener(() =>
@@ -105,11 +122,23 @@ namespace SuperUltra.Container
                 {
                     Hide();
                 }
-                foreach (Transform item in _contentContainer)
-                {
-                    Destroy(item.gameObject);
-                }
             });
+        }
+
+        public static void Show(
+            string message = "",
+            string actionButtonText = "",
+            Action actionButtonCallback = null
+        )
+        {
+            if (_instance)
+            {
+                _instance.Show(
+                    message,
+                    actionButtonText,
+                    actionButtonCallback
+                );
+            }
         }
     }
 

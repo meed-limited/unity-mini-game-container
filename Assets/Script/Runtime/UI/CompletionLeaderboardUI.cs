@@ -24,11 +24,15 @@ namespace SuperUltra.Container
 
             _instance = this;
             DontDestroyOnLoad(this.gameObject);
+            ContainerInterface.OnPlayAgain += Hide;
+            ContainerInterface.OnReturnMenu += Hide;
             Hide();
         }
 
         void OnDestory()
         {
+            ContainerInterface.OnPlayAgain -= Hide;
+            ContainerInterface.OnReturnMenu -= Hide;
         }
 
         public void Show()
@@ -48,7 +52,7 @@ namespace SuperUltra.Container
             );
         }
 
-        public void GenerateRanking(List<LeaderboardUserData> list)
+        public void GenerateRanking(LeaderboardUserData[] list)
         {
             foreach (LeaderboardUserData data in list)
             {
@@ -70,7 +74,6 @@ namespace SuperUltra.Container
         public void Back()
         {
             ContainerInterface.ReturnToMenu();
-            Hide();
         }
 
     }

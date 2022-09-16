@@ -8,6 +8,7 @@ namespace SuperUltra.Container
 
     public class MainGameUI : MonoBehaviour
     {
+        [Header("Header")]
         [SerializeField] Image _levelBar;
         [SerializeField] TMP_Text _levelText;
         [SerializeField] Image _avatar;

@@ -11,7 +11,6 @@ namespace SuperUltra.Container
 
         public void Enable(NavigationButtonUI button)
         {
-            Debug.Log(_prevActiveButton == null);
             if (_prevActiveButton == button)
             {
                 return;
@@ -19,7 +18,6 @@ namespace SuperUltra.Container
 
             if (_prevActiveButton)
             {
-                Debug.Log(_prevActiveButton.gameObject.name);
                 _prevActiveButton.Disable();
             }
 

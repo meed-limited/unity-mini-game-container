@@ -19,7 +19,7 @@ namespace SuperUltra.Container
         {
             if (instance != null)
             {
-                Destroy(this);
+                Destroy(this.gameObject);
                 return;
             }
             instance = this;
@@ -36,7 +36,7 @@ namespace SuperUltra.Container
         {
             if(_loadingIcon == null) return;
             _loadingIcon.rectTransform.DORotate(
-                new Vector3(0f, 0f, 180),
+                new Vector3(0f, 180f, 180),
                 0.4f
             ).SetEase(Ease.Linear).SetLoops(-1, LoopType.Incremental);
         }

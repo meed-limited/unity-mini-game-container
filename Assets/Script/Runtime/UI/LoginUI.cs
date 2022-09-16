@@ -20,6 +20,23 @@ namespace SuperUltra.Container
         Color _errorColor = new Color(0.96f, 0.4f, 0);
         Color _normalColor = new Color(0.4f, 0.45f, 0.52f);
 
+        void Start()
+        {
+            GetSavedLoginCredential();
+        }
+
+        void GetSavedLoginCredential()
+        {
+            if(PlayerPrefs.HasKey(Config.CREDENTIAL_KEY_EMAIL))
+            {
+                _emailInput.text = PlayerPrefs.GetString(Config.CREDENTIAL_KEY_EMAIL);
+            }
+            if (PlayerPrefs.HasKey(Config.CREDENTIAL_KEY_PASSWORD))
+            {
+                _passwordInput.text = PlayerPrefs.GetString(Config.CREDENTIAL_KEY_PASSWORD);
+            }
+        }
+
         bool CheckValidInput()
         {
 

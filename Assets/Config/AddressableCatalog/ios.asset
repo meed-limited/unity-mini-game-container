@@ -7,19 +7,21 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eb39641dea1e2f34296846ae9df5ced6, type: 3}
   m_Name: ios
   m_EditorClassIdentifier: 
   list:
-  - gameId: 0
-    gameName: demo
+  - gameId: 2
+    remoteFolderName: demo
     catalogName: catalog_2022.09.08.07.17.55.hash
-    mainSceneName: Assets/Scenes/DemoSampleScene.unity
-    coverImage: {fileID: 21300000, guid: 8b9f8299721ba3648818517f092c851c, type: 3}
+    mainSceneKey: Assets/Scenes/DemoSampleScene.unity
+    posterImage: {fileID: 21300000, guid: d5d4e400fff891e488fa4de5c3633190, type: 3}
+    bannerImage: {fileID: 21300000, guid: da6f16291c90f12459247e88366247b6, type: 3}
   - gameId: 0
-    gameName: poke-a-mango
+    remoteFolderName: poke-a-mango
     catalogName: catalog_2022.07.08.03.43.19.hash
-    mainSceneName: MainScene
-    coverImage: {fileID: 21300000, guid: 04f255cdff75eb4428dec0c245d377f9, type: 3}
+    mainSceneKey: 
+    posterImage: {fileID: 0}
+    bannerImage: {fileID: 0}

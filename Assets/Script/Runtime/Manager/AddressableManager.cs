@@ -13,12 +13,13 @@ namespace SuperUltra.Container
     {
         [SerializeField] bool _shouldDownload;
         [SerializeField] bool _deleteCache;
-        [SerializeField] GameListUI _menuUIManager;
+        [SerializeField] GameListUI _gameListUI;
         [SerializeField] GameInfoList _gameInfoListAndroid;
         [SerializeField] GameInfoList _gameInfoListIOS;
         static bool _intialized = false;
         static bool _hasSubscribed = false;
         static AsyncOperationHandle _currentSceneHandle;
+        static Dictionary<int, GameInfo> _gameInfoMap = new Dictionary<int, GameInfo>();
 
         void OnEnable()
         {
@@ -27,6 +28,11 @@ namespace SuperUltra.Container
                 ContainerInterface.OnReturnMenu += UnloadScene;
                 _hasSubscribed = true;
             }
+        }
+
+        void OnDestory()
+        {
+            ContainerInterface.OnReturnMenu -= UnloadScene;
         }
 
         void Start()
@@ -39,22 +45,25 @@ namespace SuperUltra.Container
                 Caching.ClearCache();
             }
 
+            List<GameInfo> gameInfoList = GetGameList();
+            SetGameInfoMap(gameInfoList);
+
             if (!_intialized)
             {
                 _intialized = true;
                 Addressables.InitializeAsync().Completed += (obj) =>
                 {
-                    foreach (GameInfo item in GetGameList())
+                    foreach (GameInfo item in gameInfoList)
                     {
-                        DownloadRemoteCatalog(item.gameName, item.catalogName, item.mainSceneName, item.gameId);
+                        DownloadRemoteCatalog(item.remoteFolderName, item.catalogName, item.mainSceneKey, item.gameId);
                     }
                 };
             }
             else
             {
-                foreach (GameInfo item in GetGameList())
+                foreach (GameInfo item in gameInfoList)
                 {
-                    DownloadRemoteCatalog(item.gameName, item.catalogName, item.mainSceneName, item.gameId);
+                    DownloadRemoteCatalog(item.remoteFolderName, item.catalogName, item.mainSceneKey, item.gameId);
                 }
             }
         }
@@ -70,12 +79,6 @@ namespace SuperUltra.Container
 
                 return location.InternalId;
             };
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
         }
 
         List<GameInfo> GetGameList()
@@ -108,6 +111,22 @@ namespace SuperUltra.Container
             };
         }
 
+        void SetGameInfoMap(List<GameInfo> gameInfoList)
+        {
+            if (_gameInfoMap == null)
+            {
+                _gameInfoMap = new Dictionary<int, GameInfo>();
+            }
+
+            foreach (GameInfo item in gameInfoList)
+            {
+                if (!_gameInfoMap.ContainsKey(item.gameId))
+                {
+                    _gameInfoMap.Add(item.gameId, item);
+                }
+            }
+        }
+
         void CreateButtons(string gameName, IList<IResourceLocation> locations, string landingSceneName, int gameId)
         {
             foreach (IResourceLocation item in locations)
@@ -116,11 +135,13 @@ namespace SuperUltra.Container
             }
             Addressables.GetDownloadSizeAsync(locations).Completed += (obj) =>
             {
-                if(obj.Status == AsyncOperationStatus.Succeeded)
+                if (obj.Status == AsyncOperationStatus.Succeeded)
                 {
-                    _menuUIManager.CreateButtons(
+                    _gameListUI.CreateButtons(
                         gameName,
+                        gameId,
                         obj.Result,
+                        GetPosterImage(gameId),
                         () =>
                         {
                             DownloadDependeny(locations, landingSceneName, gameId);
@@ -128,6 +149,15 @@ namespace SuperUltra.Container
                     );
                 }
             };
+        }
+
+        Sprite GetPosterImage(int gameId)
+        {
+            if (_gameInfoMap.TryGetValue(gameId, out GameInfo gameInfo))
+            {
+                return gameInfo.posterImage;
+            }
+            return null;
         }
 
         void DownloadDependeny(IList<IResourceLocation> item, string landingSceneName, int gameId)
@@ -139,7 +169,7 @@ namespace SuperUltra.Container
                 if (obj.Status == AsyncOperationStatus.Succeeded)
                 {
                     LoadGameScene(landingSceneName, gameId);
-                    _menuUIManager.UpdateResult("Downloading dependencies...", true);
+                    _gameListUI.UpdateResult("Downloading dependencies...", true);
                 }
             };
         }
@@ -151,7 +181,7 @@ namespace SuperUltra.Container
             {
                 if (obj.Status == AsyncOperationStatus.Succeeded)
                 {
-                    GameData.currentGameId = gameId;
+                    SessionData.currentGameId = gameId;
                     _currentSceneHandle = obj;
                     Debug.Log("Load Success");
                 }
@@ -174,11 +204,11 @@ namespace SuperUltra.Container
                 if (obj.Status == AsyncOperationStatus.Succeeded)
                 {
                     DownloadScene(gameName, landingSceneName, gameId);
-                    _menuUIManager.UpdateResult($"Retrive {gameName} {catalogName} data from aws", true);
+                    _gameListUI.UpdateResult($"Retrive {gameName} {catalogName} data from aws", true);
                 }
                 else
                 {
-                    _menuUIManager.UpdateResult($"Retrive {gameName} {catalogName} data from aws", false);
+                    _gameListUI.UpdateResult($"Retrive {gameName} {catalogName} data from aws", false);
                 }
             };
         }
@@ -187,7 +217,7 @@ namespace SuperUltra.Container
         {
             while (op.IsValid() && op.PercentComplete < 1)
             {
-                _menuUIManager.UpdateProgress(op.PercentComplete, taskName);
+                _gameListUI.UpdateProgress(op.PercentComplete, taskName);
                 yield return null;
             }
         }
@@ -204,6 +234,15 @@ namespace SuperUltra.Container
                     Addressables.UnloadSceneAsync(_currentSceneHandle);
                 }
             };
+        }
+
+        public static GameInfo GetGameInfo(int gameId)
+        {
+            if (_gameInfoMap == null || !_gameInfoMap.ContainsKey(gameId))
+            {
+                return null;
+            }
+            return _gameInfoMap[gameId];
         }
 
     }

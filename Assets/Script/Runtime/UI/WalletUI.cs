@@ -16,13 +16,15 @@ namespace SuperUltra.Container
         [SerializeField] RectTransform _notEnoughFundContent;
         [SerializeField] NFTItemUI _nFTItemUIPrefab;
         [SerializeField] RectTransform _nftItemContainer;
+        [SerializeField] RectTransform _startUpTab;
+        [SerializeField] MenuManager _menuManager;
+
+        [Header("Header")]
         [SerializeField] Image _levelBar;
         [SerializeField] Image _avatar;
         [SerializeField] TMP_Text _rankText;
         [SerializeField] TMP_Text _headerBalanceText;
         [SerializeField] TMP_Text _rankTitle;
-        [SerializeField] RectTransform _startUpTab;
-        [SerializeField] MenuManager _menuManager;
         RectTransform _previousTab;
 
 
@@ -34,12 +36,12 @@ namespace SuperUltra.Container
 
         public void Initialize()
         {
-            // SetWithdrawal(UserData.totalTokenNumber);
-            SetWithdrawal(1000);
+            SetWithdrawal(UserData.totalTokenNumber);
             SetLevel(UserData.rankLevel);
+            SetLevelBar(UserData.pointsInCurrentRank, UserData.pointsToNextRank);
             SetRankTitle(UserData.rankTitle);
             SetAvatar(UserData.profilePic);
-            SetNFTItem(new NFTItem[]{});
+            SetNFTItem(new NFTItem[] { });
             if (_startUpTab)
             {
                 _previousTab = _startUpTab;
@@ -70,7 +72,11 @@ namespace SuperUltra.Container
         void SetLevel(int level)
         {
             _rankText.text = level.ToString();
-            _levelBar.DOFillAmount(level / 100f, 1f);
+        }
+
+        void SetLevelBar(float experiencePoints, float pointToNextRank)
+        {
+            _levelBar.DOFillAmount(experiencePoints / pointToNextRank, 1f);
         }
 
         void SetRankTitle(string title)
@@ -101,18 +107,19 @@ namespace SuperUltra.Container
             {
                 _menuManager.ShowPopUP(
                     _notEnoughFundContent,
-                    "Back",
-                    null,
-                    true
+                    "Back"
                 );
                 return;
             }
 
+            // TODO
             Application.OpenURL("https://www.youtube.com/watch?v=FOfV8TvwaZ8");
         }
 
         public void OnClickHowToWithDrawal()
-        { }
+        {
+            Application.OpenURL("https://superultra.gitbook.io/ultranova/faq/withdrawal");
+        }
 
         public void SwitchTab(RectTransform transform)
         {

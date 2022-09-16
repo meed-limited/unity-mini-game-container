@@ -16,13 +16,13 @@ namespace SuperUltra.Container
             switch (_direction)
             {
                 case SlideDirection.Left:
-                    return new Vector2(-Config.ReferenceScreenWidth, 0);
+                    return new Vector2(-Config.REFERENCE_SCREEN_WIDTH, 0);
                 case SlideDirection.Right:
-                    return new Vector2(Config.ReferenceScreenWidth, 0);
+                    return new Vector2(Config.REFERENCE_SCREEN_WIDTH, 0);
                 case SlideDirection.Up:
-                    return new Vector2(0, Config.ReferenceScreenHeight);
+                    return new Vector2(0, Config.REFERENCE_SCREEN_HEIGHT);
                 case SlideDirection.Down:
-                    return new Vector2(0, -Config.ReferenceScreenHeight);
+                    return new Vector2(0, -Config.REFERENCE_SCREEN_HEIGHT);
                 default:
                     return Vector2.zero;
             }

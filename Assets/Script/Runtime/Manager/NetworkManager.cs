@@ -1,19 +1,31 @@
 using System;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 using BestHTTP;
 using SimpleJSON;
 
 namespace SuperUltra.Container
 {
 
+    public class ResponseData
+    {
+        public bool result;
+    }
+
+    public class UpdateScoreResponseData : ResponseData
+    {
+        public LeaderboardUserData[] list;
+        public float reward;
+        public int position;
+        public int score;
+    }
+
     public static class NetworkManager
     {
+
         static bool _isUserDataRequested = false;
         static bool _isAvatarImageRequested = false;
-        static bool _isUserSeasonDataRequested = false;
         static Action _onCompleteLoginRequest;
         static int _requestedLeaderboardCount;
         const float _timeOut = 6f;
@@ -35,6 +47,11 @@ namespace SuperUltra.Container
             if (response == null || response.IsSuccess == false)
             {
                 Debug.Log("respons is fail ");
+                if (response != null)
+                    Debug.Log(response.StatusCode);
+                if (string.IsNullOrEmpty(response.DataAsText))
+                    Debug.Log(response.DataAsText);
+
                 return false;
             }
 
@@ -86,7 +103,7 @@ namespace SuperUltra.Container
             }
         }
 
-        static void GetLeaderboard(int gameId, Action callback)
+        public static void GetLeaderboard(int gameId, int position, Action callback)
         {
             // get all th game list from api from Config.domain
             HTTPRequest request = new HTTPRequest(
@@ -94,18 +111,23 @@ namespace SuperUltra.Container
                 HTTPMethods.Post,
                 (req, res) =>
                 {
-                    Debug.Log("GetLeaderboard response");
                     OnLeaderBoardRequestFinished(req, res, gameId);
                     callback();
                 }
             );
             JSONObject json = new JSONObject();
             json.Add("gameIdentifier", gameId);
+            json.Add("position", position);
             request.AddHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
             request.AddHeader("Content-Type", "application/json");
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.Send();
+        }
+
+        static void GetLeaderboard(int gameId, Action callback)
+        {
+            GetLeaderboard(gameId, 0, callback);
         }
 
         public static void GetUserData(Action callback, Action avatarRequestCallback = null)
@@ -205,17 +227,26 @@ namespace SuperUltra.Container
                 Debug.Log("OnLeaderBoardRequestFinished " + json.ToString());
                 if (json["users"] != null && json["users"].IsArray)
                 {
-                    foreach (JSONNode item in json["users"].AsArray)
+                    // foreach (JSONNode item in json["users"].AsArray)
+                    // {
+                    //     Texture2D avatar = new Texture2D(1, 1);
+                    //     // TODO : reteive in image
+                    //     avatar.LoadImage(item["avatarTexture"].AsByteArray);
+                    //     LeaderboardUserData data = new LeaderboardUserData()
+                    //     {
+                    //         rankPosition = item["position"].AsInt,
+                    //         avatarTexture = avatar,
+                    //         name = item["name"].ToString(),
+                    //         score = item["score"],
+                    //         reward = item["reward"],
+                    //     };
+                    //     gameData.leaderboard.Add(data);
+                    // }
+                    // Debug 
+                    foreach (var item in DebugLeaderboardData())
                     {
-                        LeaderboardUserData data = new LeaderboardUserData()
-                        {
-                            rankPosition = item["position"].AsInt,
-                            avatarUrl = item["avatarUrl"],
-                            name = item["name"].ToString(),
-                            score = item["score"],
-                            reward = item["reward"],
-                        };
-                        gameData.leaderboard.Add(data);
+                        
+                        gameData.leaderboard.Add(item);
                     }
                 }
                 gameData.tournament.prizePool = json["bonus"];
@@ -224,10 +255,9 @@ namespace SuperUltra.Container
 
         static void CompleteRequestList()
         {
-            Debug.Log($"{_isUserDataRequested} {_isAvatarImageRequested} {_isUserSeasonDataRequested} {GameData.gameDataList.Count != 0} {_requestedLeaderboardCount == GameData.gameDataList.Count}");
+            Debug.Log($"{_isUserDataRequested} {_isAvatarImageRequested} {GameData.gameDataList.Count != 0} {_requestedLeaderboardCount == GameData.gameDataList.Count}");
             if (_isUserDataRequested
                 && _isAvatarImageRequested
-                && _isUserSeasonDataRequested
                 && GameData.gameDataList.Count != 0
                 && _requestedLeaderboardCount == GameData.gameDataList.Count
             )
@@ -309,11 +339,11 @@ namespace SuperUltra.Container
                         CompleteRequestList();
                     });
                     // get season pass data
-                    GetSeasonPass(() =>
-                    {
-                        _isUserSeasonDataRequested = true;
-                        CompleteRequestList();
-                    });
+                    // GetSeasonPass(() =>
+                    // {
+                    //     _isUserSeasonDataRequested = true;
+                    //     CompleteRequestList();
+                    // });
                 }
             );
         }
@@ -349,14 +379,15 @@ namespace SuperUltra.Container
             }
         }
 
-        public static void UpdateScore(float score, string playFabId, int gameId, Action callback)
+        public static void UpdateScore(float score, string playFabId, int gameId, Action<UpdateScoreResponseData> callback)
         {
+            Debug.Log("UpdateScore score " + score);
             HTTPRequest request = new HTTPRequest(
-                new Uri(Config.Domain + "users/submitscore"), 
-                HTTPMethods.Post, 
-                (req, res) => {
-                    OnUpdateScoreRequestFinished();
-                    callback?.Invoke();
+                new Uri(Config.Domain + "users/submitscore"),
+                HTTPMethods.Post,
+                (req, res) =>
+                {
+                    OnUpdateScoreRequestFinished(req, res, callback);
                 }
             );
             JSONObject json = new JSONObject();
@@ -370,10 +401,122 @@ namespace SuperUltra.Container
             request.Send();
         }
 
-        static void OnUpdateScoreRequestFinished()
-        { 
-            // TODO
+        static LeaderboardUserData[] DebugLeaderboardData()
+        {
+            return new LeaderboardUserData[]{
+                new LeaderboardUserData(){
+                    rankPosition = 1,
+                    name = "User 1",
+                    avatarTexture = Texture2D.blackTexture,
+                    score = 100,
+                    reward = 1
+                },
+                new LeaderboardUserData(){
+                    rankPosition = 2,
+                    name = "User 2",
+                    avatarTexture = Texture2D.linearGrayTexture,
+                    score = 7,
+                    reward = 0.5f
+                },
+                new LeaderboardUserData(){
+                    rankPosition = 3,
+                    name = "User 4",
+                    avatarTexture = Texture2D.redTexture,
+                    score = 5,
+                    reward = 0.3f
+                },
+                new LeaderboardUserData(){
+                    rankPosition = 4,
+                    name = "User 3",
+                    avatarTexture = Texture2D.blackTexture,
+                    score = 4,
+                    reward = 0.2f
+                },
+                new LeaderboardUserData(){
+                    rankPosition = 5,
+                    name = "User 5",
+                    avatarTexture = Texture2D.linearGrayTexture,
+                    score = 7,
+                    reward = 0.05f
+                },
+                new LeaderboardUserData(){
+                    rankPosition = 6,
+                    name = "User 3",
+                    avatarTexture = Texture2D.blackTexture,
+                    score = 4,
+                    reward = 0.2f
+                },
+                new LeaderboardUserData(){
+                    rankPosition =7,
+                    name = "User 5",
+                    avatarTexture = Texture2D.linearGrayTexture,
+                    score = 7,
+                    reward = 0.05f
+                },
+                new LeaderboardUserData(){
+                    rankPosition = 8,
+                    name = "User 3",
+                    avatarTexture = Texture2D.blackTexture,
+                    score = 4,
+                    reward = 0.2f
+                },
+                new LeaderboardUserData(){
+                    rankPosition = 9,
+                    name = "User 5",
+                    avatarTexture = Texture2D.linearGrayTexture,
+                    score = 7,
+                    reward = 0.05f
+                },
+                new LeaderboardUserData(){
+                    rankPosition = 10,
+                    name = "User 3",
+                    avatarTexture = Texture2D.blackTexture,
+                    score = 4,
+                    reward = 0.2f
+                }
+            };
+        }
+
+        static void OnUpdateScoreRequestFinished(HTTPRequest request, HTTPResponse response, Action<UpdateScoreResponseData> callback)
+        {
+            // TODO : confirm the data design with backend
             Debug.Log("OnUpdateScoreRequestFinished");
+            SessionData.currnetGameScore = -1;
+            int position = 8;
+            float reward = 0.03f;
+            int score = 2;
+            LeaderboardUserData[] list = DebugLeaderboardData();
+            bool result = ValidateResponse(response);
+
+            if (result)
+            {
+                JSONNode json = JSON.Parse(response.DataAsText);
+                Debug.Log("OnUpdateScoreRequestFinished " + json.ToString());
+                position = json["position"];
+                reward = json["reward"];
+                score = json["score"].AsInt;
+                if (json["users"].IsArray)
+                {
+                    JSONArray leaderboardUser = json["users"].AsArray;
+                    list = new LeaderboardUserData[leaderboardUser.Count];
+                    for (int i = 0; i < leaderboardUser.Count; i++)
+                    {
+                        list[i] = new LeaderboardUserData()
+                        {
+                            rankPosition = 1
+                        };
+                    }
+                }
+            }
+
+            callback?.Invoke(new UpdateScoreResponseData()
+            {
+                result = result,
+                list = list,
+                position = position,
+                reward = reward,
+                score = score
+            });
         }
 
         #region Update User
@@ -394,6 +537,15 @@ namespace SuperUltra.Container
             json.Add("username", userName);
             json.Add("platformId", playFabId);
             UpdateUser(json, callback);
+        }
+
+        public static void SignOut(Action callback)
+        {
+            // TODO : May need to call for endpoint to notify the event
+            callback?.Invoke();
+            UserData.ClearData();
+            GameData.ClearData();
+            SessionData.ClearData();
         }
 
         static void UpdateUser(JSONObject json, Action callback = null)

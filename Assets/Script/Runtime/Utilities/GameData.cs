@@ -5,10 +5,6 @@ namespace SuperUltra.Container
 {
     public class GameData
     {
-        /// <summary>
-        /// the game id that player is currently playing. -1 means player is not playing any game
-        /// </summary>
-        public static int currentGameId;
         static Dictionary<int, GameData> _gameDataList;
         /// <summary>
         /// a Dictionary of gameId to GameData map
@@ -58,6 +54,11 @@ namespace SuperUltra.Container
                 return _tournament;
             }
             private set { _tournament = value; }
+        }
+
+        public static void ClearData()
+        {
+            _gameDataList.Clear();
         }
         
         public int id;

@@ -2,12 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SuperUltra.Container;
+using TMPro;
 
 namespace SuperUltra.Demo
 {
 
     public class DemoManager : MonoBehaviour
     {
+        [SerializeField] TMP_Text _scoreText;
+        float _score = -1;
+
+        void Start()
+        {
+            _score = 0;
+            _scoreText.text = _score.ToString();
+        }
 
         void OnUserRewarded()
         {
@@ -54,6 +63,13 @@ namespace SuperUltra.Demo
             {
                 // do stuff
             }
+        }
+
+        public void SubmitScore()
+        {
+            _score++;
+            _scoreText.text = _score.ToString();
+            ContainerInterface.SetScore(_score);
         }
 
     }

@@ -49,7 +49,6 @@ namespace SuperUltra.Container
 
         void Show()
         {
-            Debug.Log("GameOver Show");
             _canvas.gameObject.SetActive(true);
             _popUp.Show();
         }
@@ -60,16 +59,36 @@ namespace SuperUltra.Container
             {
                 LoadingUI.Show();
                 NetworkManager.UpdateScore(
-                    100,
+                    SessionData.currnetGameScore,
                     UserData.playFabId,
-                    GameData.currentGameId,
-                    () =>
-                    {
-                        LoadingUI.Hide();
-                        _completionLeaderboard.Show();
-                        _canvas.gameObject.SetActive(false);
-                    }
+                    SessionData.currentGameId,
+                    OnUpdateScore
                 );
+            });
+        }
+
+        void OnUpdateScore(UpdateScoreResponseData data)
+        {
+            LoadingUI.Hide();
+            _canvas.gameObject.SetActive(false);
+            // TODO
+            // if (!data.result)
+            // {
+            //     MessagePopUpUI.Show(
+            //         "Post Score failed",
+            //         "Confirm",
+            //         SceneLoader.ToMenu
+            //     );
+            //     return;
+            // }
+            _completionLeaderboard.Show();
+            _completionLeaderboard.GenerateRanking(data.list);
+            _completionLeaderboard.SetUserData(new LeaderboardUserData(){
+                rankPosition = data.position,
+                reward = data.reward,
+                name = UserData.userName,
+                avatarTexture = UserData.profilePic,
+                score = data.score
             });
         }
 

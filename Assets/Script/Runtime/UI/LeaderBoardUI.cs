@@ -18,15 +18,15 @@ namespace SuperUltra.Container
         [SerializeField] TMP_Text _gameName;
         [SerializeField] TMP_Text _poolSize;
         [SerializeField] TMP_Text _timeLeft;
+        [SerializeField] ScrollRect _leaderboardScroll;
         int _currentGameId = -1;
-        float _listSpacing = 0;
-        float _itemHeight = 0;
-        Dictionary<int, int> _pageToGameMap = new Dictionary<int, int>();
+        Dictionary<int, int> _pageToGameIdMap = new Dictionary<int, int>();
+        int lazyLoadCount = 10;
+        bool _isRequested = false;
 
         // Start is called before the first frame update
         void Start()
         {
-            CacheSpacingAndheight();
             CreateGameList();
             CreateUserRank();
             SetDefaultLeaderboard();
@@ -40,6 +40,7 @@ namespace SuperUltra.Container
                 enumerator.MoveNext();
                 KeyValuePair<int, GameData> element = enumerator.Current;
                 _currentGameId = element.Value.id;
+                Debug.Log("Set Default");
                 RefreshLeaderboard(_currentGameId);
             }
         }
@@ -47,6 +48,7 @@ namespace SuperUltra.Container
         void Update()
         {
             UpdateTimeLeft(_currentGameId);
+            DetectScrollLazyLoad();
         }
 
         void CreateUserRank()
@@ -57,10 +59,10 @@ namespace SuperUltra.Container
             }
             LeaderboardUserData userRank = new LeaderboardUserData()
             {
-                rankPosition = 45,
-                avatarUrl = "",
-                name = "LiftTastic",
-                score = 608
+                rankPosition = 45, // TODO
+                avatarTexture = UserData.profilePic,
+                name = UserData.userName,
+                score = 608 // TODO 
             };
             _userLeaderboardUI.SetData(userRank);
         }
@@ -71,42 +73,50 @@ namespace SuperUltra.Container
             foreach (var game in GameData.gameDataList)
             {
                 RectTransform gameBanner = Instantiate(_gameBannerPrefab, _gameBannerContainer);
-                gameBanner.GetComponent<Image>().sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f));
-                float value = UnityEngine.Random.Range(0.1f, 0.9f);
-                float value1 = UnityEngine.Random.Range(0.1f, 0.9f);
-                float value2 = UnityEngine.Random.Range(0.1f, 0.9f);
-
-                gameBanner.GetComponent<Image>().color = new Color(value, value1, value2);
-                _pageToGameMap.Add(pageCount, game.Key);
-                CreateRankingList(game.Key);
+                SetBannerImage(gameBanner.GetComponent<Image>(), game.Key);
+                _pageToGameIdMap.Add(pageCount, game.Key);
                 pageCount++;
             }
             _gameBannerStickyScroll.Initialize();
             _gameBannerStickyScroll.OnItemChange.AddListener(OnGameChange);
         }
 
-        void OnGameChange(float page)
+
+        void SetBannerImage(Image image, int gameId)
         {
-            Debug.Log("OnGameChange " + page);
-            if(_pageToGameMap.TryGetValue(Mathf.FloorToInt(page), out int id))
+            GameInfo info = AddressableManager.GetGameInfo(gameId);
+            if (image == null || info == null)
             {
-                _currentGameId = id;
-                RefreshLeaderboard(_currentGameId);
+                if (image != null)
+                {
+                    SetDefaultImage(image);
+                }
+                return;
             }
+            image.sprite = info.bannerImage;
         }
 
-        void CacheSpacingAndheight()
+        void SetDefaultImage(Image image)
         {
-            VerticalLayoutGroup verticalLayoutGroup = _rankingItemContainer.GetComponent<VerticalLayoutGroup>();
-            if (verticalLayoutGroup)
+            if (image == null)
             {
-                _listSpacing = verticalLayoutGroup.spacing;
+                return;
             }
+            image.sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f));
+            float value = UnityEngine.Random.Range(0.1f, 0.9f);
+            float value1 = UnityEngine.Random.Range(0.1f, 0.9f);
+            float value2 = UnityEngine.Random.Range(0.1f, 0.9f);
 
-            RectTransform itemRect = _leaderboardUIPrefab.GetComponent<RectTransform>();
-            if (itemRect)
+            image.color = new Color(value, value1, value2);
+        }
+
+        void OnGameChange(float page)
+        {
+            if (_pageToGameIdMap.TryGetValue(Mathf.FloorToInt(page), out int id))
             {
-                _itemHeight = itemRect.sizeDelta.y;
+                Debug.Log("OnGameChange");
+                _currentGameId = id;
+                RefreshLeaderboard(_currentGameId);
             }
         }
 
@@ -119,29 +129,68 @@ namespace SuperUltra.Container
             _rankingItemContainer.sizeDelta = Vector2.zero;
         }
 
-        void CreateRankingList(int gameID = 0)
+        public void RefreshLeaderboard(int gameID = 0)
         {
-            if (!GameData.gameDataList.TryGetValue(gameID, out GameData gameData))
+            ClearLeaderBoard();
+            LazyLoadLeaderBoard(gameID);
+            UpdateTournamentInfo(gameID);
+        }
+
+        void DetectScrollLazyLoad()
+        {
+            if (!_leaderboardScroll || _isRequested)
             {
                 return;
             }
 
-            foreach (var item in gameData.leaderboard)
+            Debug.Log(_leaderboardScroll.normalizedPosition.y);
+            // scroll to bottom
+            if (_leaderboardScroll.normalizedPosition.y < 0)
             {
-                LeaderboardItemUI rankingItemUI = Instantiate(_leaderboardUIPrefab, _rankingItemContainer);
-                rankingItemUI.SetData(item);
-                _rankingItemContainer.sizeDelta += new Vector2(
-                    0,
-                    _itemHeight + _listSpacing
-                );
+                if (!GameData.gameDataList.TryGetValue(_currentGameId, out GameData gameData))
+                {
+                    return;
+                }
+                if (gameData.leaderboard == null)
+                {
+                    return;
+                }
+                if (gameData.leaderboard.Count < _rankingItemContainer.childCount + lazyLoadCount)
+                {
+                    _isRequested = true;
+                    NetworkManager.GetLeaderboard(_currentGameId, _rankingItemContainer.childCount, () =>
+                    {
+                        LazyLoadLeaderBoard(_currentGameId);
+                        // a hack to prevent _rankingItemContainer.childCount is 0 after LazyLoadLeaderBoard 
+                        _leaderboardScroll.normalizedPosition = new Vector2(0, (1f / (float)_rankingItemContainer.childCount));
+                        _isRequested = false;
+                    });
+                    return;
+                }
+                Debug.Log("DetectScrollLazyLoad");
+                LazyLoadLeaderBoard(_currentGameId);
             }
         }
 
-        public void RefreshLeaderboard(int gameID = 0)
+        void LazyLoadLeaderBoard(int gameID)
         {
-            ClearLeaderBoard();
-            CreateRankingList(gameID);
-            UpdateTournamentInfo(gameID);
+            Debug.Log("LazyLoadLeaderBoard");
+            if (!GameData.gameDataList.TryGetValue(gameID, out GameData gameData))
+            {
+                return;
+            }
+            if (gameData.leaderboard.Count < _rankingItemContainer.childCount + lazyLoadCount)
+            {
+                return;
+            }
+
+            int index = Mathf.Max(0, _rankingItemContainer.childCount - 1);
+            List<LeaderboardUserData> list = gameData.leaderboard.GetRange(index, lazyLoadCount);
+            foreach (var data in list)
+            {
+                LeaderboardItemUI item = Instantiate(_leaderboardUIPrefab, _rankingItemContainer);
+                item.SetData(data);
+            }
         }
 
         void UpdateTimeLeft(int gameId)

@@ -20,6 +20,7 @@ namespace SuperUltra.Container
         [SerializeField] Canvas _avatarSelectPage;
         [SerializeField] Canvas _navigationPage;
         [SerializeField] MessagePopUpUI _messagePopUpUI;
+        [SerializeField] GameListUI _gameListUI;
         RectTransform _prevUI;
         int _prevPagenumber;
         Dictionary<Canvas, int> _pageToCanvas = new Dictionary<Canvas, int>();

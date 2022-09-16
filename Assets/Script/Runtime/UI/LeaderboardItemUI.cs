@@ -14,38 +14,29 @@ namespace SuperUltra.Container
         public TMP_Text userName;
         public TMP_Text score;
         public TMP_Text reward;
-        Vector2 _avatarResulotion = new Vector2(512f, 512f);
+        readonly Vector2 _avatarResulotion = new Vector2(512f, 512f);
 
         public void SetData(LeaderboardUserData data)
         {
             rank.text = data.rankPosition.ToString();
             userName.text = data.name;
             score.text = data.score.ToString();
-            GetImage(data.avatarUrl);
+            GetImage(data.avatarTexture);
         }
 
-        void GetImage(string url)
+        void GetImage(Texture2D texture)
         {
-            if (string.IsNullOrEmpty(url))
+            if (texture == null)
             {
                 GetDefaultAvatar();
                 return;
             }
 
-            HTTPRequest request = new HTTPRequest(new Uri(url), (req, resp) =>
-            {
-                if (resp.IsSuccess)
-                {
-                    Texture2D texture = new Texture2D(1, 1);
-                    image.sprite = Sprite.Create(texture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f));
-                }
-                else
-                {
-                    GetDefaultAvatar();
-                }
-
-            });
-            request.Send();
+            image.sprite = Sprite.Create(
+                texture, 
+                new Rect(0, 0, texture.width, texture.height), 
+                new Vector2(0.5f, 0.5f)
+            );
         }
 
         void GetDefaultAvatar()

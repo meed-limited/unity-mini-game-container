@@ -25,6 +25,7 @@ namespace SuperUltra.Container
             DontDestroyOnLoad(this.gameObject);
             ContainerInterface.OnPauseMenuShow += Show;
             ContainerInterface.OnPauseMenuHide += Hide;
+            ContainerInterface.OnReturnMenu += Hide;
             Hide();
         }
 
@@ -32,12 +33,23 @@ namespace SuperUltra.Container
         {
             ContainerInterface.OnPauseMenuShow -= Show;
             ContainerInterface.OnPauseMenuHide -= Hide;
+            ContainerInterface.OnReturnMenu -= Hide;
         }
 
         void Start()
         {
-            _musicToggle.isOn = Setting.IsMusicOn;
-            _soundToggle.isOn = Setting.IsEffectSoundOn;
+            if (PlayerPrefs.HasKey(Config.KEY_MUSIC))
+            {
+                int value = PlayerPrefs.GetInt(Config.KEY_MUSIC);
+                SessionData.IsMusicOn = value == 1;
+            }
+            if (PlayerPrefs.HasKey(Config.KEY_SOUND))
+            {
+                int value = PlayerPrefs.GetInt(Config.KEY_SOUND);
+                SessionData.IsEffectSoundOn = value == 1;
+            }
+            _musicToggle.isOn = SessionData.IsMusicOn;
+            _soundToggle.isOn = SessionData.IsEffectSoundOn;
         }
 
         public void OnResume()
@@ -65,15 +77,17 @@ namespace SuperUltra.Container
         {
             LoadingUI.Show();
             NetworkManager.UpdateScore(
-                100, //TODO
+                SessionData.currnetGameScore,
                 UserData.playFabId,
-                GameData.currentGameId,
-                () =>
-                {
-                    LoadingUI.Hide();
-                    ContainerInterface.ReturnToMenu();
-                }
+                SessionData.currentGameId,
+                OnUpdateScore
             );
+        }
+
+        void OnUpdateScore(UpdateScoreResponseData data)
+        {
+            LoadingUI.Hide();
+            ContainerInterface.ReturnToMenu();
         }
 
         public void HowToPlay()
@@ -88,14 +102,16 @@ namespace SuperUltra.Container
 
         public void ToggleMusic(bool isOn)
         {
-            Setting.IsMusicOn = isOn;
+            SessionData.IsMusicOn = isOn;
             ContainerInterface.MusicVolumeChange(isOn);
+            PlayerPrefs.SetInt(Config.KEY_MUSIC, isOn ? 1 : 0);
         }
 
         public void ToggleSoundEffect(bool isOn)
         {
-            Setting.IsEffectSoundOn = isOn;
+            SessionData.IsEffectSoundOn = isOn;
             ContainerInterface.EffectVolumeChange(isOn);
+            PlayerPrefs.SetInt(Config.KEY_SOUND, isOn ? 1 : 0);
         }
 
     }

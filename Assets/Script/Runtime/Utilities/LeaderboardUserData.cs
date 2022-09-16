@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace SuperUltra.Container
 {
@@ -8,9 +9,9 @@ namespace SuperUltra.Container
     {
         public int rankPosition;
         public string name;
-        public string avatarUrl;
+        public Texture2D avatarTexture;
         public int score;
-        public int reward;
+        public float reward;
     }
 
 }

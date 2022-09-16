@@ -12,7 +12,7 @@ namespace SuperUltra.Container
     {
         enum State
         {
-            Enabled, Disable
+            Active, Deactive
         }
 
         [SerializeField] Button _button;
@@ -22,19 +22,32 @@ namespace SuperUltra.Container
         [SerializeField] bool _isActiveOnStart = false;
         [SerializeField] NavigationGroupUI _navigationGroupUI;
         float _animationTime = 0.3f;
-        State _state = State.Disable;
+        Vector2 _deactivePosition;
+        Vector2 _activePosition;
+        Vector2 _deactiveTextPosition;
+        Vector2 _activeTextPosition;
+        State _state = State.Deactive;
 
         void Start()
         {
+            CachePostiion();
             if (_isActiveOnStart)
             {
-                MoveAndResizeIcon(new Vector2(0, 15f), Vector3.one * 1.5f);
-                _state = State.Enabled;
+                MoveAndResizeIcon(_activePosition, Vector3.one * 1.5f);
+                _state = State.Active;
                 _navigationGroupUI.Enable(this);
             }else
             {
                 MoveText(new Vector2(0, -75f));
             }
+        }
+
+        void CachePostiion()
+        {
+            _deactivePosition = _icon.GetComponent<RectTransform>().anchoredPosition;
+            _activePosition = _deactivePosition + new Vector2(0, 15f);
+            _activeTextPosition = _text.GetComponent<RectTransform>().anchoredPosition;
+            _deactiveTextPosition = _activeTextPosition + new Vector2(0, -75f);
         }
 
         void Reset()
@@ -48,21 +61,21 @@ namespace SuperUltra.Container
             _text = GetComponentInChildren<TMP_Text>();
         }
 
-        void MoveAndResizeIcon(Vector2 offset, Vector3 scaleSize)
+        void MoveAndResizeIcon(Vector2 position, Vector3 scaleSize)
         {
             RectTransform rect = _icon.GetComponent<RectTransform>();
             rect.DOAnchorPos(
-                rect.anchoredPosition + offset,
+                position,
                 _animationTime
             );
             rect.DOScale(scaleSize, _animationTime);
         }
 
-        void MoveText(Vector2 offset)
+        void MoveText(Vector2 position)
         {
             RectTransform rect = _text.GetComponent<RectTransform>();
             rect.DOAnchorPos(
-                rect.anchoredPosition + offset,
+                position,
                 _animationTime
             );
         }
@@ -71,7 +84,6 @@ namespace SuperUltra.Container
         {
             RectTransform markerRect = _activeMarker.GetComponent<RectTransform>();
             RectTransform rect = GetComponent<RectTransform>();
-            Debug.Log(rect.anchoredPosition);
             markerRect.DOAnchorPos(
                 rect.anchoredPosition,
                 _animationTime
@@ -80,20 +92,20 @@ namespace SuperUltra.Container
 
         public void Enable()
         {
-            if(_state == State.Enabled) return;
+            if(_state == State.Active) return;
             MoveActiveMarker();
-            MoveAndResizeIcon(new Vector2(0, 15f), Vector3.one * 1.5f);
-            MoveText(new Vector2(0, 75f));
+            MoveAndResizeIcon(_activePosition, Vector3.one * 1.5f);
+            MoveText(_activeTextPosition);
             _navigationGroupUI.Enable(this);
-            _state = State.Enabled;
+            _state = State.Active;
         }
 
         public void Disable()
         {
-            if (_state == State.Disable) return;
-            MoveAndResizeIcon(new Vector2(0, -15f), Vector3.one);
-            MoveText(new Vector2(0, -75f));
-            _state = State.Disable;
+            if (_state == State.Deactive) return;
+            MoveAndResizeIcon(_deactivePosition, Vector3.one);
+            MoveText(_deactiveTextPosition);
+            _state = State.Deactive;
         }
 
     }

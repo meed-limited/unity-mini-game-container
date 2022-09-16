@@ -102,11 +102,11 @@ namespace SuperUltra.Container
 
         public void ChangeSlideDirection(SlideDirection direction) {}
 
-        // TODO
-        public void ToTermsAndCondition() => Application.OpenURL("https://www.youtube.com/channel/UC-lHJZR3Gqxm24_Vd_AJ5Yw");
+        public void ToFAQ() => Application.OpenURL(Config.FAQUrl);
 
-        // TODO
-        public void ToPrivacy() => Application.OpenURL("https://www.facebook.com/PlayFab-Games-116495690789896/");
+        public void ToTermsAndCondition() => Application.OpenURL(Config.TermsUrl);
+
+        public void ToPrivacy() => Application.OpenURL(Config.PrivacyUrl);
 
         public void OnClickRegister()
         {

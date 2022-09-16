@@ -18,7 +18,8 @@ namespace SuperUltra.Container
         [SerializeField] TMP_Text _pointsToNextRank;
         [SerializeField] TMP_Text _totalTokenNumber;
         [SerializeField] Image _profilePic;
-        [SerializeField] int _score;
+        [SerializeField] Image _rankLevelLevelBar;
+        int _score;
 
         public void Start()
         {
@@ -46,6 +47,7 @@ namespace SuperUltra.Container
             _rankLevel.text = level.ToString();
             _rankName.text = name;
             _pointsToNextRank.text = $"{pointsInCurrentRank.ToString()}/{pointsToNextRank.ToString()}";
+            _rankLevelLevelBar.fillAmount = ((float)pointsInCurrentRank / (float)pointsToNextRank);
         }
 
         void SetNumberOfToken(int number)
@@ -61,6 +63,13 @@ namespace SuperUltra.Container
             }
         }
 
+        public void ToYoutube() => Application.OpenURL(Config.YotubeUrl);
+        public void ToTwitter() => Application.OpenURL(Config.TwitterUrl);
+        public void ToDiscord() => Application.OpenURL(Config.DiscordUrl);
+
+        /// <summary>
+        ///     to update Playfab Statistic directly. Testing purpose only
+        /// </summary>
         public void PostScore()
         {
             PlayFabClientAPI.UpdatePlayerStatistics(

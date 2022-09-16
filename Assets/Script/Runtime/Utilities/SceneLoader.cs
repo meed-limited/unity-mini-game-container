@@ -17,12 +17,6 @@ namespace SuperUltra.Container
             SceneManager.LoadScene(SceneConst.LoginSceneIndex);
         }
 
-        public static void ToProfile()
-        {
-            SceneManager.LoadScene(SceneConst.ProfileSceneIndex);
-        }
-        
-
     }
 
 }

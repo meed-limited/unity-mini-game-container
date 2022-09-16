@@ -19,6 +19,27 @@ namespace SuperUltra.Container
         [SerializeField] AvatarSelectionUI _avatarSelectionUI;
         RectTransform _currentUI;
 
+        void Start()
+        {
+            FacebookAuthen.Initialize();
+            Application.targetFrameRate = 60;
+            // HidePanel(_loginUI.transform);
+            HidePanel(_registerUI.transform);
+            HidePanel(_enterNameUI.transform);
+            HidePanel(_forgotPasswordUI.transform);
+            HidePanel(_messagePopUpUI.transform);
+            HidePanel(_resetPasswordUI.transform);
+            HidePanel(_verifyUI.transform);
+            HidePanel(_avatarSelectionUI.transform);
+            if (!CheckInternetConnection())
+            {
+                return;
+            }
+            ToLoginSelection();
+            AutoLoginWithToken();
+        }
+
+
         void SwitchRayCastOnOff(Transform transform, bool isOn = true)
         {
             GraphicRaycaster graphicRaycaster = transform.GetComponent<GraphicRaycaster>();
@@ -62,27 +83,6 @@ namespace SuperUltra.Container
             return true;
         }
 
-        void Start()
-        {
-            FacebookAuthen.Initialize();
-            Application.targetFrameRate = 60;
-            // HidePanel(_loginUI.transform);
-            HidePanel(_registerUI.transform);
-            HidePanel(_enterNameUI.transform);
-            HidePanel(_forgotPasswordUI.transform);
-            HidePanel(_messagePopUpUI.transform);
-            HidePanel(_resetPasswordUI.transform);
-            HidePanel(_verifyUI.transform);
-            HidePanel(_avatarSelectionUI.transform);
-            if (!CheckInternetConnection())
-            {
-                return;
-            }
-            ToLoginSelection();
-            AutoLoginWithToken();
-        }
-
-
         void HidePanel(Transform transform)
         {
             ISlidable slidable = transform.GetComponent<ISlidable>();
@@ -96,11 +96,6 @@ namespace SuperUltra.Container
             {
                 transform.gameObject.SetActive(false);
             }
-        }
-
-        public void ReTryConnection()
-        {
-            Start();
         }
 
         public void AutoLoginWithToken()
@@ -119,7 +114,7 @@ namespace SuperUltra.Container
                 (string errorMessage) =>
                 {
                     LoadingUI.Hide();
-                    _messagePopUpUI.Show(errorMessage, "", null, true);
+                    _messagePopUpUI.Show(errorMessage);
                 },
                 false
             );
@@ -136,7 +131,7 @@ namespace SuperUltra.Container
                 (string errorMessage) =>
                 {
                     LoadingUI.Hide();
-                    _messagePopUpUI.Show(errorMessage, "", null, true);
+                    _messagePopUpUI.Show(errorMessage);
                 },
                 true
             );
@@ -150,12 +145,13 @@ namespace SuperUltra.Container
                 password,
                 (result) =>
                 {
+                    SaveLoginCrdiential(email, password);
                     ToMenu();
                 },
                 (string errorMessage) =>
                 {
                     LoadingUI.Hide();
-                    _messagePopUpUI.Show(errorMessage, "", null, true);
+                    _messagePopUpUI.Show(errorMessage);
                 }
             );
         }
@@ -170,7 +166,7 @@ namespace SuperUltra.Container
                 (string errorMessage) =>
                 {
                     LoadingUI.Hide();
-                    _messagePopUpUI.Show(errorMessage, "", null, true);
+                    _messagePopUpUI.Show(errorMessage);
                 }
             );
         }
@@ -186,11 +182,18 @@ namespace SuperUltra.Container
                 () =>
                 {
                     LoadingUI.Hide();
-                    _messagePopUpUI.Show("Register fail", "", null, true);
+                    _messagePopUpUI.Show("Register fail");
                 }
             );
         }
 
+        void SaveLoginCrdiential(string email, string password)
+        {
+            // TODO : save playfab token
+            PlayerPrefs.SetString(Config.CREDENTIAL_KEY_EMAIL, email);
+            PlayerPrefs.SetString(Config.CREDENTIAL_KEY_PASSWORD, password);
+        }
+ 
         public void OnClickForgotPassword(string email)
         {
             EmailAuthen.ForgotPassword(
@@ -198,7 +201,7 @@ namespace SuperUltra.Container
                 () => ToPage(_verifyUI),
                 (string errorMessage) =>
                 {
-                    _messagePopUpUI.Show(errorMessage, "", null, true);
+                    _messagePopUpUI.Show(errorMessage);
                 }
             );
         }
@@ -210,7 +213,7 @@ namespace SuperUltra.Container
                 () => ToPage(_resetPasswordUI),
                 (string errorMessage) =>
                 {
-                    _messagePopUpUI.Show(errorMessage, "", null, true);
+                    _messagePopUpUI.Show(errorMessage);
                 }
             );
         }
@@ -233,7 +236,7 @@ namespace SuperUltra.Container
                 },
                 (string errorMessage) =>
                 {
-                    _messagePopUpUI.Show(errorMessage, "", null, true);
+                    _messagePopUpUI.Show(errorMessage);
                 }
             );
         }
