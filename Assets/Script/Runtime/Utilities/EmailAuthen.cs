@@ -42,9 +42,10 @@ namespace SuperUltra.Container
                     OnRegisterSuccess(result);
                     successCallback(result.PlayFabId);
                 },
-                (result) => { 
-                    OnRegisterFailure(result); 
-                    errorCallback(result.ErrorMessage); 
+                (result) =>
+                {
+                    OnRegisterFailure(result);
+                    errorCallback(result.ErrorMessage);
                 }
             );
         }
@@ -52,19 +53,61 @@ namespace SuperUltra.Container
         public static void ForgotPassword(string email, Action successCallback = null, Action<string> errorCallback = null)
         {
             // TODO
-            successCallback();
+            NetworkManager.ForgetPasswordRequest(
+                UserData.playFabId,
+                (response) =>
+                {
+                    // if(response.result)
+                    if (true)
+                    {
+                        successCallback?.Invoke();
+                    }
+                    else
+                    {
+                        errorCallback?.Invoke(response.message);
+                    }
+                }
+            );
         }
 
         public static void Verify(string code, Action successCallback = null, Action<string> errorCallback = null)
         {
             // TODO
-            successCallback();
+            NetworkManager.VerifyResetCode(
+                UserData.playFabId,
+                (response) =>
+                {
+                    // if(response.result)
+                    if (true)
+                    {
+                        successCallback?.Invoke();
+                    }
+                    else
+                    {
+                        errorCallback?.Invoke(response.message);
+                    }
+                }
+            );
         }
-        
+
         public static void ResetPassword(string password, Action successCallback = null, Action<string> errorCallback = null)
         {
             // TODO
-            successCallback();
+            NetworkManager.ResetPassword(
+                UserData.playFabId,
+                (response) =>
+                {
+                    // if(response.result)
+                    if (true)
+                    {
+                        successCallback?.Invoke();
+                    }
+                    else
+                    {
+                        errorCallback?.Invoke(response.message);
+                    }
+                }
+            );
         }
 
         static void OnRegisterSuccess(RegisterPlayFabUserResult result)
@@ -76,7 +119,7 @@ namespace SuperUltra.Container
 
         private static void OnRegisterFailure(PlayFabError error)
         {
-            Debug.LogWarning("Something went wrong with your first API call.  :(");
+            Debug.LogWarning("Something went wrong with your first API call");
             Debug.LogError("Here's some debug information:");
             Debug.LogError(error.GenerateErrorReport());
         }

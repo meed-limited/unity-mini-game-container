@@ -13,6 +13,7 @@ namespace SuperUltra.Container
 
     public class NFTItemUI : MonoBehaviour
     {
+        // TODO : item structure
         [SerializeField] TMP_Text _itemName;
 
         public void Initialize(NFTItem item)

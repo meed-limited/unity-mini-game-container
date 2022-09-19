@@ -11,6 +11,7 @@ namespace SuperUltra.Container
     public class ResponseData
     {
         public bool result;
+        public string message;
     }
 
     public class UpdateScoreResponseData : ResponseData
@@ -19,6 +20,11 @@ namespace SuperUltra.Container
         public float reward;
         public int position;
         public int score;
+    }
+
+    public class GetUserNFTResponseData : ResponseData
+    {
+        public NFTItem[] list;
     }
 
     public static class NetworkManager
@@ -209,11 +215,6 @@ namespace SuperUltra.Container
             request.Send();
         }
 
-        static void GetSeasonPass(Action callback)
-        {
-            callback();
-        }
-
         static void OnLeaderBoardRequestFinished(HTTPRequest req, HTTPResponse response, int gameID)
         {
             if (!GameData.gameDataList.TryGetValue(gameID, out GameData gameData))
@@ -245,11 +246,15 @@ namespace SuperUltra.Container
                     // Debug 
                     foreach (var item in DebugLeaderboardData())
                     {
-                        
+
                         gameData.leaderboard.Add(item);
                     }
                 }
                 gameData.tournament.prizePool = json["bonus"];
+                // TODO : confirm the structure
+                gameData.currentUserPosition = json["currentUserPosition"];
+                gameData.currentUserReward = json["currentUserReward"];
+                gameData.currentUserScore = json["currentUserScore"];
             }
         }
 
@@ -338,14 +343,95 @@ namespace SuperUltra.Container
                         _isAvatarImageRequested = true;
                         CompleteRequestList();
                     });
-                    // get season pass data
-                    // GetSeasonPass(() =>
-                    // {
-                    //     _isUserSeasonDataRequested = true;
-                    //     CompleteRequestList();
-                    // });
                 }
             );
+        }
+
+        public static void ForgetPasswordRequest(string playFabId, Action<ResponseData> callback)
+        {
+            // TODO
+            HTTPRequest request = new HTTPRequest(
+                new Uri(Config.Domain + "users"),
+                HTTPMethods.Post,
+                (req, res) => OnForgetPasswordRequestFinished(req, res, callback)
+            );
+            JSONObject json = new JSONObject();
+            json.Add("platformId", playFabId);
+            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.AddHeader("Content-Type", "application/json");
+            request.Timeout = TimeSpan.FromSeconds(_timeOut);
+            request.RawData = Encoding.ASCII.GetBytes(json.ToString());
+            request.Send();
+        }
+
+        static void OnForgetPasswordRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback)
+        {
+            bool result = ValidateResponse(response);
+            string message = "";
+            if(result)
+            {
+                JSONNode json = JSON.Parse(response.DataAsText);
+            }
+            callback?.Invoke(new ResponseData() { result = result, message = message });
+        }
+
+        public static void ResetPassword(string playFabId, Action<ResponseData> callback)
+        { 
+            // TODO
+            HTTPRequest request = new HTTPRequest(
+                new Uri(Config.Domain + "users"),
+                HTTPMethods.Post,
+                (req, res) => OnResetPasswordRequestFinished(req, res, callback)
+            );
+            JSONObject json = new JSONObject();
+            json.Add("platformId", playFabId);
+            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.AddHeader("Content-Type", "application/json");
+            request.Timeout = TimeSpan.FromSeconds(_timeOut);
+            request.RawData = Encoding.ASCII.GetBytes(json.ToString());
+            request.Send();
+        }
+
+        static void OnResetPasswordRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback)
+        {
+            bool result = ValidateResponse(response);
+            string message = "";
+            if (result)
+            {
+                JSONNode json = JSON.Parse(response.DataAsText);
+            }
+
+            callback?.Invoke(new ResponseData(){ result = result, message = message });
+        }
+        
+
+        public static void VerifyResetCode(string playFabId, Action<ResponseData> callback)
+        { 
+            // TODO
+            HTTPRequest request = new HTTPRequest(
+                new Uri(Config.Domain + "users"),
+                HTTPMethods.Post,
+                (req, res) => OnVerifyResetCodeRequestFinished(req, res, callback)
+            );
+            JSONObject json = new JSONObject();
+            json.Add("platformId", playFabId);
+            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.AddHeader("Content-Type", "application/json");
+            request.Timeout = TimeSpan.FromSeconds(_timeOut);
+            request.RawData = Encoding.ASCII.GetBytes(json.ToString());
+            request.Send();
+        }
+
+        static void OnVerifyResetCodeRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback)
+        {
+            bool result = ValidateResponse(response);
+            string message = "";
+            if (result)
+            {
+                JSONNode json = JSON.Parse(response.DataAsText);
+            }
+
+            callback?.Invoke(new ResponseData(){ result = result, message = message });
         }
 
 
@@ -356,7 +442,6 @@ namespace SuperUltra.Container
                 HTTPMethods.Post,
                 (req, res) => { OnCreateUserRequestFinished(req, res, success, failure); }
             );
-            Debug.Log("CreateUser url " + request.Uri.ToString());
             JSONObject json = new JSONObject();
             json.Add("platformId", playFabId);
             request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
@@ -381,7 +466,6 @@ namespace SuperUltra.Container
 
         public static void UpdateScore(float score, string playFabId, int gameId, Action<UpdateScoreResponseData> callback)
         {
-            Debug.Log("UpdateScore score " + score);
             HTTPRequest request = new HTTPRequest(
                 new Uri(Config.Domain + "users/submitscore"),
                 HTTPMethods.Post,
@@ -480,7 +564,6 @@ namespace SuperUltra.Container
         static void OnUpdateScoreRequestFinished(HTTPRequest request, HTTPResponse response, Action<UpdateScoreResponseData> callback)
         {
             // TODO : confirm the data design with backend
-            Debug.Log("OnUpdateScoreRequestFinished");
             SessionData.currnetGameScore = -1;
             int position = 8;
             float reward = 0.03f;
@@ -516,6 +599,59 @@ namespace SuperUltra.Container
                 position = position,
                 reward = reward,
                 score = score
+            });
+        }
+
+        public static void GetUserNFT(string playFabId, Action<GetUserNFTResponseData> callback)
+        {
+            // TODO confirm structure
+            HTTPRequest request = new HTTPRequest(
+                new Uri(Config.Domain + "users/submitscore"),
+                HTTPMethods.Get,
+                (req, res) =>
+                {
+                    OnGetUserNFTRequestFinished(req, res, callback);
+                }
+            );
+            JSONObject json = new JSONObject();
+            json.Add("fabId", playFabId);
+            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.AddHeader("Content-Type", "application/json");
+            request.RawData = Encoding.ASCII.GetBytes(json.ToString());
+            request.Timeout = TimeSpan.FromSeconds(_timeOut);
+            request.Send();
+        }
+
+        static void OnGetUserNFTRequestFinished(HTTPRequest req, HTTPResponse response, Action<GetUserNFTResponseData> callback)
+        {
+            // TODO confirm structure
+            bool result = ValidateResponse(response);
+            NFTItem[] list = new NFTItem[] { };
+
+            if (result)
+            {
+                JSONNode json = JSON.Parse(response.DataAsText);
+                if (json["nftList"].IsArray)
+                {
+                    JSONArray nftList = json["nftList"].AsArray;
+                    list = new NFTItem[nftList.Count];
+                    for (int i = 0; i < nftList.Count; i++)
+                    {
+                        Texture2D texture = new Texture2D(1, 1);
+                        texture.LoadImage(nftList[i]["avatarTexture"].AsByteArray);
+                        list[i] = new NFTItem()
+                        {
+                            name = nftList[i]["name"].ToString(),
+                            texture2D = texture
+                        };
+                    }
+                }
+            }
+
+            callback?.Invoke(new GetUserNFTResponseData()
+            {
+                result = result,
+                list = list
             });
         }
 
@@ -559,7 +695,6 @@ namespace SuperUltra.Container
                     callback?.Invoke();
                 }
             );
-            Debug.Log("json " + json.ToString());
             request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
             request.AddHeader("Content-Type", "application/json");
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());

@@ -64,6 +64,9 @@ namespace SuperUltra.Container
         public int id;
         public string name;
         public string description;
+        public int currentUserPosition = -1;
+        public int currentUserScore = -1;
+        public float currentUserReward = -1f;
 
     }
 }

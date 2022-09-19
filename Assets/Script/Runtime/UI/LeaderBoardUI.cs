@@ -28,7 +28,6 @@ namespace SuperUltra.Container
         void Start()
         {
             CreateGameList();
-            CreateUserRank();
             SetDefaultLeaderboard();
         }
 
@@ -51,18 +50,24 @@ namespace SuperUltra.Container
             DetectScrollLazyLoad();
         }
 
-        void CreateUserRank()
+        void CreateUserTournamentData(int gameId)
         {
             if (_userLeaderboardUI == null)
             {
                 return;
             }
+            if (!GameData.gameDataList.TryGetValue(gameId, out GameData gameData))
+            {
+                return;
+            }
+
+
             LeaderboardUserData userRank = new LeaderboardUserData()
             {
-                rankPosition = 45, // TODO
+                rankPosition = gameData.currentUserPosition,
                 avatarTexture = UserData.profilePic,
                 name = UserData.userName,
-                score = 608 // TODO 
+                score = gameData.currentUserScore
             };
             _userLeaderboardUI.SetData(userRank);
         }
@@ -117,6 +122,7 @@ namespace SuperUltra.Container
                 Debug.Log("OnGameChange");
                 _currentGameId = id;
                 RefreshLeaderboard(_currentGameId);
+                CreateUserTournamentData(id);
             }
         }
 
@@ -143,7 +149,6 @@ namespace SuperUltra.Container
                 return;
             }
 
-            Debug.Log(_leaderboardScroll.normalizedPosition.y);
             // scroll to bottom
             if (_leaderboardScroll.normalizedPosition.y < 0)
             {
@@ -167,14 +172,12 @@ namespace SuperUltra.Container
                     });
                     return;
                 }
-                Debug.Log("DetectScrollLazyLoad");
                 LazyLoadLeaderBoard(_currentGameId);
             }
         }
 
         void LazyLoadLeaderBoard(int gameID)
         {
-            Debug.Log("LazyLoadLeaderBoard");
             if (!GameData.gameDataList.TryGetValue(gameID, out GameData gameData))
             {
                 return;

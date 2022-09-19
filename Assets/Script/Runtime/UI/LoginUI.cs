@@ -97,7 +97,6 @@ namespace SuperUltra.Container
 
         public Tween SlideOut(float duration = 0.5f)
         {
-            Debug.Log(GetComponent<RectTransform>().anchoredPosition);
             if (_panel == null) return null;
             return _panel.DOAnchorPos(new Vector2(0, -1920f), duration);
         }

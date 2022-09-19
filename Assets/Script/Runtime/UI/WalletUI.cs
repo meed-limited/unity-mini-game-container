@@ -41,7 +41,7 @@ namespace SuperUltra.Container
             SetLevelBar(UserData.pointsInCurrentRank, UserData.pointsToNextRank);
             SetRankTitle(UserData.rankTitle);
             SetAvatar(UserData.profilePic);
-            SetNFTItem(new NFTItem[] { });
+            RequestNFTItem();
             if (_startUpTab)
             {
                 _previousTab = _startUpTab;
@@ -58,6 +58,22 @@ namespace SuperUltra.Container
                     new Vector2(0.5f, 0.5f)
                 );
             }
+        }
+
+        void RequestNFTItem()
+        {
+            LoadingUI.Show();
+            NetworkManager.GetUserNFT(
+                UserData.playFabId,
+                OnUserNFTDataResponse
+            );
+        }
+
+        void OnUserNFTDataResponse(GetUserNFTResponseData data)
+        {
+            LoadingUI.Hide();
+            if(data.result == false) return;
+            SetNFTItem(data.list);
         }
 
         void SetNFTItem(NFTItem[] itemList)
