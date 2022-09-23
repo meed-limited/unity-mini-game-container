@@ -57,7 +57,7 @@ namespace SuperUltra.Container
         {
             Hide(() =>
             {
-                LoadingUI.Show();
+                LoadingUI.ShowInstance();
                 NetworkManager.UpdateScore(
                     SessionData.currnetGameScore,
                     UserData.playFabId,
@@ -69,7 +69,7 @@ namespace SuperUltra.Container
 
         void OnUpdateScore(UpdateScoreResponseData data)
         {
-            LoadingUI.Hide();
+            LoadingUI.HideInstance();
             _canvas.gameObject.SetActive(false);
             // TODO
             // if (!data.result)

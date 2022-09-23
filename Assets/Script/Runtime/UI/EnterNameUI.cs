@@ -58,7 +58,7 @@ namespace SuperUltra.Container
             _statusText.color = _normalColor;
             _nameInput.targetGraphic.color = _normalColor;
             
-            LoadingUI.Show();
+            LoadingUI.ShowInstance();
             PlayFabClientAPI.UpdateUserTitleDisplayName(
                 new UpdateUserTitleDisplayNameRequest()
                 {
@@ -73,7 +73,7 @@ namespace SuperUltra.Container
                 },
                 (error) =>
                 {
-                    LoadingUI.Hide();
+                    LoadingUI.HideInstance();
                     _statusText.text = error.ErrorMessage;
                     _statusText.color = _errorColor;
                     _nameInput.targetGraphic.color = _errorColor;

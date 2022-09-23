@@ -27,16 +27,20 @@ namespace SuperUltra.Container
         public NFTItem[] list;
     }
 
+    public class GetLeaderboardResponseData : ResponseData
+    {
+        public LeaderboardUserData[] list;
+    }
+
     public static class NetworkManager
     {
 
         static bool _isUserDataRequested = false;
         static bool _isAvatarImageRequested = false;
         static Action _onCompleteLoginRequest;
-        static int _requestedLeaderboardCount;
         const float _timeOut = 6f;
 
-        static bool CheckConnection()
+        public static bool CheckConnection()
         {
             if (
                 !Application.internetReachability.Equals(NetworkReachability.ReachableViaLocalAreaNetwork)
@@ -55,7 +59,7 @@ namespace SuperUltra.Container
                 Debug.Log("respons is fail ");
                 if (response != null)
                     Debug.Log(response.StatusCode);
-                if (string.IsNullOrEmpty(response.DataAsText))
+                if (response != null && string.IsNullOrEmpty(response.DataAsText))
                     Debug.Log(response.DataAsText);
 
                 return false;
@@ -77,7 +81,7 @@ namespace SuperUltra.Container
             callback();
         }
 
-        static void GetGameList(Action callback)
+        static void GetGameList(Action callback = null)
         {
             // get all th game list from api from Config.domain
             HTTPRequest request = new HTTPRequest(
@@ -87,7 +91,7 @@ namespace SuperUltra.Container
                 {
                     Debug.Log("GetGameList response");
                     OnGameListRequestFinished(req, res);
-                    callback();
+                    callback?.Invoke();
                 }
             );
             request.AddHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
@@ -95,21 +99,7 @@ namespace SuperUltra.Container
             request.Send();
         }
 
-        static void GetLeaderboardList(Action callback)
-        {
-            if (GameData.gameDataList.Count <= 0)
-            {
-                callback?.Invoke();
-            }
-
-            foreach (var item in GameData.gameDataList)
-            {
-                int id = item.Value.id;
-                GetLeaderboard(id, callback);
-            }
-        }
-
-        public static void GetLeaderboard(int gameId, int position, Action callback)
+        public static void GetLeaderboard(int gameId, int position, Action<GetLeaderboardResponseData> callback)
         {
             // get all th game list from api from Config.domain
             HTTPRequest request = new HTTPRequest(
@@ -117,8 +107,7 @@ namespace SuperUltra.Container
                 HTTPMethods.Post,
                 (req, res) =>
                 {
-                    OnLeaderBoardRequestFinished(req, res, gameId);
-                    callback();
+                    OnLeaderboardRequestFinished(req, res, gameId, callback);
                 }
             );
             JSONObject json = new JSONObject();
@@ -129,11 +118,6 @@ namespace SuperUltra.Container
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.Send();
-        }
-
-        static void GetLeaderboard(int gameId, Action callback)
-        {
-            GetLeaderboard(gameId, 0, callback);
         }
 
         public static void GetUserData(Action callback, Action avatarRequestCallback = null)
@@ -215,40 +199,48 @@ namespace SuperUltra.Container
             request.Send();
         }
 
-        static void OnLeaderBoardRequestFinished(HTTPRequest req, HTTPResponse response, int gameID)
+        static void OnLeaderboardRequestFinished(HTTPRequest req, HTTPResponse response, int gameID, Action<GetLeaderboardResponseData> callback = null)
         {
+            GetLeaderboardResponseData responseData = new GetLeaderboardResponseData() { result = false };
             if (!GameData.gameDataList.TryGetValue(gameID, out GameData gameData))
             {
+                callback?.Invoke(responseData);
                 return;
             }
 
             if (ValidateResponse(response))
             {
+                responseData.result = true;
                 JSONNode json = JSON.Parse(response.DataAsText);
-                Debug.Log("OnLeaderBoardRequestFinished " + json.ToString());
                 if (json["users"] != null && json["users"].IsArray)
                 {
-                    // foreach (JSONNode item in json["users"].AsArray)
-                    // {
-                    //     Texture2D avatar = new Texture2D(1, 1);
-                    //     // TODO : reteive in image
-                    //     avatar.LoadImage(item["avatarTexture"].AsByteArray);
-                    //     LeaderboardUserData data = new LeaderboardUserData()
-                    //     {
-                    //         rankPosition = item["position"].AsInt,
-                    //         avatarTexture = avatar,
-                    //         name = item["name"].ToString(),
-                    //         score = item["score"],
-                    //         reward = item["reward"],
-                    //     };
-                    //     gameData.leaderboard.Add(data);
-                    // }
-                    // Debug 
-                    foreach (var item in DebugLeaderboardData())
+                    int count = json["users"].AsArray.Count;
+                    LeaderboardUserData[] list = new LeaderboardUserData[count];
+                    for (int i = 0; i < count; i++)
                     {
-
-                        gameData.leaderboard.Add(item);
+                        JSONNode item = json["users"].AsArray[i];
+                        Texture2D avatar = new Texture2D(1, 1);
+                        // TODO : reteive in image
+                        avatar.LoadImage(item["avatarTexture"].AsByteArray);
+                        LeaderboardUserData data = new LeaderboardUserData()
+                        {
+                            rankPosition = item["position"].AsInt,
+                            avatarTexture = avatar,
+                            name = item["name"].ToString(),
+                            score = item["score"],
+                            reward = item["reward"],
+                        };
+                        gameData.leaderboard.Add(data);
+                        list[i] = data;
                     }
+                    responseData.list = list;
+
+                    // Debug 
+                    // foreach (var item in DebugLeaderboardData())
+                    // {
+                    //     gameData.leaderboard.Add(item);
+                    // }
+
                 }
                 gameData.tournament.prizePool = json["bonus"];
                 // TODO : confirm the structure
@@ -256,15 +248,15 @@ namespace SuperUltra.Container
                 gameData.currentUserReward = json["currentUserReward"];
                 gameData.currentUserScore = json["currentUserScore"];
             }
+            callback?.Invoke(responseData);
         }
 
         static void CompleteRequestList()
         {
-            Debug.Log($"{_isUserDataRequested} {_isAvatarImageRequested} {GameData.gameDataList.Count != 0} {_requestedLeaderboardCount == GameData.gameDataList.Count}");
+            Debug.Log($"{_isUserDataRequested} {_isAvatarImageRequested} {GameData.gameDataList.Count != 0}");
             if (_isUserDataRequested
                 && _isAvatarImageRequested
                 && GameData.gameDataList.Count != 0
-                && _requestedLeaderboardCount == GameData.gameDataList.Count
             )
             {
                 _onCompleteLoginRequest?.Invoke();
@@ -318,7 +310,6 @@ namespace SuperUltra.Container
             }
 
             _onCompleteLoginRequest = success;
-            _requestedLeaderboardCount = 0;
             // request token from server, then use the token to request
             // game list, user data and season data
             GetAuthToken(
@@ -327,11 +318,7 @@ namespace SuperUltra.Container
                     // get game list then get leader board data
                     GetGameList(() =>
                     {
-                        GetLeaderboardList(() =>
-                        {
-                            _requestedLeaderboardCount++;
-                            CompleteRequestList();
-                        });
+                        CompleteRequestList();
                     });
                     // get user data
                     GetUserData(() =>

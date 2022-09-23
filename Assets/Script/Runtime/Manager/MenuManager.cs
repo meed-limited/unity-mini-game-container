@@ -165,6 +165,12 @@ namespace SuperUltra.Container
 
         void ToPage(Canvas target)
         {
+            if(NetworkManager.CheckConnection())
+            {
+                _messagePopUpUI.Show("No Connection", "Retry", () => { ToPage(target); }, false);
+                return;
+            }
+
             if (target == null)
             {
                 return;
@@ -198,7 +204,7 @@ namespace SuperUltra.Container
 
         public void UpdateUserProfileRequest(string userName, Texture2D texture2D)
         {
-            LoadingUI.Show();
+            LoadingUI.ShowInstance();
             NetworkManager.UpdateUserProfile(
                 UserData.playFabId,
                 userName,
@@ -206,21 +212,21 @@ namespace SuperUltra.Container
                 () => NetworkManager.GetUserData(null, () =>
                 {
                     ToProfilePage();
-                    LoadingUI.Hide();
+                    LoadingUI.HideInstance();
                 })
             );
         }
 
         public void UpdateUserNameRequest(string userName)
         {
-            LoadingUI.Show();
+            LoadingUI.ShowInstance();
             NetworkManager.UpdateUserName(
                 UserData.playFabId,
                 userName,
                 () => NetworkManager.GetUserData(() =>
                 {
                     ToProfilePage();
-                    LoadingUI.Hide();
+                    LoadingUI.HideInstance();
                 })
             );
         }
@@ -254,7 +260,15 @@ namespace SuperUltra.Container
         public void ToSeasonPage() => ToPage(_seasonPassPage);
         public void ToGamePage() => ToPage(_gameListPage);
         public void ToAvatarSelectPage() => ToPage(_avatarSelectPage);
-        public void ToLeaderboardPage() => ToPage(_leaderboardUI);
+        public void ToLeaderboardPage()
+        {
+            LeaderboardUI leaderboardUI = _leaderboardUI.GetComponent<LeaderboardUI>();
+            if (leaderboardUI)
+            {
+                leaderboardUI.Initialize();
+            }
+            ToPage(_leaderboardUI);
+        }
         public void ToWalletPage()
         {
             WalletUI walletUI = _walletPage.GetComponent<WalletUI>();

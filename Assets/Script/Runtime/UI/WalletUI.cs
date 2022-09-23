@@ -62,7 +62,7 @@ namespace SuperUltra.Container
 
         void RequestNFTItem()
         {
-            LoadingUI.Show();
+            LoadingUI.ShowInstance();
             NetworkManager.GetUserNFT(
                 UserData.playFabId,
                 OnUserNFTDataResponse
@@ -71,7 +71,7 @@ namespace SuperUltra.Container
 
         void OnUserNFTDataResponse(GetUserNFTResponseData data)
         {
-            LoadingUI.Hide();
+            LoadingUI.HideInstance();
             if(data.result == false) return;
             SetNFTItem(data.list);
         }

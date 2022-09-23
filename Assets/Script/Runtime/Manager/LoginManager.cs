@@ -72,10 +72,7 @@ namespace SuperUltra.Container
 
         bool CheckInternetConnection()
         {
-            if (
-                !Application.internetReachability.Equals(NetworkReachability.ReachableViaLocalAreaNetwork)
-                && !Application.internetReachability.Equals(NetworkReachability.ReachableViaCarrierDataNetwork)
-            )
+            if (NetworkManager.CheckConnection())
             {
                 _messagePopUpUI.Show("No Connection", "Retry", () => { CheckInternetConnection(); }, false);
                 return false;
@@ -108,12 +105,12 @@ namespace SuperUltra.Container
 
         public void OnClickFacebookLogin()
         {
-            LoadingUI.Show();
+            LoadingUI.ShowInstance();
             FacebookAuthen.Login(
                 () => { ToMenu(); },
                 (string errorMessage) =>
                 {
-                    LoadingUI.Hide();
+                    LoadingUI.HideInstance();
                     _messagePopUpUI.Show(errorMessage);
                 },
                 false
@@ -122,15 +119,15 @@ namespace SuperUltra.Container
 
         public void OnClickFacebookRegister()
         {
-            LoadingUI.Show();
+            LoadingUI.ShowInstance();
             FacebookAuthen.Login(
                 () => {
-                    LoadingUI.Hide();
+                    LoadingUI.HideInstance();
                     ToEnterUserName(); 
                 },
                 (string errorMessage) =>
                 {
-                    LoadingUI.Hide();
+                    LoadingUI.HideInstance();
                     _messagePopUpUI.Show(errorMessage);
                 },
                 true
@@ -139,7 +136,7 @@ namespace SuperUltra.Container
 
         public void OnClickEmailLogin(string email, string password)
         {
-            LoadingUI.Show();
+            LoadingUI.ShowInstance();
             EmailAuthen.Login(
                 email,
                 password,
@@ -150,7 +147,7 @@ namespace SuperUltra.Container
                 },
                 (string errorMessage) =>
                 {
-                    LoadingUI.Hide();
+                    LoadingUI.HideInstance();
                     _messagePopUpUI.Show(errorMessage);
                 }
             );
@@ -158,14 +155,14 @@ namespace SuperUltra.Container
 
         public void OnClickEmailRegister(string email, string password)
         {
-            LoadingUI.Show();
+            LoadingUI.ShowInstance();
             EmailAuthen.Register(
                 email,
                 password,
                 OnEmailRegisterRequestFinished,
                 (string errorMessage) =>
                 {
-                    LoadingUI.Hide();
+                    LoadingUI.HideInstance();
                     _messagePopUpUI.Show(errorMessage);
                 }
             );
@@ -176,12 +173,12 @@ namespace SuperUltra.Container
             NetworkManager.CreateUser(
                 playFabId,
                 () => {
-                    LoadingUI.Hide();
+                    LoadingUI.HideInstance();
                     ToEnterUserName();
                 },
                 () =>
                 {
-                    LoadingUI.Hide();
+                    LoadingUI.HideInstance();
                     _messagePopUpUI.Show("Register fail");
                 }
             );
@@ -247,7 +244,7 @@ namespace SuperUltra.Container
                 () =>
                 {
                     SceneLoader.ToMenu();
-                    LoadingUI.Hide();
+                    LoadingUI.HideInstance();
                 },
                 () => { }
             );
