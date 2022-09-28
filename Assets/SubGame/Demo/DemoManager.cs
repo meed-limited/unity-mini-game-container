@@ -62,6 +62,10 @@ namespace SuperUltra.Demo
             if (result)
             {
                 // do stuff
+                Debug.Log("successfully get reward");
+            }else
+            {
+                Debug.Log("fail to get reward");
             }
         }
 
