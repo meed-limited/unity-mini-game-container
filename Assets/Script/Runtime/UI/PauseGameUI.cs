@@ -60,7 +60,7 @@ namespace SuperUltra.Container
         void Show()
         {
             _pauseMenuCanvas.gameObject.SetActive(true);
-            _popUp.Show();
+            _popUp.Show().SetUpdate(true);
         }
 
         void Hide()

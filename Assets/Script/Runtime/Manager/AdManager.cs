@@ -16,6 +16,16 @@ namespace SuperUltra.Container
         public static Action<bool> _rewardAction;
         IRewardedAd m_RewardedAd;
 
+        void OnEnable()
+        {
+            ContainerInterface.OnRequestRewardedAds += OnRequestRewardedAds;
+        }
+
+        void OnDisable()
+        {
+            ContainerInterface.OnRequestRewardedAds -= OnRequestRewardedAds;
+        }
+
         async void Start()
         {
             if (_instance != null)
@@ -25,7 +35,6 @@ namespace SuperUltra.Container
             }
             _instance = this;
             DontDestroyOnLoad(this.gameObject);
-            ContainerInterface.OnRequestRewardedAds += OnRequestRewardedAds; 
 
             try
             {
@@ -43,7 +52,6 @@ namespace SuperUltra.Container
         void OnDestroy()
         {
             m_RewardedAd?.Dispose();
-            ContainerInterface.OnRequestRewardedAds -= OnRequestRewardedAds;
         }
 
         public async void ShowRewarded()
@@ -52,7 +60,6 @@ namespace SuperUltra.Container
             {
                 Debug.Log("ShowRewarded AdState " + m_RewardedAd.AdState);
             }
-
             if (m_RewardedAd?.AdState == AdState.Loaded)
             {
                 try
@@ -65,6 +72,7 @@ namespace SuperUltra.Container
                 catch (ShowFailedException e)
                 {
                     Debug.LogWarning($"Rewarded failed to show: {e.Message}");
+                    _rewardAction?.Invoke(false);
                 }
             }
         }
@@ -89,12 +97,8 @@ namespace SuperUltra.Container
                 catch (ShowFailedException e)
                 {
                     Debug.LogWarning($"Rewarded failed to show: {e.Message}");
-                    _rewardAction?.Invoke(true);
-                    _rewardAction = null;
                 }
             }
-            _rewardAction?.Invoke(true);
-            _rewardAction = null;
         }
 
         async void LoadAd()
@@ -112,9 +116,8 @@ namespace SuperUltra.Container
         void OnRequestRewardedAds(Action<bool> callback)
         {
             Debug.Log("admanager OnRequestRewardedAds");
-            ShowRewarded();
-            _rewardAction = null;
             _rewardAction = callback;
+            ShowRewarded();
         }
 
         void InitializationComplete()
@@ -173,6 +176,7 @@ namespace SuperUltra.Container
         void AdClosed(object sender, EventArgs args)
         {
             Debug.Log("Rewarded Closed! Loading Ad...");
+            _rewardAction?.Invoke(false);
         }
 
         void AdLoaded(object sender, EventArgs e)
