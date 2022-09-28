@@ -87,7 +87,16 @@ namespace SuperUltra.Container
         void OnUpdateScore(UpdateScoreResponseData data)
         {
             LoadingUI.HideInstance();
-            ContainerInterface.ReturnToMenu();
+            if (!data.result)
+            {
+                MessagePopUpUI.Show(
+                    data.message,
+                    "Back to Menu",
+                    SceneLoader.ToMenu
+                );
+                return;
+            }
+            SceneLoader.ToMenu();
         }
 
         public void HowToPlay()

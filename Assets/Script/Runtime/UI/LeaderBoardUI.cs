@@ -75,6 +75,7 @@ namespace SuperUltra.Container
                 name = UserData.userName,
                 score = gameData.currentUserScore
             };
+            Debug.Log("CreateUserTournamentData " + userRank.rankPosition + " " + userRank.name);
             _userLeaderboardUI.SetData(userRank);
         }
 
@@ -128,7 +129,6 @@ namespace SuperUltra.Container
                 Debug.Log("OnGameChange " + page);
                 _currentGameId = id;
                 RefreshLeaderboard(_currentGameId);
-                CreateUserTournamentData(id);
             }
         }
 
@@ -154,6 +154,7 @@ namespace SuperUltra.Container
                 {
                     LazyLoadLeaderBoard(gameID);
                 }
+                CreateUserTournamentData(gameID);
             });
             UpdateTournamentInfo(gameID);
         }
@@ -221,6 +222,7 @@ namespace SuperUltra.Container
             foreach (var data in list)
             {
                 LeaderboardItemUI item = Instantiate(_leaderboardUIPrefab, _rankingItemContainer);
+                Debug.Log("data " + data.rankPosition + " " + data.score + " " + data.reward.ToString());
                 item.SetData(data);
             }
             // a hack to prevent _rankingItemContainer.childCount is 0 after LazyLoadLeaderBoard 

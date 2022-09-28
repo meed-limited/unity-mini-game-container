@@ -94,11 +94,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dfa0abcc7ef5ac4bb566a9b2ed0151e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rank: {fileID: 1215569987572053889}
-  image: {fileID: 1215569987957336909}
-  userName: {fileID: 1215569987235486157}
-  score: {fileID: 7539039905830365844}
-  reward: {fileID: 1215569988339428351}
+  _rank: {fileID: 1215569987572053889}
+  _image: {fileID: 1215569987957336909}
+  _userName: {fileID: 1215569987235486157}
+  _score: {fileID: 7539039905830365844}
+  _reward: {fileID: 1215569988339428351}
 --- !u!1 &1215569987235486155
 GameObject:
   m_ObjectHideFlags: 0

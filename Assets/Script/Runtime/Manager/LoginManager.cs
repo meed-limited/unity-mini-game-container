@@ -72,7 +72,7 @@ namespace SuperUltra.Container
 
         bool CheckInternetConnection()
         {
-            if (NetworkManager.CheckConnection())
+            if (!NetworkManager.CheckConnection())
             {
                 _messagePopUpUI.Show("No Connection", "Retry", () => { CheckInternetConnection(); }, false);
                 return false;

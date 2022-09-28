@@ -169,11 +169,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dfa0abcc7ef5ac4bb566a9b2ed0151e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rank: {fileID: 5697053263284856664}
-  image: {fileID: 5697053262731803540}
-  userName: {fileID: 5697053263082637588}
-  score: {fileID: 3995081467025308237}
-  reward: {fileID: 0}
+  _rank: {fileID: 5697053263284856664}
+  _image: {fileID: 5697053262731803540}
+  _userName: {fileID: 5697053263082637588}
+  _score: {fileID: 3995081467025308237}
+  _reward: {fileID: 0}
 --- !u!1 &5697053263082637586
 GameObject:
   m_ObjectHideFlags: 0

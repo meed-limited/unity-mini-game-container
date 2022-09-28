@@ -83,7 +83,7 @@ namespace SuperUltra.Container
                 UserData.playFabId,
                 _nameInput.text,
                 _iconPreview.sprite.texture,
-                () => {
+                (ResponseData data) => {
                     _loginManager.ToMenu();
                 }
             );

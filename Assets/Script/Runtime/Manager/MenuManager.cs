@@ -165,9 +165,9 @@ namespace SuperUltra.Container
 
         void ToPage(Canvas target)
         {
-            if(NetworkManager.CheckConnection())
+            if (!NetworkManager.CheckConnection())
             {
-                _messagePopUpUI.Show("No Connection", "Retry", () => { ToPage(target); }, false);
+                MessagePopUpUI.Show("No Connection", "Retry", () => { ToPage(target); }, false);
                 return;
             }
 
@@ -209,11 +209,7 @@ namespace SuperUltra.Container
                 UserData.playFabId,
                 userName,
                 texture2D,
-                () => NetworkManager.GetUserData(null, () =>
-                {
-                    ToProfilePage();
-                    LoadingUI.HideInstance();
-                })
+                OnUpdateUserProfile
             );
         }
 
@@ -223,18 +219,30 @@ namespace SuperUltra.Container
             NetworkManager.UpdateUserName(
                 UserData.playFabId,
                 userName,
-                () => NetworkManager.GetUserData(() =>
+                OnUpdateUserProfile
+            );
+        }
+
+        void OnUpdateUserProfile(ResponseData data)
+        {
+            if (!data.result)
+            {
+                LoadingUI.HideInstance();
+                Debug.Log("OnUpdateUserProfile");
+                MessagePopUpUI.Show(data.message, "Back", () => ToPage(_profilePage));
+                return;
+            }
+            NetworkManager.GetUserData(() =>
                 {
-                    ToProfilePage();
                     LoadingUI.HideInstance();
-                })
+                    ToProfilePage();
+                }
             );
         }
 
         public void ShowPopUP(RectTransform content, string actionButtonMessage = "", Action actionButtonCallback = null, bool shouldHideAfterAction = true)
         {
-            _messagePopUpUI.gameObject.SetActive(true);
-            _messagePopUpUI.Show(content, actionButtonMessage, actionButtonCallback, shouldHideAfterAction);
+            MessagePopUpUI.Show(content, actionButtonMessage, actionButtonCallback, shouldHideAfterAction);
         }
 
         public void ToNewsPage() => ToPage(_newsPage);

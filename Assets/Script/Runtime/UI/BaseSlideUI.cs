@@ -9,6 +9,7 @@ namespace SuperUltra.Container
     {
 
         [SerializeField] RectTransform _panel;
+        [Tooltip("The slide in direction (from the oppsite direction)")]
         [SerializeField] SlideDirection _direction;
 
         Vector2 GetSlideInPosition()

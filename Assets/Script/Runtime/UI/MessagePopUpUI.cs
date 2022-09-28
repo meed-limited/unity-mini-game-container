@@ -47,14 +47,18 @@ namespace SuperUltra.Container
             _popUpUI.Show(message);
         }
 
-        public void Show(
+        public void ShowCustomContent(
             RectTransform content,
             string actionButtonText = "",
             Action actionButtonCallback = null,
             bool shouldHideAfterAction = false
         )
         {
-            Instantiate(content, _contentContainer);
+            gameObject.SetActive(true);
+            if (_contentContainer)
+            {
+                Instantiate(content, _contentContainer);
+            }
             SetActionButtonListener(actionButtonCallback, shouldHideAfterAction);
             _actionButton.gameObject.SetActive(!string.IsNullOrEmpty(actionButtonText));
             TMP_Text text = _actionButton.GetComponentInChildren<TMP_Text>();
@@ -67,14 +71,17 @@ namespace SuperUltra.Container
 
         public void Hide()
         {
-            foreach (Transform item in _contentContainer)
+            if (_contentContainer)
             {
-                Destroy(item.gameObject);
+                foreach (Transform item in _contentContainer)
+                {
+                    Destroy(item.gameObject);
+                }
             }
             _actionButton.onClick.RemoveAllListeners();
             _popUpUI.Hide().OnComplete(() => gameObject.SetActive(false));
         }
-        
+
         void SetActionButtonText(string message, Action callback, bool shouldHideAfterAction)
         {
             TMP_Text text = _actionButton.GetComponentInChildren<TMP_Text>();
@@ -128,7 +135,8 @@ namespace SuperUltra.Container
         public static void Show(
             string message = "",
             string actionButtonText = "",
-            Action actionButtonCallback = null
+            Action actionButtonCallback = null,
+            bool shouldHideAfterAction = true
         )
         {
             if (_instance)
@@ -136,7 +144,26 @@ namespace SuperUltra.Container
                 _instance.Show(
                     message,
                     actionButtonText,
-                    actionButtonCallback
+                    actionButtonCallback,
+                    shouldHideAfterAction
+                );
+            }
+        }
+
+        public static void Show(
+            RectTransform content,
+            string actionButtonText = "",
+            Action actionButtonCallback = null,
+            bool shouldHideAfterAction = false
+        )
+        {
+            if(_instance)
+            {
+                _instance.ShowCustomContent(
+                    content,
+                    actionButtonText,
+                    actionButtonCallback,
+                    shouldHideAfterAction
                 );
             }
         }
