@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using TMPro;
 
 namespace SuperUltra.Container
 {
@@ -11,6 +12,7 @@ namespace SuperUltra.Container
         [SerializeField] Canvas _canvas;
         [SerializeField] PopUpUI _popUp;
         [SerializeField] CompletionLeaderboardUI _completionLeaderboard;
+        [SerializeField] TMP_Text _score;
         static GameOverUI _instance;
 
         void Awake()
@@ -50,6 +52,7 @@ namespace SuperUltra.Container
         void Show()
         {
             _canvas.gameObject.SetActive(true);
+            _score.text = SessionData.currnetGameScore.ToString();
             _popUp.Show();
         }
 
@@ -57,7 +60,7 @@ namespace SuperUltra.Container
         {
             Hide(() =>
             {
-                LoadingUI.Show();
+                LoadingUI.ShowInstance();
                 NetworkManager.UpdateScore(
                     SessionData.currnetGameScore,
                     UserData.playFabId,
@@ -69,18 +72,17 @@ namespace SuperUltra.Container
 
         void OnUpdateScore(UpdateScoreResponseData data)
         {
-            LoadingUI.Hide();
+            LoadingUI.HideInstance();
             _canvas.gameObject.SetActive(false);
-            // TODO
-            // if (!data.result)
-            // {
-            //     MessagePopUpUI.Show(
-            //         "Post Score failed",
-            //         "Confirm",
-            //         SceneLoader.ToMenu
-            //     );
-            //     return;
-            // }
+            if (!data.result)
+            {
+                MessagePopUpUI.Show(
+                    data.message,
+                    "Back to Menu",
+                    SceneLoader.ToMenu
+                );
+                return;
+            }
             _completionLeaderboard.Show();
             _completionLeaderboard.GenerateRanking(data.list);
             _completionLeaderboard.SetUserData(new LeaderboardUserData(){

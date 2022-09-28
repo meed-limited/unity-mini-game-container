@@ -165,6 +165,12 @@ namespace SuperUltra.Container
 
         void ToPage(Canvas target)
         {
+            if (!NetworkManager.CheckConnection())
+            {
+                MessagePopUpUI.Show("No Connection", "Retry", () => { ToPage(target); }, false);
+                return;
+            }
+
             if (target == null)
             {
                 return;
@@ -198,37 +204,45 @@ namespace SuperUltra.Container
 
         public void UpdateUserProfileRequest(string userName, Texture2D texture2D)
         {
-            LoadingUI.Show();
+            LoadingUI.ShowInstance();
             NetworkManager.UpdateUserProfile(
                 UserData.playFabId,
                 userName,
                 texture2D,
-                () => NetworkManager.GetUserData(null, () =>
-                {
-                    ToProfilePage();
-                    LoadingUI.Hide();
-                })
+                OnUpdateUserProfile
             );
         }
 
         public void UpdateUserNameRequest(string userName)
         {
-            LoadingUI.Show();
+            LoadingUI.ShowInstance();
             NetworkManager.UpdateUserName(
                 UserData.playFabId,
                 userName,
-                () => NetworkManager.GetUserData(() =>
+                OnUpdateUserProfile
+            );
+        }
+
+        void OnUpdateUserProfile(ResponseData data)
+        {
+            if (!data.result)
+            {
+                LoadingUI.HideInstance();
+                Debug.Log("OnUpdateUserProfile");
+                MessagePopUpUI.Show(data.message, "Back", () => ToPage(_profilePage));
+                return;
+            }
+            NetworkManager.GetUserData(() =>
                 {
+                    LoadingUI.HideInstance();
                     ToProfilePage();
-                    LoadingUI.Hide();
-                })
+                }
             );
         }
 
         public void ShowPopUP(RectTransform content, string actionButtonMessage = "", Action actionButtonCallback = null, bool shouldHideAfterAction = true)
         {
-            _messagePopUpUI.gameObject.SetActive(true);
-            _messagePopUpUI.Show(content, actionButtonMessage, actionButtonCallback, shouldHideAfterAction);
+            MessagePopUpUI.Show(content, actionButtonMessage, actionButtonCallback, shouldHideAfterAction);
         }
 
         public void ToNewsPage() => ToPage(_newsPage);
@@ -254,7 +268,15 @@ namespace SuperUltra.Container
         public void ToSeasonPage() => ToPage(_seasonPassPage);
         public void ToGamePage() => ToPage(_gameListPage);
         public void ToAvatarSelectPage() => ToPage(_avatarSelectPage);
-        public void ToLeaderboardPage() => ToPage(_leaderboardUI);
+        public void ToLeaderboardPage()
+        {
+            LeaderboardUI leaderboardUI = _leaderboardUI.GetComponent<LeaderboardUI>();
+            if (leaderboardUI)
+            {
+                leaderboardUI.Initialize();
+            }
+            ToPage(_leaderboardUI);
+        }
         public void ToWalletPage()
         {
             WalletUI walletUI = _walletPage.GetComponent<WalletUI>();

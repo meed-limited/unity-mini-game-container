@@ -6,16 +6,27 @@ using DG.Tweening;
 
 namespace SuperUltra.Container
 {
+    [RequireComponent(typeof(RectTransform))]
     public class LoadingUI : MonoBehaviour
     {
         public static LoadingUI instance
         {
             get; private set;
         }
-        [SerializeField] Canvas _loadingCanvas;
+        [SerializeField] RectTransform _container;
         [SerializeField] Image _loadingIcon;
+        [SerializeField] bool _isPersistance;
 
         void Awake()
+        {
+            if(_isPersistance)
+            {
+                CreateSingleton();
+            }
+            ToggleLoadingCanvas(false);
+        }
+
+        void CreateSingleton()
         {
             if (instance != null)
             {
@@ -24,7 +35,6 @@ namespace SuperUltra.Container
             }
             instance = this;
             DontDestroyOnLoad(this.gameObject);
-            ToggleLoadingCanvas(false);
         }
 
         void Start()
@@ -43,16 +53,26 @@ namespace SuperUltra.Container
 
         void Reset()
         {
-            _loadingCanvas = GetComponent<Canvas>();
+            _container = GetComponent<RectTransform>();
         }
 
-        public static void Show()
+        public void Show()
+        {
+            ToggleLoadingCanvas(true);
+        }
+
+        public void Hide()
+        {
+            ToggleLoadingCanvas(false);
+        }
+
+        public static void ShowInstance()
         {
             if (instance == null) return;
             instance.ToggleLoadingCanvas(true);
         }
 
-        public static void Hide()
+        public static void HideInstance()
         {
             if (instance == null) return;
             instance.ToggleLoadingCanvas(false);
@@ -60,8 +80,8 @@ namespace SuperUltra.Container
 
         void ToggleLoadingCanvas(bool isOn)
         { 
-            if(_loadingCanvas == null) return;
-            _loadingCanvas.gameObject.SetActive(isOn);
+            if(_container == null) return;
+            _container.gameObject.SetActive(isOn);
         }
         
     }

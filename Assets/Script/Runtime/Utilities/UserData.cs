@@ -31,6 +31,15 @@ namespace SuperUltra.Container
             rankLevel = -1;
             rankTitle = "";
         }
+        
+        public static void UpdateUserData(UpdateScoreResponseData data)
+        {
+            if (data == null)
+                return;
+            rankTitle = data.rankTitle;
+            pointsToNextRank = data.pointsToNextRank;
+            pointsInCurrentRank = data.experiencePoints;
+        }
     }
 
 }

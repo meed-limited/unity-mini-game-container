@@ -19,6 +19,7 @@ namespace SuperUltra.Container
         [SerializeField] TMP_Text _poolSize;
         [SerializeField] TMP_Text _timeLeft;
         [SerializeField] ScrollRect _leaderboardScroll;
+        [SerializeField] LoadingUI _loadingUI;
         int _currentGameId = -1;
         Dictionary<int, int> _pageToGameIdMap = new Dictionary<int, int>();
         int lazyLoadCount = 10;
@@ -28,6 +29,11 @@ namespace SuperUltra.Container
         void Start()
         {
             CreateGameList();
+            SetDefaultLeaderboard();
+        }
+
+        public void Initialize()
+        {
             SetDefaultLeaderboard();
         }
 
@@ -69,6 +75,7 @@ namespace SuperUltra.Container
                 name = UserData.userName,
                 score = gameData.currentUserScore
             };
+            Debug.Log("CreateUserTournamentData " + userRank.rankPosition + " " + userRank.name);
             _userLeaderboardUI.SetData(userRank);
         }
 
@@ -119,10 +126,9 @@ namespace SuperUltra.Container
         {
             if (_pageToGameIdMap.TryGetValue(Mathf.FloorToInt(page), out int id))
             {
-                Debug.Log("OnGameChange");
+                Debug.Log("OnGameChange " + page);
                 _currentGameId = id;
                 RefreshLeaderboard(_currentGameId);
-                CreateUserTournamentData(id);
             }
         }
 
@@ -138,19 +144,31 @@ namespace SuperUltra.Container
         public void RefreshLeaderboard(int gameID = 0)
         {
             ClearLeaderBoard();
-            LazyLoadLeaderBoard(gameID);
+            _loadingUI.Show();
+            NetworkManager.GetLeaderboard(gameID, 0, (GetLeaderboardResponseData data) =>
+            {
+                _loadingUI.Hide();
+                bool isEmpty = data.list.Length <= 0;
+                _leaderboardScroll.enabled = !isEmpty && data.result;
+                if (data.result && !isEmpty)
+                {
+                    LazyLoadLeaderBoard(gameID);
+                }
+                CreateUserTournamentData(gameID);
+            });
             UpdateTournamentInfo(gameID);
         }
 
         void DetectScrollLazyLoad()
         {
-            if (!_leaderboardScroll || _isRequested)
+            if (!_leaderboardScroll || !_leaderboardScroll.enabled || _isRequested)
             {
                 return;
             }
 
-            // scroll to bottom
-            if (_leaderboardScroll.normalizedPosition.y < 0)
+            // only detect when there are items in board 
+            // and scrolled to bottom
+            if (_leaderboardScroll.verticalNormalizedPosition <= 0)
             {
                 if (!GameData.gameDataList.TryGetValue(_currentGameId, out GameData gameData))
                 {
@@ -160,20 +178,32 @@ namespace SuperUltra.Container
                 {
                     return;
                 }
+                Debug.Log($"{gameData.leaderboard.Count} {_rankingItemContainer.childCount + lazyLoadCount}");
                 if (gameData.leaderboard.Count < _rankingItemContainer.childCount + lazyLoadCount)
                 {
+                    Debug.Log("Requesting");
                     _isRequested = true;
-                    NetworkManager.GetLeaderboard(_currentGameId, _rankingItemContainer.childCount, () =>
-                    {
-                        LazyLoadLeaderBoard(_currentGameId);
-                        // a hack to prevent _rankingItemContainer.childCount is 0 after LazyLoadLeaderBoard 
-                        _leaderboardScroll.normalizedPosition = new Vector2(0, (1f / (float)_rankingItemContainer.childCount));
-                        _isRequested = false;
-                    });
+                    _loadingUI.Show();
+                    NetworkManager.GetLeaderboard(
+                        _currentGameId, 
+                        _rankingItemContainer.childCount, 
+                        OnGetLeaderboardRequestFinish
+                    );
                     return;
                 }
                 LazyLoadLeaderBoard(_currentGameId);
             }
+        }
+
+        void OnGetLeaderboardRequestFinish(GetLeaderboardResponseData data)
+        {
+            _loadingUI.Hide();
+            if (!data.result)
+            {
+                return;
+            }
+            LazyLoadLeaderBoard(_currentGameId);
+            _isRequested = false;
         }
 
         void LazyLoadLeaderBoard(int gameID)
@@ -192,8 +222,11 @@ namespace SuperUltra.Container
             foreach (var data in list)
             {
                 LeaderboardItemUI item = Instantiate(_leaderboardUIPrefab, _rankingItemContainer);
+                Debug.Log("data " + data.rankPosition + " " + data.score + " " + data.reward.ToString());
                 item.SetData(data);
             }
+            // a hack to prevent _rankingItemContainer.childCount is 0 after LazyLoadLeaderBoard 
+            _leaderboardScroll.verticalNormalizedPosition = (1f / (float)_rankingItemContainer.childCount);
         }
 
         void UpdateTimeLeft(int gameId)

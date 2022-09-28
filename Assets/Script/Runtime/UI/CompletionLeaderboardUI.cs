@@ -54,8 +54,13 @@ namespace SuperUltra.Container
 
         public void GenerateRanking(LeaderboardUserData[] list)
         {
+            foreach (Transform item in _leaderboardItemContainer.transform)
+            {
+                Destroy(item.gameObject);
+            }
             foreach (LeaderboardUserData data in list)
             {
+                Debug.Log("GenerateRanking " + data.rankPosition + " " + data.score);
                 LeaderboardItemUI rankingItemUI = Instantiate(_leaderboardItemUIPrefab, _leaderboardItemContainer);
                 rankingItemUI.SetData(data);
             }
@@ -68,6 +73,7 @@ namespace SuperUltra.Container
 
         public void SetUserData(LeaderboardUserData data)
         {
+            Debug.Log($"SetUserData {data.name}");
             _userLeaderboardUI.SetData(data);
         }
 

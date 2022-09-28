@@ -16,11 +16,11 @@ namespace SuperUltra.Container
 
         public void SignOut()
         {
-            LoadingUI.Show();
+            LoadingUI.ShowInstance();
             NetworkManager.SignOut(
                 () =>
                 {
-                    LoadingUI.Hide();
+                    LoadingUI.HideInstance();
                     SceneLoader.ToLogin();
                 }
             );

@@ -48,6 +48,7 @@ public class StickyScrollUI : MonoBehaviour, IPointerUpHandler, IPointerDownHand
             targetValue,
             _smoothTime
         );
+        Debug.Log(targetValue);
         OnItemChange?.Invoke(targetValue * (_childCount - 1));
     }
 

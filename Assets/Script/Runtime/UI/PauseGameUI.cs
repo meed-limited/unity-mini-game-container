@@ -75,7 +75,7 @@ namespace SuperUltra.Container
 
         public void SubmitScore()
         {
-            LoadingUI.Show();
+            LoadingUI.ShowInstance();
             NetworkManager.UpdateScore(
                 SessionData.currnetGameScore,
                 UserData.playFabId,
@@ -86,8 +86,17 @@ namespace SuperUltra.Container
 
         void OnUpdateScore(UpdateScoreResponseData data)
         {
-            LoadingUI.Hide();
-            ContainerInterface.ReturnToMenu();
+            LoadingUI.HideInstance();
+            if (!data.result)
+            {
+                MessagePopUpUI.Show(
+                    data.message,
+                    "Back to Menu",
+                    SceneLoader.ToMenu
+                );
+                return;
+            }
+            SceneLoader.ToMenu();
         }
 
         public void HowToPlay()

@@ -9,9 +9,8 @@ using TMPro;
 namespace SuperUltra.Container
 {
 
-    public class AvatarSelectionUI : MonoBehaviour, ISlidable
+    public class AvatarSelectionUI : MonoBehaviour
     {
-        [SerializeField] RectTransform _panel;
         [SerializeField] RectTransform _avatarPrefab;
         [SerializeField] RectTransform _avatarSelection;
         [SerializeField] Button _backButton;
@@ -19,7 +18,6 @@ namespace SuperUltra.Container
         [SerializeField] UnityEvent<Sprite> _avatarSelectedAction;
         [SerializeField] List<Sprite> _avatars = new List<Sprite>();
         int _numberOfElementInRow = 3;
-        Sprite _selectedAvatar;
 
         void Start()
         {
@@ -29,20 +27,6 @@ namespace SuperUltra.Container
             }
             CreateSelectionList();
         }
-
-        public Tween SlideIn(float duration = 0.5f)
-        {
-            if (_panel == null) return null;
-            return _panel.DOLocalMoveX(0, duration);
-        }
-
-        public Tween SlideOut(float duration = 0.5f)
-        {
-            if (_panel == null) return null;
-            return _panel.DOLocalMoveX(Screen.height, duration);
-        }
-
-        public void ChangeSlideDirection(SlideDirection direction) { }
 
         void CreateSelectionList()
         {
