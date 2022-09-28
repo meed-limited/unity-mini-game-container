@@ -4,6 +4,8 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.Animations;
 using SuperUltra.JungleDrum;
+using DG.Tweening;
+using SuperUltra.Container;
 
 namespace SuperUltra.JungleDrum
 {
@@ -33,10 +35,19 @@ namespace SuperUltra.JungleDrum
         Animator _running;
         [SerializeField]
         private GameObject _speed;
+        [SerializeField]
+        private GameObject[] _lifeBar;
+        public int _life;
+
 
         private void Awake()
         {
             _bestText.text = PlayerPrefs.GetInt("Best").ToString();
+            _life = 3;
+            for (int i = 0; i < 3; i++)
+            {
+                _lifeBar[i].SetActive(true);
+            }
 
         }
         private void Start()
@@ -85,8 +96,59 @@ namespace SuperUltra.JungleDrum
                 PlayerPrefs.SetInt("Best", _score);
         }
 
+        public void RequestLifeAds()
+        {
+            ContainerInterface.RequestRewardedAds(
+                RequestLifeRewardedAdCallback
+            );
+        }
+
+        void RequestLifeRewardedAdCallback(bool result)
+        {
+            Debug.Log("RequestLifeRewardedAdCallback " + result);
+            if (result)
+            {
+                AddLife();
+            }
+        }
+
+        public void AddLife()
+        {
+            if(_life == 3)
+            {
+                for (int i = 0; i< 5; i++)
+                {
+                    _life += 1;
+                    _lifeBar[_life].SetActive(true);
+
+                }
+
+            }
+            else if (_life == 0)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    _life += 1;
+                    _lifeBar[_life].SetActive(true);
+
+                }
+            }
 
 
+        }
+        
+        public void ReduceLife()
+        {
+            if(_life>0)
+                _life -= 1;
+            else
+            {
+                _life = 0;
+            }
+            _lifeBar[_life].GetComponent<RectTransform>().DOLocalMoveY(-21f, 0.2f, false).OnComplete(() => _lifeBar[_life].SetActive(false));
+            //_lifeBar[_life].SetActive(false);
+        }
+        
 
     }
 }

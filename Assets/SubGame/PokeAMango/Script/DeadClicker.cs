@@ -7,6 +7,7 @@ using UnityEngine.Animations;
 using UnityEngine.UI;
 using Lofelt.NiceVibrations;
 using SuperUltra.JungleDrum;
+using SuperUltra.Container;
 
 namespace SuperUltra.JungleDrum
 {
@@ -39,6 +40,7 @@ namespace SuperUltra.JungleDrum
         [SerializeField]
         AudioSource _lighting;
         private Shaker _shaker;
+        bool _isEnd = false;
 
         private void Start()
         {
@@ -52,6 +54,11 @@ namespace SuperUltra.JungleDrum
         void Update()
         {
             transform.Rotate(0, 0, zvalue * Time.deltaTime);
+            if (_gs._life == 0 && _isEnd == false)
+            {
+                GameEnd();
+                _isEnd = true;
+            }
 
         }
         IEnumerator PauseGame()
@@ -75,6 +82,10 @@ namespace SuperUltra.JungleDrum
             {
                 HapticController.Play(_vir);
                 PtReduce();
+                if(_gs._life == 0)
+                {
+                    GameEnd();
+                }
 
             }
             else
@@ -93,7 +104,6 @@ namespace SuperUltra.JungleDrum
         }
         public void GameEnd()
         {
-
             _player.GetComponent<Animator>().SetTrigger("Dead");
             gameObject.GetComponent<Button>().interactable = false;
             //_endSfx.Play();
@@ -105,6 +115,7 @@ namespace SuperUltra.JungleDrum
             StartCoroutine(Thunder());
             _shaker.Shake();
 
+            //ContainerInterface.GameOver();
             StartCoroutine(EndGamee());
 
         }
@@ -120,14 +131,16 @@ namespace SuperUltra.JungleDrum
                 //_endSfx.Play();
                 _lighting.Play();
                 StartCoroutine(Thunder());
+                _gs.ReduceLife();
                 _shaker.Shake();
+                if (_gs._score >= 20)
+                    _gs._score -= 20;
+                else
+                    _gs._score = 0;
             }
             _clicker._moveValue = -2f;
             //_player.transform.position = new Vector3(-2, 1.616f, 10f);
-            if (_gs._score >= 50)
-                _gs._score -= 50;
-            else
-                _gs._score = 0;
+
         }
 
         IEnumerator Thunder()

@@ -9,12 +9,18 @@ namespace SuperUltra.JungleDrum
     {
         [SerializeField]
         Scroller _scroller;
+        [SerializeField]
+        GameStat _gs;
+
         private void OnCollisionEnter(Collision collision)
         {
             if (collision.gameObject.CompareTag("Enemy"))
             {
                 Debug.Log("dog hit!");
-                RollAniPlay();
+                if(_gs._life > 0)
+                {
+                    RollAniPlay();
+                }
                 gameObject.transform.DOMoveX(-2f, 0.5f, false);
                 _scroller.StartCoroutine(_scroller.MoveBack());
             }

@@ -44,7 +44,8 @@ namespace SuperUltra.JungleDrum
         public void RestartSenece()
         {
             //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-            SceneManager.LoadScene(0);
+            //SceneManager.LoadScene(0);
+            ContainerInterface.PlayAgain();
             Time.timeScale = 1;
         }
 

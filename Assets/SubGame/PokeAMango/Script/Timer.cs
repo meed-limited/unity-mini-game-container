@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using SuperUltra.JungleDrum;
+using SuperUltra.Container;
+
 namespace SuperUltra.JungleDrum
 {
     public class Timer : MonoBehaviour
@@ -45,6 +47,22 @@ namespace SuperUltra.JungleDrum
                     _yesButton.SetActive(false);
                     _deadclicker.GameEnd();
                 }
+            }
+        }
+
+        public void RequestTimeAds()
+        {
+            ContainerInterface.RequestRewardedAds(
+                RequestTimeRewardedAdCallback
+            );
+        }
+
+        void RequestTimeRewardedAdCallback(bool result)
+        {
+            Debug.Log("RequestLifeRewardedAdCallback " + result);
+            if (result)
+            {
+                _timeRemaining += 30f;
             }
         }
         void DisplayTime(float timeToDisplay)

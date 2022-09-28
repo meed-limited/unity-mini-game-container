@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SuperUltra.JungleDrum;
+using SuperUltra.Container;
 
 namespace SuperUltra.JungleDrum {
 
@@ -14,14 +15,16 @@ namespace SuperUltra.JungleDrum {
 
         public void PauseGame()
         {
+            ContainerInterface.Pause();
             EffectControl _ef = _gv.GetComponent<EffectControl>();
             _ef.DofOn();
-            Time.timeScale = 0;
+            //Time.timeScale = 0;
             _pauseWindow.SetActive(true);
         }
 
         public void ResumeGame()
         {
+            //ContainerInterface.Resume();
             EffectControl _ef = _gv.GetComponent<EffectControl>();
             _ef.DofOff();
             Time.timeScale = 1;

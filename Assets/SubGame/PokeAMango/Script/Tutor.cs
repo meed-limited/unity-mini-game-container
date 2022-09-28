@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using SuperUltra.JungleDrum;
+using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
-using UnityEngine.AddressableAssets;
 
 namespace SuperUltra.JungleDrum
 {
@@ -41,8 +41,8 @@ namespace SuperUltra.JungleDrum
 
         public void P2OnClick()
         {
-            AsyncOperationHandle<SceneInstance> operationHandle = Addressables.LoadSceneAsync("Assets/Scenes/Tourment.unity");
-
+            //AsyncOperationHandle<SceneInstance> operationHandle = Addressables.LoadSceneAsync("Assets/Scenes/Tourment.unity");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 }
