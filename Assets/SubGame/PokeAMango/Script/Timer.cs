@@ -3,51 +3,56 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-public class Timer : MonoBehaviour
+using SuperUltra.JungleDrum;
+namespace SuperUltra.JungleDrum
 {
-    [SerializeField]
-    private float _timeRemaining = 120;
-    private bool _timerIsRunning = false;
-    [SerializeField]
-    private TextMeshProUGUI _timeText;
-    [SerializeField]
-    private GameObject _end;
-    [SerializeField]
-    DeadClicker _deadclicker;
-    [SerializeField]
-    private GameObject _yesButton;
+    public class Timer : MonoBehaviour
+    {
 
-    private void Start()
-    {
-        // Starts the timer automatically
-        _timerIsRunning = true;
-        _deadclicker = _end.GetComponent<DeadClicker>();
-        
-    }
-    void Update()
-    {
-        if (_timerIsRunning)
+        public float _timeRemaining = 120;
+        private bool _timerIsRunning = false;
+        [SerializeField]
+        private TextMeshProUGUI _timeText;
+        [SerializeField]
+        private GameObject _end, _fire;
+        [SerializeField]
+        DeadClicker _deadclicker;
+        [SerializeField]
+        private GameObject _yesButton;
+
+        private void Start()
         {
-            if (_timeRemaining > 0)
+            // Starts the timer automatically
+            _timerIsRunning = true;
+            _deadclicker = _end.GetComponent<DeadClicker>();
+
+        }
+        void Update()
+        {
+            if (_timerIsRunning)
             {
-                _timeRemaining -= Time.deltaTime;
-                DisplayTime(_timeRemaining);
-            }
-            else
-            {
-                _timeRemaining = 0;
-                _timerIsRunning = false;
-                _end.SetActive(true);
-                _yesButton.SetActive(false);
-                _deadclicker.GameEnd();
+                if (_timeRemaining > 0)
+                {
+                    _timeRemaining -= Time.deltaTime;
+                    DisplayTime(_timeRemaining);
+                }
+                else
+                {
+                    _fire.SetActive(false);
+                    _timeRemaining = 0;
+                    _timerIsRunning = false;
+                    _end.SetActive(true);
+                    _yesButton.SetActive(false);
+                    _deadclicker.GameEnd();
+                }
             }
         }
-    }
-    void DisplayTime(float timeToDisplay)
-    {
-        timeToDisplay += 1;
-        float minutes = Mathf.FloorToInt(timeToDisplay / 60);
-        float seconds = Mathf.FloorToInt(timeToDisplay % 60);
-        _timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        void DisplayTime(float timeToDisplay)
+        {
+            timeToDisplay += 1;
+            float minutes = Mathf.FloorToInt(timeToDisplay / 60);
+            float seconds = Mathf.FloorToInt(timeToDisplay % 60);
+            _timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        }
     }
 }

@@ -2,12 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SuperUltra.Container;
+using SuperUltra.JungleDrum;
 
-public class BackMenu : MonoBehaviour
+namespace SuperUltra.JungleDrum
 {
 
-    public void Onclick()
+    public class BackMenu : MonoBehaviour
     {
-        ContainerInterface.ReturnToMenu();
+
+        public void Onclick()
+        {
+            ContainerInterface.ReturnToMenu();
+        }
     }
 }

@@ -20474,7 +20474,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1517497575}
   m_HandleRect: {fileID: 1535860113}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -23341,18 +23341,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f18fb0f8e37a89544b7417f6ca658dff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _leaderboardUIPrefab: {fileID: 6350524141160046262, guid: b081d2cd556ca8d43bd9b3d047914a72,
-    type: 3}
-  _rankingItemContainer: {fileID: 1610440381}
-  _gameBannerPrefab: {fileID: 4134976846313156041, guid: 1478e89e34e8ded4fa542619f4d9c07c,
-    type: 3}
-  _gameBannerContainer: {fileID: 710683352}
-  _gameBannerStickyScroll: {fileID: 2085507682}
-  _userLeaderboardUI: {fileID: 3919020042803721042}
-  _gameName: {fileID: 2026987735}
-  _poolSize: {fileID: 290270227}
-  _timeLeft: {fileID: 1858837513}
-  _leaderboardScroll: {fileID: 955583408}
 --- !u!114 &1559076526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27537,9 +27525,9 @@ RectTransform:
   m_Father: {fileID: 503547103}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 373.46, y: -75}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 373.46, y: 0}
   m_SizeDelta: {x: 0, y: 75}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1858837513
@@ -34359,18 +34347,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b081d2cd556ca8d43bd9b3d047914a72, type: 3}
---- !u!114 &3919020042803721042 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6350524141160046262, guid: b081d2cd556ca8d43bd9b3d047914a72,
-    type: 3}
-  m_PrefabInstance: {fileID: 3919020042803721041}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0dfa0abcc7ef5ac4bb566a9b2ed0151e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!222 &4009579913573710594
 CanvasRenderer:
   m_ObjectHideFlags: 0

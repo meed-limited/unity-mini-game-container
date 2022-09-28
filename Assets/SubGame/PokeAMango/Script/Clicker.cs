@@ -5,131 +5,235 @@ using TMPro;
 using Lofelt.NiceVibrations;
 using UnityEngine.Animations;
 using DG.Tweening;
+using System;
+using UnityEngine.UI;
+using SuperUltra.JungleDrum;
 
-
-public class Clicker : MonoBehaviour
+namespace SuperUltra.JungleDrum
 {
-    private float zvalue = 50;
-    public GameObject gameman;
-    public GameObject m_camera;
-    Animator _anim;
-    [SerializeField]
-    private float _colorValueX = 1;
-    [SerializeField]
-    private float _colorValueY = 0.99f;
-    [SerializeField]
-    private float _colorValueZ = 0.7f;
-    [SerializeField]
-    private AudioSource _sfx;
-    [SerializeField]
-    ParticleSystem _clickeffect;
-    
-    bool _rotating = true; ///change before launch
-    [SerializeField]
-    GameObject _runner;
-    Animator _runnerAni;
-    [SerializeReference]
-    private float _stopCount = 0.3f;
- 
-    public float _moveValue = -2f;
-
-
-
-
-
-
-    private void Start()
+    public class Clicker : MonoBehaviour
     {
-        _anim = gameObject.GetComponent<Animator>();
-        _sfx = gameObject.GetComponent<AudioSource>();
-        _runnerAni = _runner.GetComponent<Animator>();
-       
-        
-    }
+        private float zvalue = 50;
+        public GameObject gameman;
+        public GameObject m_camera;
+        Animator _anim;
+        [SerializeField]
+        private float _colorValueX = 1;
+        [SerializeField]
+        private float _colorValueY = 0.99f;
+        [SerializeField]
+        private float _colorValueZ = 0.7f;
+        [SerializeField]
+        private AudioSource _sfx;
+        [SerializeField]
+        ParticleSystem _clickeffect, _dustEffect, _sDust;
 
-    void Update()
-    {
-        //Debug.Log(Time.deltaTime);
-        if(_rotating)
-            transform.Rotate(0, 0, zvalue * Time.deltaTime);
-        _stopCount -= Time.deltaTime;
-        if (_stopCount < 0)
+        bool _rotating = true; ///change before launch
+        [SerializeField]
+        GameObject _runner;
+        [SerializeField]
+        GameObject _speedLine;
+        Animator _runnerAni;
+        [SerializeField]
+        private float _stopCount = 0.3f;
+
+        public float _moveValue = -2f;
+        [SerializeField]
+        Scroller _scroll;
+        float lastTime;
+        float bpm = 0;
+        [SerializeField]
+        Sprite[] _faceSprites;
+        [SerializeField]
+        Sprite[] _eyesSprites;
+        [SerializeField]
+        GameObject _rawImage;
+        [SerializeField]
+        GameObject _dustPoint, _fire;
+
+
+
+
+
+
+
+
+        private void Start()
         {
-            _runnerAni.SetBool("runningtri", false);
-            _stopCount = 0;
+            _anim = gameObject.GetComponent<Animator>();
+            _sfx = gameObject.GetComponent<AudioSource>();
+            _runnerAni = _runner.GetComponent<Animator>();
+
+
         }
 
-    }
-
-    public void OnClick()
-    {
-        RunningAni();
-        gameman.GetComponent<GameStat>().GetSocre();
-        m_camera.GetComponent<Camera>().backgroundColor = new Color(_colorValueX, _colorValueY, _colorValueZ);
-        
-        
-        var _coin = Instantiate(_clickeffect, transform.position, Quaternion.identity);
-        _coin.transform.localScale = new Vector3(0.6f,0.7f,1);
-        ColorChange();
-        
-
-        _anim.SetTrigger("AniPlayer");
-
-        //Debug.Log("Clicked");
-
-        if (_sfx != null)
+        void Update()
         {
-            _sfx.Play();
-        }
-            
-
-    }
-
-    private void ColorChange()
-    {
-        if (_colorValueX >= 1 && _colorValueY < 1 && _colorValueZ < 1)
-        {
-            Debug.Log("C1");
-            _colorValueY -= 0.02f;
-            _colorValueZ += 0.02f;
-        }
-        else if (_colorValueX <= 0.45 && _colorValueY < 1 && _colorValueZ >= 1)
-        {
-            _colorValueY += 0.02f;
-            Debug.Log("C2");
-        }
-        else if (_colorValueX >= 1 && _colorValueY < .8 && _colorValueZ > .8)
-        {
-            _colorValueZ = 0.8f;
-            _colorValueX -= 0.02f;
-
-            Debug.Log("C3");
-        }
-        else
-        {
-            _colorValueX -= 0.02f;
-            Debug.Log("C4");
+            RotateObject();
+            //ChangeFace();
 
         }
-    }
 
-    public void StartRotate()
-    {
-        _rotating = true;
-    }
-
-    private void RunningAni()
-    {
-        _runnerAni.SetBool("runningtri", true);
-        _runner.transform.DOMoveX(_moveValue, 0.2f, false);
-
-        //_runner.transform.position += new Vector3(_moveValue, 0, 0);
-        _stopCount = 0.3f;
-        _moveValue += 0.05f;
-
-        if(_moveValue >= 2.13)
+        private void ChangeFace()
         {
-            _moveValue = -2f;
+            if (bpm >= 150 && bpm < 250)
+            {
+                gameObject.GetComponent<Image>().sprite = _faceSprites[1];
+                _rawImage.GetComponent<Image>().sprite = _eyesSprites[1];
+            }
+            else if (bpm >= 250 && bpm < 350)
+            {
+                gameObject.GetComponent<Image>().sprite = _faceSprites[2];
+                _rawImage.GetComponent<Image>().sprite = _eyesSprites[2];
+            }
+            else if (bpm >= 350 && bpm < 400)
+            {
+                gameObject.GetComponent<Image>().sprite = _faceSprites[3];
+                _rawImage.GetComponent<Image>().sprite = _eyesSprites[3];
+            }
+            else if (bpm >= 400)
+            {
+                gameObject.GetComponent<Image>().sprite = _faceSprites[4];
+                _rawImage.GetComponent<Image>().sprite = _eyesSprites[4];
+            }
+            else
+            {
+                gameObject.GetComponent<Image>().sprite = _faceSprites[0];
+                _rawImage.GetComponent<Image>().sprite = _eyesSprites[0];
+            }
+
+        }
+
+        private void BpmTrack()
+        {
+
+            float currentTime = Time.time;
+            float diff = currentTime - lastTime;
+            lastTime = currentTime;
+            bpm = 60f / diff;
+            _runnerAni.SetFloat("Speed", bpm);
+            //Debug.Log(bpm);
+
+        }
+
+        private void OnEnable()
+        {
+            //_anim.Play();
+        }
+
+
+        public void OnClick()
+        {
+            gameman.GetComponent<GameStat>().GetSocre();
+            m_camera.GetComponent<Camera>().backgroundColor = new Color(_colorValueX, _colorValueY, _colorValueZ);
+
+            RunningAni();
+            ColorChange();
+            EffectPlay();
+            _scroll.MountMove();
+            _anim.SetTrigger("AniPlayer");
+            //SpwanCoin();
+
+            //Debug.Log("Clicked");
+
+            if (_sfx != null)
+            {
+                _sfx.Play();
+            }
+            BpmTrack();
+
+        }
+
+        private void SpwanCoin()
+        {
+            var _coin = Instantiate(_clickeffect, transform.position, Quaternion.identity);
+            if (bpm > 300)
+                Instantiate(_dustEffect, _dustPoint.transform.position, _dustPoint.transform.rotation);
+            else
+                Instantiate(_sDust, _dustPoint.transform.position, _dustPoint.transform.rotation);
+            _coin.transform.localScale = new Vector3(0.6f, 0.7f, 1);
+        }
+
+        private void EffectPlay()
+        {
+            if (bpm < 280)
+            {
+                _fire.SetActive(true);
+                _fire.GetComponent<ParticleSystem>().Play(true);
+                _fire.transform.localScale = new Vector3(1, 1, 1);
+                //_speedLine.SetActive(false);
+            }
+            else if (bpm >= 280)
+            {
+                _fire.SetActive(true);
+                _fire.transform.localScale = new Vector3(4, 4, 4);
+                //_speedLine.SetActive(true);
+            }
+            else
+            {
+                _fire.SetActive(false);
+                //_speedLine.SetActive(false);
+            }
+        }
+
+        private void ColorChange()
+        {
+            if (_colorValueX >= 1 && _colorValueY < 1 && _colorValueZ < 1)
+            {
+                //Debug.Log("C1");
+                _colorValueY -= 0.02f;
+                _colorValueZ += 0.02f;
+            }
+            else if (_colorValueX <= 0.45 && _colorValueY < 1 && _colorValueZ >= 1)
+            {
+                _colorValueY += 0.02f;
+                //Debug.Log("C2");
+            }
+            else if (_colorValueX >= 1 && _colorValueY < .8 && _colorValueZ > .8)
+            {
+                _colorValueZ = 0.8f;
+                _colorValueX -= 0.02f;
+
+                //Debug.Log("C3");
+            }
+            else
+            {
+                _colorValueX -= 0.02f;
+                //Debug.Log("C4");
+
+            }
+        }
+
+        public void StartRotate()
+        {
+            _rotating = true;
+        }
+
+        private void RunningAni()
+        {
+            _runnerAni.SetBool("runningtri", true);
+            _runner.transform.DOMoveX(_moveValue, 0.2f, false);
+
+            //_runner.transform.position += new Vector3(_moveValue, 0, 0);
+            _stopCount = 0.3f;
+            _moveValue += 0.05f;
+
+            if (_moveValue >= 1.6)
+            {
+                _moveValue = -2f;
+            }
+        }
+
+        private void RotateObject()
+        {
+            if (_rotating)
+                transform.Rotate(0, 0, zvalue * Time.deltaTime);
+            _stopCount -= Time.deltaTime;
+            if (_stopCount < 0)
+            {
+                _runnerAni.SetBool("runningtri", false);
+                _stopCount = 0;
+            }
         }
     }
 }
