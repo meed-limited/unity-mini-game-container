@@ -18,8 +18,8 @@ namespace SuperUltra.JungleDrum {
             ContainerInterface.Pause();
             EffectControl _ef = _gv.GetComponent<EffectControl>();
             _ef.DofOn();
-            //Time.timeScale = 0;
-            _pauseWindow.SetActive(true);
+            Time.timeScale = 0;
+            //_pauseWindow.SetActive(true);
         }
 
         public void ResumeGame()
