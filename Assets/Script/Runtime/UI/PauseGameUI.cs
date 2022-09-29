@@ -87,6 +87,7 @@ namespace SuperUltra.Container
         void OnUpdateScore(UpdateScoreResponseData data)
         {
             LoadingUI.HideInstance();
+            Hide();
             if (!data.result)
             {
                 MessagePopUpUI.Show(
