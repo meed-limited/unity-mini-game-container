@@ -65,7 +65,7 @@ namespace SuperUltra.Container
 
         void Hide()
         {
-            _popUp.Hide().OnComplete(
+            _popUp.Hide().SetUpdate(true).OnComplete(
                 () =>
                 {
                     _pauseMenuCanvas.gameObject.SetActive(false);
