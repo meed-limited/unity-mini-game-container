@@ -31,7 +31,7 @@ namespace SuperUltra.Container
         // Start is called before the first frame update
         void Start()
         {
-            Initialize();
+
         }
 
         public void Initialize()
@@ -48,7 +48,7 @@ namespace SuperUltra.Container
             }
         }
 
-        public void SetAvatar(Texture2D texture)
+        void SetAvatar(Texture2D texture)
         {
             if (_avatar && texture)
             {
@@ -64,7 +64,6 @@ namespace SuperUltra.Container
         {
             LoadingUI.ShowInstance();
             NetworkManager.GetUserNFT(
-                UserData.playFabId,
                 OnUserNFTDataResponse
             );
         }

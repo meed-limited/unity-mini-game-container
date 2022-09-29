@@ -20,7 +20,6 @@ namespace SuperUltra.Container
         [SerializeField] Canvas _avatarSelectPage;
         [SerializeField] Canvas _navigationPage;
         [SerializeField] MessagePopUpUI _messagePopUpUI;
-        [SerializeField] GameListUI _gameListUI;
         RectTransform _prevUI;
         int _prevPagenumber;
         Dictionary<Canvas, int> _pageToCanvas = new Dictionary<Canvas, int>();
@@ -48,7 +47,6 @@ namespace SuperUltra.Container
             _profilePage.gameObject.SetActive(false);
             _profileEditPage.gameObject.SetActive(false);
             _avatarSelectPage.gameObject.SetActive(false);
-            _messagePopUpUI.gameObject.SetActive(false);
 
             _navigationPage.gameObject.SetActive(true);
             _gameListPage.gameObject.SetActive(true);
@@ -232,17 +230,19 @@ namespace SuperUltra.Container
                 MessagePopUpUI.Show(data.message, "Back", () => ToPage(_profilePage));
                 return;
             }
-            NetworkManager.GetUserData(() =>
-                {
-                    LoadingUI.HideInstance();
-                    ToProfilePage();
-                }
-            );
+            LoadingUI.HideInstance();
+            ToProfilePage();
         }
 
         public void ShowPopUP(RectTransform content, string actionButtonMessage = "", Action actionButtonCallback = null, bool shouldHideAfterAction = true)
         {
             MessagePopUpUI.Show(content, actionButtonMessage, actionButtonCallback, shouldHideAfterAction);
+        }
+
+        public void UpdateAvatar(Texture2D texture2D)
+        {
+            
+
         }
 
         public void ToNewsPage() => ToPage(_newsPage);
@@ -266,7 +266,14 @@ namespace SuperUltra.Container
             ToPage(_profileEditPage);
         }
         public void ToSeasonPage() => ToPage(_seasonPassPage);
-        public void ToGamePage() => ToPage(_gameListPage);
+        public void ToGamePage(){
+            MainGameUI menuUI = _gameListPage.GetComponent<MainGameUI>();
+            if (menuUI)
+            {
+                menuUI.Initialize();
+            }
+            ToPage(_gameListPage);
+        }
         public void ToAvatarSelectPage() => ToPage(_avatarSelectPage);
         public void ToLeaderboardPage()
         {

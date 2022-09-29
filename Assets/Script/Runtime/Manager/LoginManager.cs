@@ -241,12 +241,19 @@ namespace SuperUltra.Container
         public void ToMenu()
         {
             NetworkManager.LoginRequest(
-                () =>
+                (ResponseData data) =>
                 {
-                    SceneLoader.ToMenu();
-                    LoadingUI.HideInstance();
-                },
-                () => { }
+                    if(data.result)
+                    {
+                        SceneLoader.ToMenu();
+                        LoadingUI.HideInstance();
+                    }
+                    else
+                    {
+                        MessagePopUpUI.Show("Login fail");
+                        LoadingUI.HideInstance();
+                    }
+                }
             );
         }
 

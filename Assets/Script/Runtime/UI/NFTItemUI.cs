@@ -7,7 +7,9 @@ namespace SuperUltra.Container
 
     public class NFTItem
     {
+        public int id;
         public string name; 
+        public string description;
         public Texture2D texture2D;
     }
 

@@ -73,9 +73,9 @@ namespace SuperUltra.Container
                 rankPosition = gameData.currentUserPosition,
                 avatarTexture = UserData.profilePic,
                 name = UserData.userName,
-                score = gameData.currentUserScore
+                score = gameData.currentUserScore,
+                reward = gameData.currentUserReward
             };
-            Debug.Log("CreateUserTournamentData " + userRank.rankPosition + " " + userRank.name);
             _userLeaderboardUI.SetData(userRank);
         }
 

@@ -17,11 +17,11 @@ MonoBehaviour:
     remoteFolderName: demo
     catalogName: catalog_2022.07.07.07.46.19.hash
     mainSceneKey: Assets/Scenes/DemoSampleScene.unity
-    posterImage: {fileID: 21300000, guid: d5d4e400fff891e488fa4de5c3633190, type: 3}
-    bannerImage: {fileID: 21300000, guid: da6f16291c90f12459247e88366247b6, type: 3}
-  - gameId: 0
+    posterImage: {fileID: 21300000, guid: 72addebf086044f4bb5e0ce611798c3b, type: 3}
+    bannerImage: {fileID: 21300000, guid: 97f2274c8cb526e488d89d15ec5f2705, type: 3}
+  - gameId: 1
     remoteFolderName: poke-a-mango
     catalogName: catalog_2022.07.12.07.02.39.hash
     mainSceneKey: 
-    posterImage: {fileID: 0}
-    bannerImage: {fileID: 0}
+    posterImage: {fileID: 21300000, guid: d5d4e400fff891e488fa4de5c3633190, type: 3}
+    bannerImage: {fileID: 21300000, guid: da6f16291c90f12459247e88366247b6, type: 3}

@@ -17,13 +17,18 @@ namespace SuperUltra.Container
 
         void Start()
         {
+            Initialize();
+        }
+
+        public void Initialize()
+        {
             SetLevel(UserData.rankLevel);
             SetBalance(UserData.totalTokenNumber);
             SetRankTitle(UserData.rankTitle);
             SetAvatar(UserData.profilePic);
         }
 
-        public void SetAvatar(Texture2D texture)
+        void SetAvatar(Texture2D texture)
         {
             if (_avatar && texture)
             {

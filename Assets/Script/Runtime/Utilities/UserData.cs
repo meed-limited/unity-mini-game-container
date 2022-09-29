@@ -11,6 +11,8 @@ namespace SuperUltra.Container
         public static string playFabId;
         public static string userName;
         public static Texture2D profilePic;
+        /// <summary> a texture ready to send or sent to update user profile. </summary>
+        public static Texture2D pendingProfilePic;
         public static string email;
         public static int totalTokenNumber;
         public static string walletAddress;
