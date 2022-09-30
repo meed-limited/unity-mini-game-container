@@ -97,7 +97,7 @@ namespace SuperUltra.Container
                 );
                 return;
             }
-            SceneLoader.ToMenu();
+            ContainerInterface.ReturnToMenu();
         }
 
         public void HowToPlay()
