@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using SuperUltra.Container;
 
 public class SFXToggle : MonoBehaviour
 {
@@ -13,6 +14,11 @@ public class SFXToggle : MonoBehaviour
     AudioSource _sfx;
     AudioSource _badSfx;
 
+
+    private void OnEnable()
+    {
+        ContainerInterface.OnEffectVolumeChange += SFXOnOff;
+    }
     private void Start()
     {
         _toggle = gameObject.GetComponent<Toggle>();
@@ -20,9 +26,9 @@ public class SFXToggle : MonoBehaviour
         _badSfx = _badClicker.GetComponent<AudioSource>();
 
     }
-    public void SFXOnOff()
+    public void SFXOnOff(bool _inOn)
     {
-        if (_toggle.isOn)
+        if (_inOn)
         {
             if (_sfx != null || _badSfx != null)
             {

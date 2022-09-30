@@ -13,6 +13,14 @@ namespace SuperUltra.JungleDrum {
         [SerializeField]
         GameObject _gv;
 
+        private void OnEnable()
+        {
+            ContainerInterface.OnReturnMenu += ResumeGame;
+        }
+        private void DisEnable()
+        {
+            ContainerInterface.OnReturnMenu -= ResumeGame;
+        }
         public void PauseGame()
         {
             ContainerInterface.Pause();
@@ -28,7 +36,7 @@ namespace SuperUltra.JungleDrum {
             EffectControl _ef = _gv.GetComponent<EffectControl>();
             _ef.DofOff();
             Time.timeScale = 1;
-            _pauseWindow.SetActive(false);
+            //_pauseWindow.SetActive(false);
         }
     }
 }

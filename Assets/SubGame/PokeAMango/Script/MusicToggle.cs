@@ -10,8 +10,7 @@ namespace SuperUltra.JungleDrum
     {
         [SerializeField]
         GameObject _music;
-        [SerializeField]
-        private Toggle _toggle;
+
 
         private void OnEnable()
         {
@@ -23,20 +22,22 @@ namespace SuperUltra.JungleDrum
             ContainerInterface.OnMusicVolumeChange -= MusicOnOff;
         }
 
-        private void Start()
-        {
-            _toggle = gameObject.GetComponent<Toggle>();
-        }
+
         public void MusicOnOff(bool isOn)
         {
             if (isOn)
             {
                 _music.SetActive(true);
-                ContainerInterface.MusicVolumeChange(true);
+                //ContainerInterface.MusicVolumeChange(true);
+                Debug.Log("IsOn");
             }
             else
+            {
                 _music.SetActive(false);
-                ContainerInterface.MusicVolumeChange(false);
+                //ContainerInterface.MusicVolumeChange(false);
+                Debug.Log("IsOn");  
+
+            }
         }
     }
 }
