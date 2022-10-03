@@ -3,32 +3,63 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using SuperUltra.Container;
+using SuperUltra.JungleDrum;
 
-public class SceneManger : MonoBehaviour
+namespace SuperUltra.JungleDrum
 {
-    private void Awake()
-    {
-        Debug.Log("awake");
-        Time.timeScale = 0;
-    }
 
-    public void RestartSenece()
+    public class SceneManger : MonoBehaviour
     {
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        SceneManager.LoadScene(0);
-        Time.timeScale = 1;
-    }
+        [SerializeField]
+        private GameObject _tutor;
+        [SerializeField]
+        private EffectControl _ev;
+        [SerializeField]
+        private GameObject _start;
 
-    public void Tourment()
-    {
-        SceneManager.LoadScene(2);
-    }
 
-    public void SuddenDead()
-    {
-        SceneManager.LoadScene(1);
+        private void Awake()
+        {
+            Debug.Log("awake");
+            Time.timeScale = 0;
+        }
+
+        private void Start()
+        {
+            if (!PlayerPrefs.HasKey("firstTime")) //return true if the key exist
+            {
+                _ev.DofOff();
+                _tutor.SetActive(true);
+                _start.SetActive(false);
+                Time.timeScale = 1;
+                PlayerPrefs.SetInt("firstTime", 0);
+            }
+            else
+            {
+
+                print("It is not the first time in the game.");
+                //because the key "firstTime"
+            }
+        }
+        public void RestartSenece()
+        {
+            //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            //SceneManager.LoadScene(0);
+            ContainerInterface.PlayAgain();
+            Time.timeScale = 1;
+        }
+
+        public void Tourment()
+        {
+            SceneManager.LoadScene(2);
+        }
+
+        public void SuddenDead()
+        {
+            SceneManager.LoadScene(1);
+        }
+
     }
-   
 }
 
 

@@ -1,28 +1,42 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SuperUltra.JungleDrum;
+using SuperUltra.Container;
 
-public class PauseButton : MonoBehaviour
-{
-    [SerializeField]
-    GameObject _pauseWindow;
-    [SerializeField]
-    GameObject _gv;
+namespace SuperUltra.JungleDrum {
 
-    public void PauseGame()
+    public class PauseButton : MonoBehaviour
     {
-        EffectControl _ef = _gv.GetComponent<EffectControl>();
-        _ef.DofOn();
-        Time.timeScale = 0;
-        _pauseWindow.SetActive(true);
-    }
+        [SerializeField]
+        GameObject _pauseWindow;
+        [SerializeField]
+        GameObject _gv;
 
-    public void ResumeGame()
-    {
-        EffectControl _ef = _gv.GetComponent<EffectControl>();
-        _ef.DofOff();
-        Time.timeScale = 1;
-        _pauseWindow.SetActive(false);
-    }
+        private void OnEnable()
+        {
+            ContainerInterface.OnReturnMenu += ResumeGame;
+        }
+        private void DisEnable()
+        {
+            ContainerInterface.OnReturnMenu -= ResumeGame;
+        }
+        public void PauseGame()
+        {
+            ContainerInterface.Pause();
+            EffectControl _ef = _gv.GetComponent<EffectControl>();
+            _ef.DofOn();
+            Time.timeScale = 0;
+            //_pauseWindow.SetActive(true);
+        }
 
+        public void ResumeGame()
+        {
+            //ContainerInterface.Resume();
+            EffectControl _ef = _gv.GetComponent<EffectControl>();
+            _ef.DofOff();
+            Time.timeScale = 1;
+            //_pauseWindow.SetActive(false);
+        }
+    }
 }

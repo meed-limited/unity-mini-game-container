@@ -2,25 +2,47 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using SuperUltra.Container;
 
-public class MusicToggle : MonoBehaviour
+namespace SuperUltra.JungleDrum
 {
-    [SerializeField]
-    GameObject _music;
-    [SerializeField]
-    private Toggle _toggle;
+    public class MusicToggle : MonoBehaviour
+    {
+        [SerializeField]
+        GameObject _music;
 
-    private void Start()
-    {
-        _toggle = gameObject.GetComponent<Toggle>();
-    }
-    public void MusicOnOff()
-    {
-        if (_toggle.isOn)
+
+        private void OnEnable()
         {
-            _music.SetActive(true);
+            ContainerInterface.OnMusicVolumeChange += MusicOnOff;
+            ContainerInterface.OnPauseMenuHide += Resume;
         }
-        else
-            _music.SetActive(false);
+
+        private void OnDisable()
+        {
+            ContainerInterface.OnMusicVolumeChange -= MusicOnOff;
+            ContainerInterface.OnPauseMenuHide -= Resume;
+        }
+
+        private void Resume()
+        {
+            Time.timeScale = 1;
+        }
+        public void MusicOnOff(bool isOn)
+        {
+            if (isOn)
+            {
+                _music.SetActive(true);
+                //ContainerInterface.MusicVolumeChange(true);
+                Debug.Log("IsOn");
+            }
+            else
+            {
+                _music.SetActive(false);
+                //ContainerInterface.MusicVolumeChange(false);
+                Debug.Log("IsOn");  
+
+            }
+        }
     }
 }

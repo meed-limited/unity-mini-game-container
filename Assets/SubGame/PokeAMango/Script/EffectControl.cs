@@ -3,37 +3,41 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using SuperUltra.JungleDrum;
 
-public class EffectControl : MonoBehaviour
+namespace SuperUltra.JungleDrum
 {
-    [SerializeField]
-    Volume _volume;
-    DepthOfField _dof;
-
-    private void Awake()
+    public class EffectControl : MonoBehaviour
     {
-        VolumeProfile profile = _volume.sharedProfile;
+        [SerializeField]
+        Volume _volume;
+        DepthOfField _dof;
 
-        profile.TryGet<DepthOfField>(out _dof);
-        _dof.active = true;
-    }
+        private void Awake()
+        {
+            VolumeProfile profile = _volume.sharedProfile;
+
+            profile.TryGet<DepthOfField>(out _dof);
+            _dof.active = true;
+        }
 
 
 
 
-    public void DofOn()
-    {
-        VolumeProfile profile = _volume.sharedProfile;
+        public void DofOn()
+        {
+            VolumeProfile profile = _volume.sharedProfile;
 
-        profile.TryGet<DepthOfField>(out _dof);
-        _dof.active = true;
-    }
+            profile.TryGet<DepthOfField>(out _dof);
+            _dof.active = true;
+        }
 
-    public void DofOff()
-    {
-        VolumeProfile profile = _volume.sharedProfile;
+        public void DofOff()
+        {
+            VolumeProfile profile = _volume.sharedProfile;
 
-        profile.TryGet<DepthOfField>(out _dof);
-        _dof.active = false;
+            profile.TryGet<DepthOfField>(out _dof);
+            _dof.active = false;
+        }
     }
 }
