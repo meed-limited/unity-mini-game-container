@@ -19,9 +19,15 @@ MonoBehaviour:
     mainSceneKey: Assets/Scenes/DemoSampleScene.unity
     posterImage: {fileID: 21300000, guid: d5d4e400fff891e488fa4de5c3633190, type: 3}
     bannerImage: {fileID: 21300000, guid: da6f16291c90f12459247e88366247b6, type: 3}
-  - gameId: 0
+  - gameId: 1
     remoteFolderName: poke-a-mango
     catalogName: catalog_2022.09.20.03.34.04.hash
     mainSceneKey: Assets/Scenes/Tourment.unity
+    posterImage: {fileID: 0}
+    bannerImage: {fileID: 0}
+  - gameId: 3
+    remoteFolderName: Gazoline-Racing
+    catalogName: catalog_2022.09.30.07.55.46.hash
+    mainSceneKey: Assets/Scenes/SampleScene.unity
     posterImage: {fileID: 0}
     bannerImage: {fileID: 0}
