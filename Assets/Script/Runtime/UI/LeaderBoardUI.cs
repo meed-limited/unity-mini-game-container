@@ -151,6 +151,7 @@ namespace SuperUltra.Container
             _nextPage = 0;
             _isLastPage = false;
             _isRequested = false;
+            _leaderboardScroll.verticalNormalizedPosition = 0;
             NetworkManager.GetTournament(
                 gameId,
                 (GetTournamentResponseData data) =>
@@ -189,6 +190,7 @@ namespace SuperUltra.Container
 
         void OnGetLeaderboardRequestFinish(GetLeaderboardResponseData data)
         {
+            Debug.Log($"OnGetLeaderboardRequestFinish {data.nextPage} {data.nextPage}");
             _loadingUI.Hide();
             _nextPage = data.nextPage;
             _isLastPage = _nextPage == -1;

@@ -18,11 +18,11 @@ namespace SuperUltra.Container
     {
         public LeaderboardUserData[] list;
         public float reward;
-        public int position;
-        public int score;
+        public int position = -1;
+        public int score = -1;
         public string rankTitle = "";
-        public int experiencePoints;
-        public int pointsToNextRank;
+        public int experiencePoints = -1;
+        public int pointsToNextRank = -1;
     }
 
     public class GetUserNFTResponseData : ResponseData
@@ -33,8 +33,8 @@ namespace SuperUltra.Container
     public class GetLeaderboardResponseData : ResponseData
     {
         public LeaderboardUserData[] list;
-        public int nextPage;
-        public int prevPage;
+        public int nextPage = -1;
+        public int prevPage = -1;
     }
 
     public class GetImageResponseData : ResponseData
@@ -280,8 +280,6 @@ namespace SuperUltra.Container
                 responseData.result = true;
                 JSONNode json = JSON.Parse(response.DataAsText);
                 Debug.Log("OnLeaderboardRequestFinished " + response.DataAsText);
-                bool isBoardInfoEmpty = json["boardInfo"] != null; 
-                JSONNode boardInfo = json["boardInfo"];
                 gameData.tournament.prizePool = json["bonus"];
                 if (json["users"] != null && json["users"].IsArray)
                 {
@@ -290,14 +288,16 @@ namespace SuperUltra.Container
                     list = GetLeaderboardUserData(json["users"].AsArray);
                     responseData.list = list;
                 }
-                if (!isBoardInfoEmpty)
-                    Debug.Log("boardInfo" + boardInfo.ToString());
-                gameData.currentUserPosition = isBoardInfoEmpty ? -1 : boardInfo["position"];
-                gameData.currentUserReward = isBoardInfoEmpty ? -1 : boardInfo["reward"];
-                gameData.currentUserScore = isBoardInfoEmpty ? -1 : boardInfo["score"];
+                if (json["boardInfo"] != null)
+                {
+                    JSONNode boardInfo = json["boardInfo"];
+                    gameData.currentUserPosition = boardInfo["position"];
+                    gameData.currentUserReward = boardInfo["reward"];
+                    gameData.currentUserScore = boardInfo["score"];
+                }
 
                 responseData.nextPage = json["nextPageNumber"] != null ? json["nextPageNumber"] : -1;
-                responseData.prevPage = json["prevPageNumber"] != null ? json["prevPageNumber"] : -1; ;
+                responseData.prevPage = json["prevPageNumber"] != null ? json["prevPageNumber"] : -1;
             }
             callback?.Invoke(responseData);
         }
