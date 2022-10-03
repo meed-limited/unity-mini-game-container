@@ -79,7 +79,7 @@ namespace SuperUltra.Container
                 MessagePopUpUI.Show(
                     data.message,
                     "Back to Menu",
-                    SceneLoader.ToMenu
+                    ContainerInterface.ReturnToMenu
                 );
                 return;
             }

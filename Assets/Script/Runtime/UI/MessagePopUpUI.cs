@@ -44,7 +44,7 @@ namespace SuperUltra.Container
 
             _closeButton.gameObject.SetActive(shouldShowCloseButton);
 
-            _popUpUI.Show(message);
+            _popUpUI.Show(message).SetUpdate(true);
         }
 
         public void ShowCustomContent(
@@ -66,7 +66,7 @@ namespace SuperUltra.Container
             {
                 text.text = actionButtonText;
             }
-            _popUpUI.Show();
+            _popUpUI.Show().SetUpdate(true);
         }
 
         public void Hide()
@@ -79,7 +79,7 @@ namespace SuperUltra.Container
                 }
             }
             _actionButton.onClick.RemoveAllListeners();
-            _popUpUI.Hide().OnComplete(() => gameObject.SetActive(false));
+            _popUpUI.Hide().SetUpdate(true).OnComplete(() => gameObject.SetActive(false));
         }
 
         void SetActionButtonText(string message, Action callback, bool shouldHideAfterAction)

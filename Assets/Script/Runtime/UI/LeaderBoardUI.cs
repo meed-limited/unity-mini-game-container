@@ -144,14 +144,13 @@ namespace SuperUltra.Container
             _rankingItemContainer.sizeDelta = Vector2.zero;
         }
 
-        public void RefreshLeaderboard(int gameId = 0)
+        void RefreshLeaderboard(int gameId = 0)
         {
             LoadingUI.ShowInstance();
             ClearLeaderBoard();
             _nextPage = 0;
             _isLastPage = false;
-            _isRequested = false;
-            _leaderboardScroll.verticalNormalizedPosition = 0;
+            RequestLeaderboardList();
             NetworkManager.GetTournament(
                 gameId,
                 (GetTournamentResponseData data) =>
@@ -177,15 +176,20 @@ namespace SuperUltra.Container
                 {
                     return;
                 }
-                _isRequested = true;
-                _loadingUI.Show();
-                NetworkManager.GetLeaderboard(
-                    _currentGameId,
-                    _nextPage,
-                    _lazyLoadCount,
-                    OnGetLeaderboardRequestFinish
-                );
+                RequestLeaderboardList();
             }
+        }
+
+        void RequestLeaderboardList()
+        {
+            _isRequested = true;
+            _loadingUI.Show();
+            NetworkManager.GetLeaderboard(
+                _currentGameId,
+                _nextPage,
+                _lazyLoadCount,
+                OnGetLeaderboardRequestFinish
+            );
         }
 
         void OnGetLeaderboardRequestFinish(GetLeaderboardResponseData data)

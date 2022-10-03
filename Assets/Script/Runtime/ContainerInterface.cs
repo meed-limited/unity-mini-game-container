@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace SuperUltra.Container
 {
@@ -21,7 +22,7 @@ namespace SuperUltra.Container
         public static void EffectVolumeChange(bool isOn) => OnEffectVolumeChange?.Invoke(isOn);
         public static void MusicVolumeChange(bool isOn) => OnMusicVolumeChange?.Invoke(isOn);
         /// <summary> Return to Main menu from the game, unloading current game scene </summary>
-        public static void ReturnToMenu() => OnReturnMenu?.Invoke();
+        public static void ReturnToMenu() { Debug.Log("asdf"); OnReturnMenu?.Invoke(); }
         /// <summary> Pause the game and show pause menu during game play </summary>
         public static void Pause() => OnPauseMenuShow?.Invoke();
         /// <summary> Resume game play from the Pause menu </summary>
