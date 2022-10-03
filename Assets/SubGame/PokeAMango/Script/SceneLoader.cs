@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceProviders;
+using SuperUltra.JungleDrum;
 
-namespace SuperUltra.PokeAMango
+namespace SuperUltra.JungleDrum
 {
     public class SceneLoader : MonoBehaviour
     {
@@ -13,28 +13,27 @@ namespace SuperUltra.PokeAMango
         
         public void ToMainScene()
         {
-            AsyncOperationHandle<SceneInstance> operationHandle = Addressables.LoadSceneAsync("MainScene");
+            AsyncOperationHandle operationHandle = Addressables.LoadSceneAsync("MainScene");
             operationHandle.Completed += OnSceneLoaded;
         }
         
         public void ToGameScene()
         {
-            AsyncOperationHandle<SceneInstance> operationHandle = Addressables.LoadSceneAsync("SuddenDeath");
-            Debug.Log("Poke");
+            AsyncOperationHandle operationHandle = Addressables.LoadSceneAsync("SuddenDeath");
             operationHandle.Completed += OnSceneLoaded;
         }
 
         public void ToTourScene()
         {
-            AsyncOperationHandle<SceneInstance> operationHandle = Addressables.LoadSceneAsync("Tourment");
+            AsyncOperationHandle operationHandle = Addressables.LoadSceneAsync("Tourment");
             operationHandle.Completed += OnSceneLoaded;
         }
         
-        void OnSceneLoaded(AsyncOperationHandle<SceneInstance> operationHandle)
+        void OnSceneLoaded(AsyncOperationHandle operationHandle)
         {
+            //Debug.Log("        void OnSceneLoaded(AsyncOperationHandle operationHandle)");
             if (operationHandle.Status == AsyncOperationStatus.Succeeded)
             {
-                Debug.Log("debug" + operationHandle.Result.Scene.name);
                 // Unload previous scene
                 if (_currentSceneHandle.IsValid())
                 {

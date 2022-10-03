@@ -1,16 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SuperUltra.JungleDrum;
 
-public class EffectDestroy : MonoBehaviour
+namespace SuperUltra.JungleDrum
 {
-    private void Start()
-    {
-        Invoke("Destroyit", 2f);
-    }
 
-    private void Destroyit()
+    public class EffectDestroy : MonoBehaviour
     {
-        Destroy(gameObject);
+        private void Start()
+        {
+            Invoke("Destroyit", 2f);
+        }
+
+        private void Destroyit()
+        {
+            Destroy(gameObject);
+        }
     }
 }

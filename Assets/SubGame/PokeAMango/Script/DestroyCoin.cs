@@ -1,11 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SuperUltra.JungleDrum;
 
-public class DestroyCoin : MonoBehaviour
+namespace SuperUltra.JungleDrum
 {
-    private void Start()
+
+    public class DestroyCoin : MonoBehaviour
     {
-        Destroy(gameObject, 0.5f);
+        private void Start()
+        {
+            Destroy(gameObject, 1.5f);
+        }
     }
 }
