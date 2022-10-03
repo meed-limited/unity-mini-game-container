@@ -12,6 +12,12 @@ namespace SuperUltra.Container
         static SessionData()
         {
             ContainerInterface.OnSetScore += OnSetScore;
+            ContainerInterface.OnGetVolumeSetting += OnGetVolumeSetting;
+        }
+
+        static VolumeSetting OnGetVolumeSetting()
+        {
+            return new VolumeSetting { isMusicOn = IsMusicOn, isEffectOn = IsEffectSoundOn };
         }
 
         static void OnSetScore(float score)
