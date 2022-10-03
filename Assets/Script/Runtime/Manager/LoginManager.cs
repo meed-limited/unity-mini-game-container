@@ -38,8 +38,7 @@ namespace SuperUltra.Container
             ToLoginSelection();
             AutoLoginWithToken();
         }
-
-
+        
         void SwitchRayCastOnOff(Transform transform, bool isOn = true)
         {
             GraphicRaycaster graphicRaycaster = transform.GetComponent<GraphicRaycaster>();

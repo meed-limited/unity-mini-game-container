@@ -22,23 +22,6 @@ namespace SuperUltra.Container
             private set { _gameDataList = value; }
         }
 
-        List<LeaderboardUserData> _leaderboard;
-        /// <summary>
-        /// a List of LeaderboardUserData
-        /// </summary>
-        public List<LeaderboardUserData> leaderboard
-        {
-            get
-            {
-                if (_leaderboard == null)
-                {
-                    _leaderboard = new List<LeaderboardUserData>();
-                }
-                return _leaderboard;
-            }
-            private set { _leaderboard = value; }
-        }
-
         Tournament _tournament;
         /// <summary>
         /// a Tournament object

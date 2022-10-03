@@ -26,12 +26,15 @@ namespace SuperUltra.Container
         public const string TermsUrl = GitBookUrl + "/terms-and-conditions";
         public const string PrivacyUrl = GitBookUrl + "/privacy-policy";
         public const string HowToPlayUrl = GitBookUrl + "/faq/how-to-play";
+        public const string HowToWithDrawalUrl = GitBookUrl + "/faq/withdrawal";
         public const string YotubeUrl = "https://www.youtube.com/channel/UCMstYEJboRs6K096AP_sz8Q";
         public const string TwitterUrl = "https://twitter.com/ultranova_app";
         // TODO
         public const string DiscordUrl = "https://twitter.com/ultranova_app";
         // TODO 
         public const string MarketPlaceUrl = "https://twitter.com/ultranova_app";
+        // TODO
+        public const string WithDrawUrl = "https://main.d41x8g6yyhv7w.amplifyapp.com/dashboard";
 
         #endregion
 

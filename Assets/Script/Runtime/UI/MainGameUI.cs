@@ -22,7 +22,7 @@ namespace SuperUltra.Container
 
         public void Initialize()
         {
-            SetLevel(UserData.rankLevel);
+            SetLevelBar(UserData.pointsInCurrentRank, UserData.pointsToNextRank);
             SetBalance(UserData.totalTokenNumber);
             SetRankTitle(UserData.rankTitle);
             SetAvatar(UserData.profilePic);
@@ -40,10 +40,9 @@ namespace SuperUltra.Container
             }
         }
 
-        void SetLevel(int level)
+        void SetLevelBar(float experiencePoints, float pointToNextRank)
         {
-            _levelText.text = level.ToString();
-            _levelBar.DOFillAmount(level / 100f, 1f);
+            _levelBar.DOFillAmount(experiencePoints / pointToNextRank, 1f);
         }
 
         void SetBalance(int balance)

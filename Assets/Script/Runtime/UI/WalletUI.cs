@@ -127,13 +127,12 @@ namespace SuperUltra.Container
                 return;
             }
 
-            // TODO
-            Application.OpenURL("https://www.youtube.com/watch?v=FOfV8TvwaZ8");
+            Application.OpenURL(Config.WithDrawUrl);
         }
 
         public void OnClickHowToWithDrawal()
         {
-            Application.OpenURL("https://superultra.gitbook.io/ultranova/faq/withdrawal");
+            Application.OpenURL(Config.HowToWithDrawalUrl);
         }
 
         public void SwitchTab(RectTransform transform)
