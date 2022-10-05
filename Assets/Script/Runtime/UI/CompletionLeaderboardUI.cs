@@ -46,7 +46,6 @@ namespace SuperUltra.Container
             _popUp.Hide().OnComplete(
                 () =>
                 {
-                    Debug.Log("CompleteLeader Hide");
                     _canvas.gameObject.SetActive(false);
                 }
             );
@@ -60,7 +59,6 @@ namespace SuperUltra.Container
             }
             foreach (LeaderboardUserData data in list)
             {
-                Debug.Log("GenerateRanking " + data.rankPosition + " " + data.score);
                 LeaderboardItemUI rankingItemUI = Instantiate(_leaderboardItemUIPrefab, _leaderboardItemContainer);
                 rankingItemUI.SetData(data);
             }
@@ -73,7 +71,6 @@ namespace SuperUltra.Container
 
         public void SetUserData(LeaderboardUserData data)
         {
-            Debug.Log($"SetUserData {data.name}");
             _userLeaderboardUI.SetData(data);
         }
 

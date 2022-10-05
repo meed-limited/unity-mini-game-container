@@ -10,8 +10,10 @@ namespace SuperUltra.Container
         public int rankPosition;
         public string name;
         public Texture2D avatarTexture;
+        public string avatarUrl;
         public int score;
         public float reward;
+
     }
 
 }

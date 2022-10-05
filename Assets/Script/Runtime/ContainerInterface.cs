@@ -2,6 +2,11 @@ using System;
 
 namespace SuperUltra.Container
 {
+    public class VolumeSetting
+    {
+        public bool isMusicOn;
+        public bool isEffectOn;   
+    }
 
     public static class ContainerInterface
     {
@@ -13,6 +18,7 @@ namespace SuperUltra.Container
         public static event Action OnClickHowToPlay;
         public static event Action OnGameOver;
         public static event Action<float> OnSetScore;
+        public static event Func<VolumeSetting> OnGetVolumeSetting;
         public static event Action<Action<bool>> OnRequestRewardedAds;
         /// <summary> When user finish watching a rewarded ads </summary>
         public static event Action<bool> OnMusicVolumeChange;
@@ -34,6 +40,7 @@ namespace SuperUltra.Container
         public static void GameOver() => OnGameOver?.Invoke();
         public static void SetScore(float score) => OnSetScore?.Invoke(score);
         public static void RequestRewardedAds(Action<bool> callback) => OnRequestRewardedAds?.Invoke(callback);
+        public static VolumeSetting GetVolumeSetting() => OnGetVolumeSetting?.Invoke();
 
     }
 

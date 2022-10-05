@@ -18,22 +18,37 @@ namespace SuperUltra.Container
 
         public void SetData(LeaderboardUserData data)
         {
-            if(_rank)
+            if (_rank)
                 _rank.text = data.rankPosition.ToString();
-            if(_userName)
+            if (_userName)
                 _userName.text = data.name;
-            if(_score)
+            if (_score)
                 _score.text = data.score.ToString();
-            if(_reward)
+            if (_reward)
                 _reward.text = data.reward.ToString();
-            GetImage(data.avatarTexture);
+
+            GetImage(data);
         }
 
-        void GetImage(Texture2D texture)
+        void GetImage(LeaderboardUserData data)
         {
-            if(_image == null)
+            if (_image == null)
                 return;
-            
+            if (data.avatarTexture != null)
+            {
+                SetImage(data.avatarTexture);
+                return;
+            }
+            if (!string.IsNullOrEmpty(data.avatarUrl))
+            {
+                SetImage(data.avatarUrl);
+                return;
+            }
+            GetDefaultAvatar();
+        }
+
+        void SetImage(Texture2D texture)
+        {
             if (texture == null)
             {
                 GetDefaultAvatar();
@@ -41,15 +56,45 @@ namespace SuperUltra.Container
             }
 
             _image.sprite = Sprite.Create(
-                texture, 
-                new Rect(0, 0, texture.width, texture.height), 
+                texture,
+                new Rect(0, 0, texture.width, texture.height),
                 new Vector2(0.5f, 0.5f)
             );
         }
 
+        void SetImage(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                GetDefaultAvatar();
+            }
+
+            NetworkManager.GetImage(url, (GetImageResponseData data) =>
+            {
+                if (this == null)
+                {
+                    return;
+                }
+                if (!data.result)
+                {
+                    GetDefaultAvatar();
+                    return;
+                }
+                _image.sprite = Sprite.Create(
+                    data.texture2D,
+                    new Rect(0, 0, data.texture2D.width, data.texture2D.height),
+                    new Vector2(0.5f, 0.5f)
+                );
+            });
+        }
+
         void GetDefaultAvatar()
         {
-            _image.sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f));
+            if (_image == null)
+            {
+                return;
+            }
+            _image.sprite = Sprite.Create(Texture2D.grayTexture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f));
         }
     }
 

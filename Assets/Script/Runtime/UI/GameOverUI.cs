@@ -46,7 +46,7 @@ namespace SuperUltra.Container
 
         void Hide(TweenCallback callback)
         {
-            _popUp.Hide().OnComplete(callback);
+            _popUp.Hide().SetUpdate(true).OnComplete(callback);
         }
 
         void Show()
@@ -79,7 +79,7 @@ namespace SuperUltra.Container
                 MessagePopUpUI.Show(
                     data.message,
                     "Back to Menu",
-                    SceneLoader.ToMenu
+                    ContainerInterface.ReturnToMenu
                 );
                 return;
             }

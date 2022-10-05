@@ -18,11 +18,11 @@ namespace SuperUltra.Container
     {
         public LeaderboardUserData[] list;
         public float reward;
-        public int position;
-        public int score;
+        public int position = -1;
+        public int score = -1;
         public string rankTitle = "";
-        public int experiencePoints;
-        public int pointsToNextRank;
+        public int experiencePoints = -1;
+        public int pointsToNextRank = -1;
     }
 
     public class GetUserNFTResponseData : ResponseData
@@ -33,12 +33,25 @@ namespace SuperUltra.Container
     public class GetLeaderboardResponseData : ResponseData
     {
         public LeaderboardUserData[] list;
+        public int nextPage = -1;
+        public int prevPage = -1;
+    }
+
+    public class GetImageResponseData : ResponseData
+    {
+        public Texture2D texture2D;
     }
 
     public class UpdateUserResponseData : ResponseData
     {
         public string userName;
         public Texture2D texture2D;
+    }
+
+    public class GetTournamentResponseData : ResponseData
+    {
+        public DateTime endDate;
+        public float prizePool;
     }
 
     public static class NetworkManager
@@ -121,7 +134,7 @@ namespace SuperUltra.Container
             request.Send();
         }
 
-        public static void GetLeaderboard(int gameId, int position, Action<GetLeaderboardResponseData> callback)
+        public static void GetLeaderboard(int gameId, int page, int count, Action<GetLeaderboardResponseData> callback)
         {
             // get all th game list from api from Config.domain
             HTTPRequest request = new HTTPRequest(
@@ -134,7 +147,9 @@ namespace SuperUltra.Container
             );
             JSONObject json = new JSONObject();
             json.Add("gameId", gameId);
-            json.Add("position", position);
+            json.Add("platformId", UserData.playFabId);
+            json.Add("count", count);
+            json.Add("page", page);
             request.AddHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
             request.AddHeader("Content-Type", "application/json");
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
@@ -184,6 +199,33 @@ namespace SuperUltra.Container
             }
             
             callback?.Invoke(responseData);
+        }
+
+        public static void GetImage(string avatarUrl, Action<GetImageResponseData> callback = null)
+        {
+            Texture2D texture2D = Texture2D.grayTexture;
+            if (string.IsNullOrEmpty(avatarUrl))
+            {
+                callback?.Invoke(new GetImageResponseData { result = false, texture2D = texture2D});
+                return;
+            }
+            HTTPRequest request = new HTTPRequest(
+                new Uri(avatarUrl),
+                HTTPMethods.Get,
+                (req, res) =>
+                {
+                    bool result = res.IsSuccess && res.Data != null;
+                    if (result)
+                        texture2D = res.DataAsTexture2D;
+                    callback?.Invoke(new GetImageResponseData
+                    {
+                        result = result,
+                        texture2D = texture2D
+                    });
+                }
+            );
+            request.Timeout = TimeSpan.FromSeconds(_timeOut);
+            request.Send();
         }
 
         static void GetAvatar(string avatarUrl, Action<ResponseData> callback = null)
@@ -238,38 +280,24 @@ namespace SuperUltra.Container
                 responseData.result = true;
                 JSONNode json = JSON.Parse(response.DataAsText);
                 Debug.Log("OnLeaderboardRequestFinished " + response.DataAsText);
+                gameData.tournament.prizePool = json["bonus"];
                 if (json["users"] != null && json["users"].IsArray)
                 {
                     int count = json["users"].AsArray.Count;
                     LeaderboardUserData[] list = new LeaderboardUserData[count];
-                    for (int i = 0; i < count; i++)
-                    {
-                        JSONNode item = json["users"].AsArray[i];
-                        Texture2D avatar = new Texture2D(1, 1);
-                        // TODO : reteive in image
-                        avatar.LoadImage(item["avatarTexture"].AsByteArray);
-                        LeaderboardUserData data = new LeaderboardUserData()
-                        {
-                            rankPosition = item["position"].AsInt,
-                            avatarTexture = avatar,
-                            name = item["name"].ToString(),
-                            score = item["score"],
-                            reward = item["bonus"],
-                        };
-                        gameData.leaderboard.Add(data);
-                        list[i] = data;
-                    }
+                    list = GetLeaderboardUserData(json["users"].AsArray);
                     responseData.list = list;
                 }
-                gameData.tournament.prizePool = json["bonus"];
-                // TODO : confirm the structure
-                if(json["boardInfo"] != null)
+                if (json["boardInfo"] != null)
                 {
                     JSONNode boardInfo = json["boardInfo"];
                     gameData.currentUserPosition = boardInfo["position"];
                     gameData.currentUserReward = boardInfo["reward"];
                     gameData.currentUserScore = boardInfo["score"];
                 }
+
+                responseData.nextPage = json["nextPageNumber"] != null ? json["nextPageNumber"] : -1;
+                responseData.prevPage = json["prevPageNumber"] != null ? json["prevPageNumber"] : -1;
             }
             callback?.Invoke(responseData);
         }
@@ -309,7 +337,6 @@ namespace SuperUltra.Container
             JSONArray arr = json["games"].AsArray;
             foreach (JSONNode item in arr)
             {
-                Debug.Log($"item {item}");
                 if (item["id"] == null || item["title"] == null)
                 {
                     continue;
@@ -324,7 +351,6 @@ namespace SuperUltra.Container
                     }
                 );
             }
-
         }
 
         public static void LoginRequest(Action<ResponseData> callback)
@@ -452,6 +478,46 @@ namespace SuperUltra.Container
             callback?.Invoke(new ResponseData() { result = result, message = message });
         }
 
+        public static void GetTournament(int gameId, Action<GetTournamentResponseData> callback)
+        {
+            HTTPRequest request = new HTTPRequest(
+                new Uri(Config.Domain + "systems/tournaments/for"),
+                HTTPMethods.Post,
+                (req, res) => OnGetTournamentRequestFinished(req, res, callback)
+            );
+            JSONObject json = new JSONObject();
+            json.Add("gameId", gameId);
+            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.AddHeader("Content-Type", "application/json");
+            request.RawData = Encoding.ASCII.GetBytes(json.ToString());
+            request.Timeout = TimeSpan.FromSeconds(_timeOut);
+            request.Send();
+        }
+
+        static void OnGetTournamentRequestFinished(HTTPRequest request, HTTPResponse response, Action<GetTournamentResponseData> callback)
+        {
+            ResponseData data = ValidateResponse(response);
+            GetTournamentResponseData responseData = new GetTournamentResponseData { result = data.result, message = data.message };
+            if(data.result)
+            {
+                JSONNode json = JSON.Parse(response.DataAsText);
+                Debug.Log("OnGetTournamentRequestFinished " + json.ToString());
+                if(json["game"] != null)
+                {
+                    JSONNode game = json["game"];                    
+                    if (GameData.gameDataList.ContainsKey(game["id"]))
+                    {
+                        Tournament tournament = GameData.gameDataList[game["id"]].tournament;
+                        tournament.endTime = new DateTime().FromTimeStamp(game["endTime"]);
+                        tournament.prizePool = game["pricePool"].AsFloat;
+                        tournament.status = (TournamentStatus)game["status"].AsInt;
+                        Debug.Log(tournament.endTime);
+                    }
+
+                }
+            }
+            callback?.Invoke(responseData);
+        }
 
         public static void CreateUser(string playFabId, Action success, Action failure = null)
         {
@@ -512,15 +578,22 @@ namespace SuperUltra.Container
             for (int i = 0; i < leaderboardBeforeUser.Count; i++)
             {
                 Texture2D avatar = new Texture2D(1, 1);
+                string userName = "";
+                string avatarUrl = "";
                 JSONNode item = leaderboardBeforeUser[i];
                 avatar.LoadImage(item["avatarTexture"].AsByteArray);
+                if(item["userInfo"] != null)
+                {
+                    userName = item["userInfo"]["username"];
+                    avatarUrl = item["userInfo"]["avatarUrl"];
+                }
                 list[i] = new LeaderboardUserData()
                 {
                     rankPosition = item["position"].AsInt,
-                    avatarTexture = avatar,
-                    name = item["name"].ToString(),
+                    avatarUrl = avatarUrl,
+                    name = userName,
                     score = item["score"],
-                    reward = item["reward"],
+                    reward = item["bonus"],
                 };
             }
             

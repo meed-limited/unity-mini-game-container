@@ -93,7 +93,7 @@ namespace SuperUltra.Container
                 MessagePopUpUI.Show(
                     data.message,
                     "Back to Menu",
-                    SceneLoader.ToMenu
+                    ContainerInterface.ReturnToMenu
                 );
                 return;
             }
@@ -103,11 +103,6 @@ namespace SuperUltra.Container
         public void HowToPlay()
         {
             ContainerInterface.HowToPlay();
-        }
-
-        public void tesT()
-        {
-            ContainerInterface.GameOver();
         }
 
         public void ToggleMusic(bool isOn)

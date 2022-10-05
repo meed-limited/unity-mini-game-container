@@ -18,6 +18,21 @@ namespace SuperUltra.Demo
             _scoreText.text = _score.ToString();
         }
 
+        void OnEnable()
+        {
+            ContainerInterface.OnEffectVolumeChange += OnEffectVolumeChange; 
+        }
+
+        void OnDisable()
+        {
+            ContainerInterface.OnEffectVolumeChange -= OnEffectVolumeChange;
+        }
+
+        void OnEffectVolumeChange(bool isOn)
+        {
+            Debug.Log("isOn " + isOn);
+        }
+
         void OnUserRewarded()
         {
             Debug.Log("Demo Rewarded!");
