@@ -87,7 +87,6 @@ namespace SuperUltra.Container
             foreach (var game in GameData.gameDataList)
             {
                 GameData gameData = game.Value;
-                Debug.Log($"game {gameData.name} tounament {gameData.tournament.IsValid()}");
                 RectTransform gameBanner = Instantiate(_gameBannerPrefab, _gameBannerContainer);
                 SetBannerImage(gameBanner.GetComponent<Image>(), game.Key);
                 _pageToGameIdMap.Add(pageCount, game.Key);
@@ -194,7 +193,6 @@ namespace SuperUltra.Container
 
         void OnGetLeaderboardRequestFinish(GetLeaderboardResponseData data)
         {
-            Debug.Log($"OnGetLeaderboardRequestFinish {data.nextPage} {data.nextPage}");
             _loadingUI.Hide();
             _nextPage = data.nextPage;
             _isLastPage = _nextPage == -1;
@@ -225,11 +223,6 @@ namespace SuperUltra.Container
                 return;
             }
             TimeSpan timeLeft = data.tournament.endTime - DateTime.Now;
-            if(timeLeft < TimeSpan.Zero)
-            {
-                _day.text = _hour.text = _minute.text = "--"; 
-                return;
-            }
             if (_day != null)
                 _day.text = timeLeft.Days.ToString();
             if (_hour != null)
@@ -258,8 +251,6 @@ namespace SuperUltra.Container
             {
                 return;
             }
-
-            Debug.Log("UpdateTournamentInfo " + data.id + " " + data.tournament.endTime + " " + data.tournament.prizePool);
 
             if (_gameName != null)
             {

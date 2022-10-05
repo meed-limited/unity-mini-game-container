@@ -226,7 +226,6 @@ namespace SuperUltra.Container
             if (!data.result)
             {
                 LoadingUI.HideInstance();
-                Debug.Log("OnUpdateUserProfile");
                 MessagePopUpUI.Show(data.message, "Back", () => ToPage(_profilePage));
                 return;
             }

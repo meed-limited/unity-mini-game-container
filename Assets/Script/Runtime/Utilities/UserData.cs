@@ -20,6 +20,20 @@ namespace SuperUltra.Container
         public static int pointsToNextRank;
         public static int rankLevel;
         public static string rankTitle;
+        public static NFTItem[] nftItemList;
+
+        static UserData()
+        {
+            ContainerInterface.OnGetNFTItemList += OnGetNFTItemList;
+        }
+
+        static NFTItem[] OnGetNFTItemList()
+        {
+            NFTItem[] list = new NFTItem[nftItemList.Length];
+            nftItemList.CopyTo(list, 0);
+            return list;
+        }
+
         public static void ClearData()
         {
             playFabId = "";

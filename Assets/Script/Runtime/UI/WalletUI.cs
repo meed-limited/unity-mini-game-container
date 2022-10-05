@@ -15,6 +15,7 @@ namespace SuperUltra.Container
         [SerializeField] TMP_Text _balanceText;
         [SerializeField] RectTransform _notEnoughFundContent;
         [SerializeField] NFTItemUI _nFTItemUIPrefab;
+        [SerializeField] NFTItemDetailUI _nFTItemDetailUI;
         [SerializeField] RectTransform _nftItemContainer;
         [SerializeField] RectTransform _startUpTab;
         [SerializeField] MenuManager _menuManager;
@@ -72,16 +73,27 @@ namespace SuperUltra.Container
         {
             LoadingUI.HideInstance();
             if(data.result == false) return;
-            SetNFTItem(data.list);
+            SetNFTItemList(data.list);
         }
 
-        void SetNFTItem(NFTItem[] itemList)
+        void SetNFTItemList(NFTItem[] itemList)
         {
+            foreach (Transform item in _nftItemContainer.transform)
+            {
+                Destroy(item.gameObject);
+            }
             foreach (NFTItem item in itemList)
             {
                 NFTItemUI prefab = Instantiate(_nFTItemUIPrefab, _nftItemContainer);
                 prefab.Initialize(item);
+                prefab.SetOnClickAction(OnClickNFTItem);
             }
+        }
+
+        void OnClickNFTItem(NFTItem item, Sprite sprite)
+        {
+            _nFTItemDetailUI.Initialize(item, sprite);
+            _nFTItemDetailUI.Show();
         }
 
         void SetLevel(int level)

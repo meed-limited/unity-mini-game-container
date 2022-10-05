@@ -84,11 +84,11 @@ namespace SuperUltra.Container
                 },
                 (result) =>
                 {
-                    Debug.Log("Update Player Statistics Success");
+                    // Update Player Statistics Success
                 },
                 (error) =>
                 {
-                    Debug.LogError("Update Player Statistics Error\n" + error.GenerateErrorReport());
+                    // Update Player Statistics Error
                 }
             );
         }

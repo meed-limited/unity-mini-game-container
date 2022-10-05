@@ -214,7 +214,8 @@ namespace SuperUltra.Container
                 HTTPMethods.Get,
                 (req, res) =>
                 {
-                    bool result = res.IsSuccess && res.Data != null;
+                    bool result = res != null && res.IsSuccess && res.Data != null;
+                    Debug.Log("request ");// + req.Uri + "\nresponse is null" +　res == null);
                     if (result)
                         texture2D = res.DataAsTexture2D;
                     callback?.Invoke(new GetImageResponseData
@@ -692,20 +693,22 @@ namespace SuperUltra.Container
                     list = new NFTItem[nftList.Count];
                     for (int i = 0; i < nftList.Count; i++)
                     {
-                        JSONNode item = nftList[i];
+                        JSONNode nftItem = nftList[i];
                         Texture2D texture = new Texture2D(1, 1);
-                        texture.LoadImage(item["avatarTexture"].AsByteArray);
+                        texture.LoadImage(nftItem["avatarTexture"].AsByteArray);
                         list[i] = new NFTItem()
                         {
-                            id = item["id"],
-                            name = item["name"].ToString(),
-                            description = item["description"],
-                            texture2D = texture
+                            id = nftItem["id"],
+                            name = nftItem["name"].ToString(),
+                            description = nftItem["description"],
+                            texture2DUrl = nftItem["image"],
+                            attribute = nftItem["attributes"].ToString()
                         };
                     }
                 }
             }
-
+            
+            UserData.nftItemList = list;
             callback?.Invoke(new GetUserNFTResponseData()
             {
                 result = result,

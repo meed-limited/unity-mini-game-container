@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace SuperUltra.Container
 {
@@ -6,6 +7,16 @@ namespace SuperUltra.Container
     {
         public bool isMusicOn;
         public bool isEffectOn;   
+    }
+
+    public class NFTItem
+    {
+
+        public int id;
+        public string name;
+        public string description;
+        public string texture2DUrl;
+        public string attribute;
     }
 
     public static class ContainerInterface
@@ -23,6 +34,7 @@ namespace SuperUltra.Container
         /// <summary> When user finish watching a rewarded ads </summary>
         public static event Action<bool> OnMusicVolumeChange;
         public static event Action<bool> OnEffectVolumeChange;
+        public static event Func<NFTItem[]> OnGetNFTItemList;
 
         public static void EffectVolumeChange(bool isOn) => OnEffectVolumeChange?.Invoke(isOn);
         public static void MusicVolumeChange(bool isOn) => OnMusicVolumeChange?.Invoke(isOn);
@@ -41,6 +53,7 @@ namespace SuperUltra.Container
         public static void SetScore(float score) => OnSetScore?.Invoke(score);
         public static void RequestRewardedAds(Action<bool> callback) => OnRequestRewardedAds?.Invoke(callback);
         public static VolumeSetting GetVolumeSetting() => OnGetVolumeSetting?.Invoke();
+        public static NFTItem[] GetNFTItemList() => OnGetNFTItemList?.Invoke();
 
     }
 
