@@ -27,13 +27,7 @@ namespace SuperUltra.Container
         [SerializeField] TMP_Text _headerBalanceText;
         [SerializeField] TMP_Text _rankTitle;
         RectTransform _previousTab;
-
-
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
+        Dictionary<NFTItem, NFTItemUI> _nftIdToItemUIMap = new Dictionary<NFTItem, NFTItemUI>();
 
         public void Initialize()
         {
@@ -78,6 +72,7 @@ namespace SuperUltra.Container
 
         void SetNFTItemList(NFTItem[] itemList)
         {
+            _nftIdToItemUIMap.Clear();
             foreach (Transform item in _nftItemContainer.transform)
             {
                 Destroy(item.gameObject);
@@ -87,11 +82,30 @@ namespace SuperUltra.Container
                 NFTItemUI prefab = Instantiate(_nFTItemUIPrefab, _nftItemContainer);
                 prefab.Initialize(item);
                 prefab.SetOnClickAction(OnClickNFTItem);
+                _nftIdToItemUIMap.Add(item, prefab);
+            }
+        }
+
+        public void UpdateNFTItemUIIsActive(NFTItem item)
+        {
+            foreach (var kvp in _nftIdToItemUIMap)
+            {
+                kvp.Value.UpdateIsActive();
             }
         }
 
         void OnClickNFTItem(NFTItem item, Sprite sprite)
         {
+            if (item.isActive)
+            {
+                UserData.DeactivateNFTItem(item);
+            }
+            else
+            {
+                UserData.ActivateNFTItem(item);
+            }
+
+            UpdateNFTItemUIIsActive(item);
             _nFTItemDetailUI.Initialize(item, sprite);
             _nFTItemDetailUI.Show();
         }

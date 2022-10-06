@@ -34,6 +34,37 @@ namespace SuperUltra.Container
             return list;
         }
 
+        public static void ActivateNFTItem(NFTItem item)
+        {
+            if(item.type == NFTItem.ItemType.Cosmetic)
+            {
+                for (int i = 0; i < nftItemList.Length; i++)
+                {
+                    bool isCosmetic = nftItemList[i].type == NFTItem.ItemType.Cosmetic;
+                    bool isTarget = item.id == nftItemList[i].id; 
+                    if(isCosmetic)
+                    {
+                        nftItemList[i].isActive = isTarget;
+                    }
+                }
+            }
+        }
+
+        public static void DeactivateNFTItem(NFTItem item)
+        {
+            if (item.type == NFTItem.ItemType.Cosmetic)
+            {
+                for (int i = 0; i < nftItemList.Length; i++)
+                {
+                    bool isTarget = item.id == nftItemList[i].id;
+                    if (isTarget)
+                    {
+                        nftItemList[i].isActive = false;
+                    }
+                }
+            }
+        }
+
         public static void ClearData()
         {
             playFabId = "";

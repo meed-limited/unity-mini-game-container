@@ -23,7 +23,11 @@ namespace SuperUltra.Container
                     UserData.playFabId = result.PlayFabId;
                     successCallback(result);
                 },
-                (result) => { errorCallback(result.ErrorMessage); }
+                (result) => { 
+                    
+                    Debug.Log("login error " + result.HttpCode + " " + result.HttpStatus + " " + result.ErrorMessage);
+                    errorCallback(result.ErrorMessage); 
+                }
             );
         }
 

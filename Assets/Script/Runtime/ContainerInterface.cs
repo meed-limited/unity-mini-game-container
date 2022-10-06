@@ -11,8 +11,13 @@ namespace SuperUltra.Container
 
     public class NFTItem
     {
-
+        public enum ItemType { 
+            Cosmetic, 
+            Utilities 
+        }
+        public ItemType type;
         public int id;
+        public bool isActive;
         public string name;
         public string description;
         public string texture2DUrl;

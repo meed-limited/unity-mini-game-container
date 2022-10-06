@@ -78,6 +78,10 @@ namespace SuperUltra.Container
                     Destroy(item.gameObject);
                 }
             }
+            if (_messageText)
+            {
+                _messageText.text = "";
+            }
             _actionButton.onClick.RemoveAllListeners();
             _popUpUI.Hide().SetUpdate(true).OnComplete(() => gameObject.SetActive(false));
         }
@@ -157,7 +161,7 @@ namespace SuperUltra.Container
             bool shouldHideAfterAction = false
         )
         {
-            if(_instance)
+            if (_instance)
             {
                 _instance.ShowCustomContent(
                     content,

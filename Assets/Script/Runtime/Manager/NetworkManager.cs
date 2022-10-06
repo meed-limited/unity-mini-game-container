@@ -702,12 +702,14 @@ namespace SuperUltra.Container
                             name = nftItem["name"].ToString(),
                             description = nftItem["description"],
                             texture2DUrl = nftItem["image"],
-                            attribute = nftItem["attributes"].ToString()
+                            attribute = nftItem["attributes"].ToString(),
+                            type = NFTItem.ItemType.Cosmetic,
+                            isActive = false,
                         };
                     }
                 }
             }
-            
+
             UserData.nftItemList = list;
             callback?.Invoke(new GetUserNFTResponseData()
             {
