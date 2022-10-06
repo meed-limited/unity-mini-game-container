@@ -775,7 +775,7 @@ namespace SuperUltra.Container
                 UserData.profilePic = UserData.pendingProfilePic;
                 UserData.pendingProfilePic = null;
                 if(requestData["username"] != null && requestData["username"].IsString)
-                    UserData.userName = json["username"];
+                    UserData.userName = requestData["username"];
             }else
             {
                 Debug.Log(Encoding.ASCII.GetString(request.RawData));
