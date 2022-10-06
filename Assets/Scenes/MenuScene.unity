@@ -8512,26 +8512,6 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.20392157
       objectReference: {fileID: 0}
-    - target: {fileID: 4997822889947450022, guid: abc21d448a4f55b489b34a00b1f517bf,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 4997822889947450022, guid: abc21d448a4f55b489b34a00b1f517bf,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 4997822889947450022, guid: abc21d448a4f55b489b34a00b1f517bf,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4997822889947450022, guid: abc21d448a4f55b489b34a00b1f517bf,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -9
-      objectReference: {fileID: 0}
     - target: {fileID: 6160900025660826166, guid: abc21d448a4f55b489b34a00b1f517bf,
         type: 3}
       propertyPath: m_Pivot.x
@@ -19596,12 +19576,12 @@ PrefabInstance:
     - target: {fileID: 2748485171201013395, guid: abc21d448a4f55b489b34a00b1f517bf,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnClickContinue
+      value: OnClickDoubleScoreAd
       objectReference: {fileID: 0}
     - target: {fileID: 2748485171201013395, guid: abc21d448a4f55b489b34a00b1f517bf,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: SuperUltra.Container.GameOverUI, Assembly-CSharp
+      value: SuperUltra.Container.GameOverUI, NewAssembly
       objectReference: {fileID: 0}
     - target: {fileID: 2748485171201013395, guid: abc21d448a4f55b489b34a00b1f517bf,
         type: 3}
@@ -19697,15 +19677,20 @@ PrefabInstance:
       propertyPath: m_fontColor32.rgba
       value: 4294967295
       objectReference: {fileID: 0}
-    - target: {fileID: 4997822889947450022, guid: abc21d448a4f55b489b34a00b1f517bf,
+    - target: {fileID: 4064219437137889499, guid: abc21d448a4f55b489b34a00b1f517bf,
         type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 30
+      propertyPath: m_Color.b
+      value: 0.32941177
       objectReference: {fileID: 0}
-    - target: {fileID: 4997822889947450022, guid: abc21d448a4f55b489b34a00b1f517bf,
+    - target: {fileID: 4064219437137889499, guid: abc21d448a4f55b489b34a00b1f517bf,
         type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -9
+      propertyPath: m_Color.g
+      value: 0.2509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 4064219437137889499, guid: abc21d448a4f55b489b34a00b1f517bf,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.20392157
       objectReference: {fileID: 0}
     - target: {fileID: 6160900025660826166, guid: abc21d448a4f55b489b34a00b1f517bf,
         type: 3}
@@ -36776,7 +36761,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -9}
-  m_SizeDelta: {x: 20, y: 30}
+  m_SizeDelta: {x: 0, y: 18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &449914952184628477
 CanvasRenderer:
@@ -38016,8 +38001,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -9}
-  m_SizeDelta: {x: 20, y: 30}
+  m_AnchoredPosition: {x: 0, y: -10}
+  m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &4997822889232298416
 RectTransform:
@@ -38036,8 +38021,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -9}
-  m_SizeDelta: {x: 20, y: 30}
+  m_AnchoredPosition: {x: 0, y: -10}
+  m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5039475167709304231
 MonoBehaviour:
@@ -38405,7 +38390,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -9}
-  m_SizeDelta: {x: 20, y: 30}
+  m_SizeDelta: {x: 0, y: 18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7361727656102779072
 CanvasRenderer:

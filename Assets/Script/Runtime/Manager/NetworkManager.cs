@@ -420,65 +420,6 @@ namespace SuperUltra.Container
             callback?.Invoke(new ResponseData() { result = result, message = message });
         }
 
-        public static void ResetPassword(string playFabId, Action<ResponseData> callback)
-        {
-            // TODO
-            HTTPRequest request = new HTTPRequest(
-                new Uri(Config.Domain + "users"),
-                HTTPMethods.Post,
-                (req, res) => OnResetPasswordRequestFinished(req, res, callback)
-            );
-            JSONObject json = new JSONObject();
-            json.Add("platformId", playFabId);
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
-            request.AddHeader("Content-Type", "application/json");
-            request.Timeout = TimeSpan.FromSeconds(_timeOut);
-            request.RawData = Encoding.ASCII.GetBytes(json.ToString());
-            request.Send();
-        }
-
-        static void OnResetPasswordRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback)
-        {
-            bool result = ValidateResponse(response).result;
-            string message = "";
-            if (result)
-            {
-                JSONNode json = JSON.Parse(response.DataAsText);
-            }
-
-            callback?.Invoke(new ResponseData() { result = result, message = message });
-        }
-
-
-        public static void VerifyResetCode(string playFabId, Action<ResponseData> callback)
-        {
-            // TODO
-            HTTPRequest request = new HTTPRequest(
-                new Uri(Config.Domain + "users"),
-                HTTPMethods.Post,
-                (req, res) => OnVerifyResetCodeRequestFinished(req, res, callback)
-            );
-            JSONObject json = new JSONObject();
-            json.Add("platformId", playFabId);
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
-            request.AddHeader("Content-Type", "application/json");
-            request.Timeout = TimeSpan.FromSeconds(_timeOut);
-            request.RawData = Encoding.ASCII.GetBytes(json.ToString());
-            request.Send();
-        }
-
-        static void OnVerifyResetCodeRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback)
-        {
-            bool result = ValidateResponse(response).result;
-            string message = "";
-            if (result)
-            {
-                JSONNode json = JSON.Parse(response.DataAsText);
-            }
-
-            callback?.Invoke(new ResponseData() { result = result, message = message });
-        }
-
         public static void GetTournament(int gameId, Action<GetTournamentResponseData> callback)
         {
             HTTPRequest request = new HTTPRequest(
@@ -551,6 +492,7 @@ namespace SuperUltra.Container
 
         public static void UpdateScore(float score, string playFabId, int gameId, Action<UpdateScoreResponseData> callback)
         {
+            Debug.Log($"UpdateScore {score}");
             HTTPRequest request = new HTTPRequest(
                 new Uri(Config.Domain + "users/submitscore"),
                 HTTPMethods.Post,
