@@ -68,8 +68,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Oops!!!\n Not enough Fund"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7f62e2f15d6d5274793ade9d0751ac50, type: 2}
-  m_sharedMaterial: {fileID: -865326566535173267, guid: 7f62e2f15d6d5274793ade9d0751ac50,
+  m_fontAsset: {fileID: 11400000, guid: bc1ff6ac31dc0ca4d8da383f4c8d9478, type: 2}
+  m_sharedMaterial: {fileID: -3865837560610592537, guid: bc1ff6ac31dc0ca4d8da383f4c8d9478,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -319,8 +319,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Minimum withdraw will be \L10000 L3P"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2300428209381304fa54c256cd757e30, type: 2}
-  m_sharedMaterial: {fileID: -2293238289678512981, guid: 2300428209381304fa54c256cd757e30,
+  m_fontAsset: {fileID: 11400000, guid: bc1ff6ac31dc0ca4d8da383f4c8d9478, type: 2}
+  m_sharedMaterial: {fileID: -3865837560610592537, guid: bc1ff6ac31dc0ca4d8da383f4c8d9478,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
