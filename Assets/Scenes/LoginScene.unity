@@ -2459,7 +2459,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &335699629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4585,7 +4585,7 @@ GameObject:
   - component: {fileID: 850467437}
   - component: {fileID: 850467441}
   m_Layer: 0
-  m_Name: PopUpCanvas
+  m_Name: MessagePopUpCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8250,7 +8250,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0e7156649b944724ba568d90f5387ed7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e0ef6076aeeef2244b0d3041e8e61b40, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8259,7 +8259,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 0.7
+  m_PixelsPerUnitMultiplier: 3.25
 --- !u!222 &1500189851
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10808,17 +10808,17 @@ PrefabInstance:
     - target: {fileID: 3688120694376391226, guid: abc21d448a4f55b489b34a00b1f517bf,
         type: 3}
       propertyPath: m_fontColor.b
-      value: 0.19607843
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3688120694376391226, guid: abc21d448a4f55b489b34a00b1f517bf,
         type: 3}
       propertyPath: m_fontColor.g
-      value: 0.19607843
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3688120694376391226, guid: abc21d448a4f55b489b34a00b1f517bf,
         type: 3}
       propertyPath: m_fontColor.r
-      value: 0.19607843
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3688120694376391226, guid: abc21d448a4f55b489b34a00b1f517bf,
         type: 3}
@@ -10839,7 +10839,7 @@ PrefabInstance:
     - target: {fileID: 3688120694376391226, guid: abc21d448a4f55b489b34a00b1f517bf,
         type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4281479730
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 4064219437137889499, guid: abc21d448a4f55b489b34a00b1f517bf,
         type: 3}
@@ -11727,7 +11727,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2097616150
 MonoBehaviour:
   m_ObjectHideFlags: 0
