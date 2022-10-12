@@ -1,6 +1,8 @@
+using UnityEngine;
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
-using UnityEngine;
+using PlayFab;
+using PlayFab.ClientModels;
 using System;
 
 namespace SuperUltra.Container
@@ -11,40 +13,56 @@ namespace SuperUltra.Container
 
         public static void Login(Action<ResponseData> callback)
         {
-            PlayGamesPlatform.Instance.Authenticate((status) =>
-            {
-                ProcessAuthentication(status, callback);
-            });
+            // The following grants profile access to the Google Play Games SDK.
+            // Note: If you also want to capture the player's Google email, be sure to add
+            // .RequestEmail() to the PlayGamesClientConfiguration
+            PlayGamesClientConfiguration config = new PlayGamesClientConfiguration.Builder()
+            .AddOauthScope("profile")
+            .RequestServerAuthCode(false)
+            .Build();
+            PlayGamesPlatform.InitializeInstance(config);
+
+            // recommended for debugging:
+            PlayGamesPlatform.DebugLogEnabled = true;
+
+            // Activate the Google Play Games platform
+            PlayGamesPlatform.Activate();
         }
 
-        static void ProcessAuthentication(SignInStatus status, Action<ResponseData> callback)
+        private static void OnSignInButtonClicked()
         {
-            if (status == SignInStatus.Success)
+            Social.localUser.Authenticate((bool success) =>
             {
-                string token = "";
-                // Continue with Play Games Services
-                PlayGamesPlatform.Instance.RequestServerSideAccess(true, code =>
+
+                if (success)
                 {
-                    Debug.Log("Authorization code: " + code);
-                    token = code;
-                    // This token serves as an example to be used for SignInWithGooglePlayGames
-                });
-                callback?.Invoke(new ResponseData{
-                    result = true,
-                    message = $"{token}"
-                });
-            }
-            else
-            {
-                // Disable your integration with Play Games Services or show a login button
-                // to ask users to sign-in. Clicking it should call
-                // PlayGamesPlatform.Instance.ManuallyAuthenticate(ProcessAuthentication).
-                callback?.Invoke(new ResponseData
+
+                    // GoogleStatusText.text = "Google Signed In";
+                    var serverAuthCode = PlayGamesPlatform.Instance.GetServerAuthCode();
+                    Debug.Log("Server Auth Code: " + serverAuthCode);
+
+                    PlayFabClientAPI.LoginWithGoogleAccount(
+                        new LoginWithGoogleAccountRequest()
+                        {
+                            TitleId = PlayFabSettings.TitleId,
+                            ServerAuthCode = serverAuthCode,
+                            CreateAccount = true
+                        }, 
+                        (result) =>
+                        {
+                            // GoogleStatusText.text = "Signed In as " + result.PlayFabId;
+
+                        }, 
+                        (PlayFabError error) => {} 
+                    );
+                }
+                else
                 {
-                    result = false,
-                    message = "Sign in failed"
-                });
-            }
+                    // GoogleStatusText.text = "Google Failed to Authorize your login";
+                }
+
+            });
+
         }
 
     }

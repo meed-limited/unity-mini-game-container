@@ -1,4 +1,3 @@
-using GooglePlayGames;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
@@ -15,11 +14,6 @@ namespace SuperUltra.Container
         [SerializeField] MessagePopUpUI _messagePopUpUI;
         [SerializeField] AvatarSelectionUI _avatarSelectionUI;
         RectTransform _currentUI;
-
-        void Awake()
-        {
-            PlayGamesPlatform.Activate();
-        }
 
         void Start()
         {
