@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Generic;
+using GooglePlayGames;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
@@ -16,6 +15,11 @@ namespace SuperUltra.Container
         [SerializeField] MessagePopUpUI _messagePopUpUI;
         [SerializeField] AvatarSelectionUI _avatarSelectionUI;
         RectTransform _currentUI;
+
+        void Awake()
+        {
+            PlayGamesPlatform.Activate();
+        }
 
         void Start()
         {
@@ -126,6 +130,26 @@ namespace SuperUltra.Container
                     _messagePopUpUI.Show(errorMessage);
                 },
                 true
+            );
+        }
+
+        public void OnClickGoogleLogin()
+        {
+            LoadingUI.ShowInstance();
+            GoogleAuthen.Login(
+                (ResponseData response) =>
+                {
+                    LoadingUI.HideInstance();
+                    if(response.result)
+                    {
+                        Debug.Log("asdfasdf");
+                        // ToMenu();
+                    }
+                    else
+                    {
+                        _messagePopUpUI.Show(response.message);
+                    }
+                }
             );
         }
 
