@@ -26,14 +26,19 @@ namespace SuperUltra.Container
         Vector2 _activePosition;
         Vector2 _deactiveTextPosition;
         Vector2 _activeTextPosition;
+        Color _enableColor = Color.white;
+        Color _disableColor;
         State _state = State.Deactive;
 
         void Start()
         {
             CachePostiion();
+            _disableColor = _text.color;
             if (_isActiveOnStart)
             {
                 MoveAndResizeIcon(_activePosition, Vector3.one * 1.5f);
+                ChangeTextColor(_enableColor);
+                ChangeIconColor(_enableColor);
                 _state = State.Active;
                 _navigationGroupUI.Enable(this);
             }else
@@ -80,6 +85,22 @@ namespace SuperUltra.Container
             );
         }
 
+        void ChangeIconColor(Color color)
+        {
+            _icon.DOColor(
+                color,
+                _animationTime
+            );
+        }
+
+        void ChangeTextColor(Color color)
+        {
+            _text.DOColor(
+                color,
+                _animationTime
+            );
+        }
+
         void MoveActiveMarker()
         {
             RectTransform markerRect = _activeMarker.GetComponent<RectTransform>();
@@ -96,6 +117,8 @@ namespace SuperUltra.Container
             MoveActiveMarker();
             MoveAndResizeIcon(_activePosition, Vector3.one * 1.5f);
             MoveText(_activeTextPosition);
+            ChangeTextColor(_enableColor);
+            ChangeIconColor(_enableColor);
             _navigationGroupUI.Enable(this);
             _state = State.Active;
         }
@@ -105,6 +128,8 @@ namespace SuperUltra.Container
             if (_state == State.Deactive) return;
             MoveAndResizeIcon(_deactivePosition, Vector3.one);
             MoveText(_deactiveTextPosition);
+            ChangeTextColor(_disableColor);
+            ChangeIconColor(_disableColor);
             _state = State.Deactive;
         }
 

@@ -175,7 +175,7 @@ namespace SuperUltra.Container
 
         static void OnUserDataRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback, Action<ResponseData> avatarRequestCallback = null)
         {
-            ResponseData responseData = ValidateResponse(response); 
+            ResponseData responseData = ValidateResponse(response);
             if (responseData.result)
             {
                 JSONNode json = JSON.Parse(response.DataAsText);
@@ -193,11 +193,12 @@ namespace SuperUltra.Container
                     UserData.rankTitle = data["rank"];
                     GetAvatar(data["avatarUrl"], avatarRequestCallback);
                 }
-            }else
+            }
+            else
             {
                 avatarRequestCallback?.Invoke(new ResponseData { result = false });
             }
-            
+
             callback?.Invoke(responseData);
         }
 
@@ -206,7 +207,7 @@ namespace SuperUltra.Container
             Texture2D texture2D = Texture2D.grayTexture;
             if (string.IsNullOrEmpty(avatarUrl))
             {
-                callback?.Invoke(new GetImageResponseData { result = false, texture2D = texture2D});
+                callback?.Invoke(new GetImageResponseData { result = false, texture2D = texture2D });
                 return;
             }
             HTTPRequest request = new HTTPRequest(
@@ -214,7 +215,8 @@ namespace SuperUltra.Container
                 HTTPMethods.Get,
                 (req, res) =>
                 {
-                    bool result = res.IsSuccess && res.Data != null;
+                    bool result = res != null && res.IsSuccess && res.Data != null;
+                    Debug.Log("request ");// + req.Uri + "\nresponse is null" +　res == null);
                     if (result)
                         texture2D = res.DataAsTexture2D;
                     callback?.Invoke(new GetImageResponseData
@@ -250,7 +252,7 @@ namespace SuperUltra.Container
                 (req, res) =>
                 {
                     bool result = res.IsSuccess && res.Data != null;
-                    
+
                     if (result)
                     {
                         UserData.profilePic = res.DataAsTexture2D;
@@ -310,7 +312,8 @@ namespace SuperUltra.Container
                 && GameData.gameDataList.Count != 0
             )
             {
-                callback?.Invoke(new ResponseData{
+                callback?.Invoke(new ResponseData
+                {
                     result = true
                 });
             }
@@ -386,7 +389,7 @@ namespace SuperUltra.Container
 
         static JSONArray GetJSONArray(JSONNode node)
         {
-            if(node.IsArray)
+            if (node.IsArray)
                 return node.AsArray;
             return new JSONArray();
         }
@@ -419,65 +422,6 @@ namespace SuperUltra.Container
             callback?.Invoke(new ResponseData() { result = result, message = message });
         }
 
-        public static void ResetPassword(string playFabId, Action<ResponseData> callback)
-        {
-            // TODO
-            HTTPRequest request = new HTTPRequest(
-                new Uri(Config.Domain + "users"),
-                HTTPMethods.Post,
-                (req, res) => OnResetPasswordRequestFinished(req, res, callback)
-            );
-            JSONObject json = new JSONObject();
-            json.Add("platformId", playFabId);
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
-            request.AddHeader("Content-Type", "application/json");
-            request.Timeout = TimeSpan.FromSeconds(_timeOut);
-            request.RawData = Encoding.ASCII.GetBytes(json.ToString());
-            request.Send();
-        }
-
-        static void OnResetPasswordRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback)
-        {
-            bool result = ValidateResponse(response).result;
-            string message = "";
-            if (result)
-            {
-                JSONNode json = JSON.Parse(response.DataAsText);
-            }
-
-            callback?.Invoke(new ResponseData() { result = result, message = message });
-        }
-
-
-        public static void VerifyResetCode(string playFabId, Action<ResponseData> callback)
-        {
-            // TODO
-            HTTPRequest request = new HTTPRequest(
-                new Uri(Config.Domain + "users"),
-                HTTPMethods.Post,
-                (req, res) => OnVerifyResetCodeRequestFinished(req, res, callback)
-            );
-            JSONObject json = new JSONObject();
-            json.Add("platformId", playFabId);
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
-            request.AddHeader("Content-Type", "application/json");
-            request.Timeout = TimeSpan.FromSeconds(_timeOut);
-            request.RawData = Encoding.ASCII.GetBytes(json.ToString());
-            request.Send();
-        }
-
-        static void OnVerifyResetCodeRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback)
-        {
-            bool result = ValidateResponse(response).result;
-            string message = "";
-            if (result)
-            {
-                JSONNode json = JSON.Parse(response.DataAsText);
-            }
-
-            callback?.Invoke(new ResponseData() { result = result, message = message });
-        }
-
         public static void GetTournament(int gameId, Action<GetTournamentResponseData> callback)
         {
             HTTPRequest request = new HTTPRequest(
@@ -498,13 +442,13 @@ namespace SuperUltra.Container
         {
             ResponseData data = ValidateResponse(response);
             GetTournamentResponseData responseData = new GetTournamentResponseData { result = data.result, message = data.message };
-            if(data.result)
+            if (data.result)
             {
                 JSONNode json = JSON.Parse(response.DataAsText);
                 Debug.Log("OnGetTournamentRequestFinished " + json.ToString());
-                if(json["game"] != null)
+                if (json["game"] != null)
                 {
-                    JSONNode game = json["game"];                    
+                    JSONNode game = json["game"];
                     if (GameData.gameDataList.ContainsKey(game["id"]))
                     {
                         Tournament tournament = GameData.gameDataList[game["id"]].tournament;
@@ -550,6 +494,7 @@ namespace SuperUltra.Container
 
         public static void UpdateScore(float score, string playFabId, int gameId, Action<UpdateScoreResponseData> callback)
         {
+            Debug.Log($"UpdateScore {score}");
             HTTPRequest request = new HTTPRequest(
                 new Uri(Config.Domain + "users/submitscore"),
                 HTTPMethods.Post,
@@ -582,7 +527,7 @@ namespace SuperUltra.Container
                 string avatarUrl = "";
                 JSONNode item = leaderboardBeforeUser[i];
                 avatar.LoadImage(item["avatarTexture"].AsByteArray);
-                if(item["userInfo"] != null)
+                if (item["userInfo"] != null)
                 {
                     userName = item["userInfo"]["username"];
                     avatarUrl = item["userInfo"]["avatarUrl"];
@@ -596,7 +541,7 @@ namespace SuperUltra.Container
                     reward = item["bonus"],
                 };
             }
-            
+
             return list;
         }
 
@@ -628,10 +573,11 @@ namespace SuperUltra.Container
                     rank = details["rank"];
                     experiencePoints = details["experiencePoints"];
                     pointsToNextRank = details["pointsToNextRank"];
-                    JSONArray leaderboardBeforeUser  = GetJSONArray(details["twoBefore"]);
+                    JSONArray leaderboardBeforeUser = GetJSONArray(details["twoBefore"]);
                     JSONArray leaderboardAfterUser = GetJSONArray(details["twoAfter"]);
                     list = new LeaderboardUserData[leaderboardBeforeUser.Count + leaderboardAfterUser.Count + 1];
-                    list[leaderboardBeforeUser.Count] = new LeaderboardUserData(){
+                    list[leaderboardBeforeUser.Count] = new LeaderboardUserData()
+                    {
                         rankPosition = position,
                         name = UserData.userName,
                         avatarTexture = UserData.profilePic,
@@ -641,7 +587,8 @@ namespace SuperUltra.Container
                     GetLeaderboardUserData(leaderboardBeforeUser).CopyTo(list, 0);
                     GetLeaderboardUserData(leaderboardAfterUser).CopyTo(list, leaderboardBeforeUser.Count + 1);
                 }
-            }else
+            }
+            else
             {
                 Debug.Log(Encoding.ASCII.GetString(request.RawData));
             }
@@ -692,20 +639,24 @@ namespace SuperUltra.Container
                     list = new NFTItem[nftList.Count];
                     for (int i = 0; i < nftList.Count; i++)
                     {
-                        JSONNode item = nftList[i];
+                        JSONNode nftItem = nftList[i];
                         Texture2D texture = new Texture2D(1, 1);
-                        texture.LoadImage(item["avatarTexture"].AsByteArray);
+                        texture.LoadImage(nftItem["avatarTexture"].AsByteArray);
                         list[i] = new NFTItem()
                         {
-                            id = item["id"],
-                            name = item["name"].ToString(),
-                            description = item["description"],
-                            texture2D = texture
+                            id = nftItem["id"],
+                            name = nftItem["name"].ToString(),
+                            description = nftItem["description"],
+                            texture2DUrl = nftItem["image"],
+                            attribute = nftItem["attributes"].ToString(),
+                            type = NFTItem.ItemType.Cosmetic,
+                            isActive = false,
                         };
                     }
                 }
             }
 
+            UserData.nftItemList = list;
             callback?.Invoke(new GetUserNFTResponseData()
             {
                 result = result,
@@ -714,6 +665,14 @@ namespace SuperUltra.Container
         }
 
         #region Update User
+
+        public static void UpdateUserWalletAddress(string playFabId, string walletAddress, Action<ResponseData> callback)
+        {
+            JSONObject json = new JSONObject();
+            json.Add("walletAddress", walletAddress);
+            json.Add("platformId", playFabId);
+            UpdateUser(json, callback);
+        }
 
         public static void UpdateUserName(string playFabId, string userName, Action<ResponseData> callback)
         {
@@ -769,13 +728,17 @@ namespace SuperUltra.Container
                 Debug.Log("OnUpdateUserRequestFinished " + json.ToString());
                 UserData.profilePic = UserData.pendingProfilePic;
                 UserData.pendingProfilePic = null;
-                if(requestData["username"] != null && requestData["username"].IsString)
-                    UserData.userName = json["username"];
-            }else
+                if (requestData["username"] != null && requestData["username"].IsString)
+                    UserData.userName = requestData["username"];
+                if (requestData["walletAddress"] != null && requestData["walletAddress"].IsString)
+                    UserData.walletAddress = requestData["walletAddress"];
+            }
+            else
             {
                 Debug.Log(Encoding.ASCII.GetString(request.RawData));
             }
-            callback?.Invoke(new UpdateUserResponseData(){
+            callback?.Invoke(new UpdateUserResponseData()
+            {
                 message = data.message,
                 result = data.result,
                 texture2D = UserData.pendingProfilePic

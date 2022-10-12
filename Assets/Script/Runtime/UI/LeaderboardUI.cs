@@ -14,6 +14,7 @@ namespace SuperUltra.Container
         [SerializeField] RectTransform _rankingItemContainer;
         [SerializeField] RectTransform _gameBannerPrefab;
         [SerializeField] RectTransform _gameBannerContainer;
+        [SerializeField] RectTransform _emptyLeaderboardMessage;
         [SerializeField] StickyScrollUI _gameBannerStickyScroll;
         [SerializeField] LeaderboardItemUI _userLeaderboardUI;
         [SerializeField] TMP_Text _gameName;
@@ -87,7 +88,6 @@ namespace SuperUltra.Container
             foreach (var game in GameData.gameDataList)
             {
                 GameData gameData = game.Value;
-                Debug.Log($"game {gameData.name} tounament {gameData.tournament.IsValid()}");
                 RectTransform gameBanner = Instantiate(_gameBannerPrefab, _gameBannerContainer);
                 SetBannerImage(gameBanner.GetComponent<Image>(), game.Key);
                 _pageToGameIdMap.Add(pageCount, game.Key);
@@ -96,7 +96,6 @@ namespace SuperUltra.Container
             _gameBannerStickyScroll.Initialize();
             _gameBannerStickyScroll.OnItemChange.AddListener(OnGameChange);
         }
-
 
         void SetBannerImage(Image image, int gameId)
         {
@@ -194,7 +193,6 @@ namespace SuperUltra.Container
 
         void OnGetLeaderboardRequestFinish(GetLeaderboardResponseData data)
         {
-            Debug.Log($"OnGetLeaderboardRequestFinish {data.nextPage} {data.nextPage}");
             _loadingUI.Hide();
             _nextPage = data.nextPage;
             _isLastPage = _nextPage == -1;
@@ -205,11 +203,21 @@ namespace SuperUltra.Container
 
         void LazyLoadLeaderBoard(GetLeaderboardResponseData responseData)
         {
+
+            _emptyLeaderboardMessage.gameObject.SetActive(false);
             if (!responseData.result || responseData.list == null)
             {
+                string message = string.IsNullOrEmpty(responseData.message) ? "ServerError" : responseData.message;
+                MessagePopUpUI.Show(message);
                 return;
             }
-            
+
+            if (_emptyLeaderboardMessage && responseData.list.Length <= 0)
+            {
+                _emptyLeaderboardMessage.gameObject.SetActive(true);
+                return;
+            }
+
             int index = Mathf.Max(0, _rankingItemContainer.childCount - 1);
             foreach (var data in responseData.list)
             {
@@ -225,11 +233,6 @@ namespace SuperUltra.Container
                 return;
             }
             TimeSpan timeLeft = data.tournament.endTime - DateTime.Now;
-            if(timeLeft < TimeSpan.Zero)
-            {
-                _day.text = _hour.text = _minute.text = "--"; 
-                return;
-            }
             if (_day != null)
                 _day.text = timeLeft.Days.ToString();
             if (_hour != null)
@@ -258,8 +261,6 @@ namespace SuperUltra.Container
             {
                 return;
             }
-
-            Debug.Log("UpdateTournamentInfo " + data.id + " " + data.tournament.endTime + " " + data.tournament.prizePool);
 
             if (_gameName != null)
             {

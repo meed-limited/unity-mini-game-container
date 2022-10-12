@@ -13,9 +13,7 @@ namespace SuperUltra.Container
         [SerializeField] RegisterUI _registerUI;
         [SerializeField] EnterNameUI _enterNameUI;
         [SerializeField] ForgotPasswordUI _forgotPasswordUI;
-        [SerializeField] VerifyUI _verifyUI;
         [SerializeField] MessagePopUpUI _messagePopUpUI;
-        [SerializeField] ResetPasswordUI _resetPasswordUI;
         [SerializeField] AvatarSelectionUI _avatarSelectionUI;
         RectTransform _currentUI;
 
@@ -28,8 +26,6 @@ namespace SuperUltra.Container
             HidePanel(_enterNameUI.transform);
             HidePanel(_forgotPasswordUI.transform);
             HidePanel(_messagePopUpUI.transform);
-            HidePanel(_resetPasswordUI.transform);
-            HidePanel(_verifyUI.transform);
             HidePanel(_avatarSelectionUI.transform);
             if (!CheckInternetConnection())
             {
@@ -194,19 +190,10 @@ namespace SuperUltra.Container
         {
             EmailAuthen.ForgotPassword(
                 email,
-                () => ToPage(_verifyUI),
-                (string errorMessage) =>
-                {
-                    _messagePopUpUI.Show(errorMessage);
-                }
-            );
-        }
-
-        public void OnClickVerify(string code)
-        {
-            EmailAuthen.Verify(
-                code,
-                () => ToPage(_resetPasswordUI),
+                () => {
+                    _messagePopUpUI.Show("Reset password email is sent to your mailbox");
+                    ToPage(_loginUI);
+                },
                 (string errorMessage) =>
                 {
                     _messagePopUpUI.Show(errorMessage);
@@ -217,24 +204,6 @@ namespace SuperUltra.Container
         public void OnSelectAvatar(Sprite avatar)
         {
             _enterNameUI.SetAvatar(avatar);
-        }
-
-        public void OnClickResetPassword(string password)
-        {
-            EmailAuthen.ResetPassword(
-                password,
-                () =>
-                {
-                    _messagePopUpUI.Show("Password has been reset", "Sign In", () =>
-                    {
-                        ToLoginSelection();
-                    }, true, false);
-                },
-                (string errorMessage) =>
-                {
-                    _messagePopUpUI.Show(errorMessage);
-                }
-            );
         }
         
         public void ToMenu()

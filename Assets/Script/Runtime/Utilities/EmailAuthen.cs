@@ -23,7 +23,11 @@ namespace SuperUltra.Container
                     UserData.playFabId = result.PlayFabId;
                     successCallback(result);
                 },
-                (result) => { errorCallback(result.ErrorMessage); }
+                (result) => { 
+                    
+                    Debug.Log("login error " + result.HttpCode + " " + result.HttpStatus + " " + result.ErrorMessage);
+                    errorCallback(result.ErrorMessage); 
+                }
             );
         }
 
@@ -54,46 +58,6 @@ namespace SuperUltra.Container
         {
             // TODO
             NetworkManager.ForgetPasswordRequest(
-                UserData.playFabId,
-                (response) =>
-                {
-                    // if(response.result)
-                    if (true)
-                    {
-                        successCallback?.Invoke();
-                    }
-                    else
-                    {
-                        errorCallback?.Invoke(response.message);
-                    }
-                }
-            );
-        }
-
-        public static void Verify(string code, Action successCallback = null, Action<string> errorCallback = null)
-        {
-            // TODO
-            NetworkManager.VerifyResetCode(
-                UserData.playFabId,
-                (response) =>
-                {
-                    // if(response.result)
-                    if (true)
-                    {
-                        successCallback?.Invoke();
-                    }
-                    else
-                    {
-                        errorCallback?.Invoke(response.message);
-                    }
-                }
-            );
-        }
-
-        public static void ResetPassword(string password, Action successCallback = null, Action<string> errorCallback = null)
-        {
-            // TODO
-            NetworkManager.ResetPassword(
                 UserData.playFabId,
                 (response) =>
                 {

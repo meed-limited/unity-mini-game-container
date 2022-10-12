@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using TMPro;
 using DG.Tweening;
 
-
 namespace SuperUltra.Container
 {
 
@@ -48,12 +47,13 @@ namespace SuperUltra.Container
 
         public void OnSubmit()
         {
-            if(!CheckEmail(_email.text))
+            if (!CheckEmail(_email.text))
             {
                 return;
             }
             _loginManager.OnClickForgotPassword(_email.text);
         }
+
     }
-    
+
 }

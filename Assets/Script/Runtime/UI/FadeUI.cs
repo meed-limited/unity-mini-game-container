@@ -60,6 +60,7 @@ namespace SuperUltra.Container
                 _transparentColor = _image.color - new Color(0f, 0f, 0f, 1f);
                 float visibleValue = _isVisible ? 1f : -1f;
                 _image.color += new Color(0f, 0f, 0f, visibleValue);
+                _image.raycastTarget = _isVisible;
             }
         }
 
@@ -95,6 +96,18 @@ namespace SuperUltra.Container
             );
         }
 
+        void SetInteraction(CanvasGroup canvasGroup, Image image, bool value)
+        {
+            if (canvasGroup)
+            {
+                canvasGroup.blocksRaycasts = value;
+            }
+            if (image)
+            {
+                image.raycastTarget = value;
+            }
+        }
+
         public Tween FadeIn()
         {
             if (_isAnimating)
@@ -111,7 +124,7 @@ namespace SuperUltra.Container
                 () => { _isAnimating = false; }
             );
             _isVisible = true;
-            _canvasGroup.blocksRaycasts = true;
+            SetInteraction(_canvasGroup, _image, true);
             _fadeInCallBack?.Invoke();
 
             return sequence;
@@ -133,7 +146,7 @@ namespace SuperUltra.Container
                 {
                     ToggleButtonInteraction(false);
                     _isVisible = false;
-                    _canvasGroup.blocksRaycasts = false;
+                    SetInteraction(_canvasGroup, _image, false);
                     _isAnimating = false;
                     _fadeOutCallBack?.Invoke();
                 }

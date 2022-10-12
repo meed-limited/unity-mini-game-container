@@ -56,6 +56,23 @@ namespace SuperUltra.Container
             _popUp.Show();
         }
 
+        public void OnClickDoubleScoreAd()
+        {
+            ContainerInterface.RequestRewardedAds(
+                (bool isRewarded) =>
+                {
+                    float score = isRewarded ? SessionData.currnetGameScore * 2 : SessionData.currnetGameScore;
+                    LoadingUI.ShowInstance();
+                    NetworkManager.UpdateScore(
+                        score,
+                        UserData.playFabId,
+                        SessionData.currentGameId,
+                        OnUpdateScore
+                    );
+                }
+            );
+        }
+
         public void OnClickContinue()
         {
             Hide(() =>

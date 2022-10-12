@@ -20,6 +20,51 @@ namespace SuperUltra.Container
         public static int pointsToNextRank;
         public static int rankLevel;
         public static string rankTitle;
+        public static NFTItem[] nftItemList;
+
+        static UserData()
+        {
+            ContainerInterface.OnGetNFTItemList += OnGetNFTItemList;
+        }
+
+        static NFTItem[] OnGetNFTItemList()
+        {
+            NFTItem[] list = new NFTItem[nftItemList.Length];
+            nftItemList.CopyTo(list, 0);
+            return list;
+        }
+
+        public static void ActivateNFTItem(NFTItem item)
+        {
+            if(item.type == NFTItem.ItemType.Cosmetic)
+            {
+                for (int i = 0; i < nftItemList.Length; i++)
+                {
+                    bool isCosmetic = nftItemList[i].type == NFTItem.ItemType.Cosmetic;
+                    bool isTarget = item.id == nftItemList[i].id; 
+                    if(isCosmetic)
+                    {
+                        nftItemList[i].isActive = isTarget;
+                    }
+                }
+            }
+        }
+
+        public static void DeactivateNFTItem(NFTItem item)
+        {
+            if (item.type == NFTItem.ItemType.Cosmetic)
+            {
+                for (int i = 0; i < nftItemList.Length; i++)
+                {
+                    bool isTarget = item.id == nftItemList[i].id;
+                    if (isTarget)
+                    {
+                        nftItemList[i].isActive = false;
+                    }
+                }
+            }
+        }
+
         public static void ClearData()
         {
             playFabId = "";
