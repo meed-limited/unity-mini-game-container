@@ -18,6 +18,7 @@ namespace SuperUltra.Container
         void Start()
         {
             FacebookAuthen.Initialize();
+            GoogleAuthen.Initialize();
             Application.targetFrameRate = 60;
             // HidePanel(_loginUI.transform);
             HidePanel(_registerUI.transform);

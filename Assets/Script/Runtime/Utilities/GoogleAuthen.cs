@@ -11,13 +11,13 @@ namespace SuperUltra.Container
     public static class GoogleAuthen
     {
 
-        public static void Login(Action<ResponseData> callback)
+        public static void Initialize()
         {
             // The following grants profile access to the Google Play Games SDK.
             // Note: If you also want to capture the player's Google email, be sure to add
             // .RequestEmail() to the PlayGamesClientConfiguration
             PlayGamesClientConfiguration config = new PlayGamesClientConfiguration.Builder()
-            .AddOauthScope("profile")
+            // .AddOauthScope("profile")
             .RequestServerAuthCode(false)
             .Build();
             PlayGamesPlatform.InitializeInstance(config);
@@ -29,14 +29,14 @@ namespace SuperUltra.Container
             PlayGamesPlatform.Activate();
         }
 
-        private static void OnSignInButtonClicked()
+        public static void Login(Action<ResponseData> callback)
         {
-            Social.localUser.Authenticate((bool success) =>
+            ResponseData data = new ResponseData { result = false };
+            PlayGamesPlatform.Instance.Authenticate((bool success) =>
             {
 
                 if (success)
                 {
-
                     // GoogleStatusText.text = "Google Signed In";
                     var serverAuthCode = PlayGamesPlatform.Instance.GetServerAuthCode();
                     Debug.Log("Server Auth Code: " + serverAuthCode);
@@ -51,14 +51,20 @@ namespace SuperUltra.Container
                         (result) =>
                         {
                             // GoogleStatusText.text = "Signed In as " + result.PlayFabId;
-
+                            data.message = "Signed In as " + result.PlayFabId;
+                            callback?.Invoke(data);
                         }, 
-                        (PlayFabError error) => {} 
+                        (PlayFabError error) => {
+                            data.message = error.ErrorMessage;
+                            callback?.Invoke(data);
+                        } 
                     );
                 }
                 else
                 {
                     // GoogleStatusText.text = "Google Failed to Authorize your login";
+                    data.message = "Google Failed to Authorize your login";
+                    callback?.Invoke(data);
                 }
 
             });
