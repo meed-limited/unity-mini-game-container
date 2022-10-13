@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
@@ -20,6 +18,7 @@ namespace SuperUltra.Container
         void Start()
         {
             FacebookAuthen.Initialize();
+            GoogleAuthen.Initialize();
             Application.targetFrameRate = 60;
             // HidePanel(_loginUI.transform);
             HidePanel(_registerUI.transform);
@@ -126,6 +125,26 @@ namespace SuperUltra.Container
                     _messagePopUpUI.Show(errorMessage);
                 },
                 true
+            );
+        }
+
+        public void OnClickGoogleLogin()
+        {
+            LoadingUI.ShowInstance();
+            GoogleAuthen.Login(
+                (ResponseData response) =>
+                {
+                    LoadingUI.HideInstance();
+                    if(response.result)
+                    {
+                        Debug.Log("asdfasdf");
+                        // ToMenu();
+                    }
+                    else
+                    {
+                        _messagePopUpUI.Show(response.message);
+                    }
+                }
             );
         }
 
