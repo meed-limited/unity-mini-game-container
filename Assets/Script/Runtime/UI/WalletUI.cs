@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 
-
 namespace SuperUltra.Container
 {
 
@@ -19,6 +18,9 @@ namespace SuperUltra.Container
         [SerializeField] RectTransform _nftItemContainer;
         [SerializeField] RectTransform _startUpTab;
         [SerializeField] MenuManager _menuManager;
+        [SerializeField] TMP_Text _walletAddress;
+        [SerializeField] TMP_InputField _walletAddressInput;
+        [SerializeField] RectTransform _emptyNFTMessage;
 
         [Header("Header")]
         [SerializeField] Image _levelBar;
@@ -36,10 +38,20 @@ namespace SuperUltra.Container
             SetLevelBar(UserData.pointsInCurrentRank, UserData.pointsToNextRank);
             SetRankTitle(UserData.rankTitle);
             SetAvatar(UserData.profilePic);
+            SetWalletAddress(UserData.walletAddress);
             RequestNFTItem();
             if (_startUpTab)
             {
                 _previousTab = _startUpTab;
+            }
+        }
+
+        void SetWalletAddress(string walletAddress)
+        {
+            if (_walletAddress)
+            {
+                bool isEmpty = string.IsNullOrEmpty(walletAddress);
+                _walletAddress.text = isEmpty ? "No wallet address saved" : walletAddress;
             }
         }
 
@@ -66,16 +78,22 @@ namespace SuperUltra.Container
         void OnUserNFTDataResponse(GetUserNFTResponseData data)
         {
             LoadingUI.HideInstance();
-            if(data.result == false) return;
+            if (data.result == false) return;
             SetNFTItemList(data.list);
         }
 
         void SetNFTItemList(NFTItem[] itemList)
         {
             _nftIdToItemUIMap.Clear();
+            _emptyNFTMessage.gameObject.SetActive(false);
             foreach (Transform item in _nftItemContainer.transform)
             {
                 Destroy(item.gameObject);
+            }
+            if(_emptyNFTMessage && itemList.Length <= 0)
+            {
+                _emptyNFTMessage.gameObject.SetActive(true);
+                return;
             }
             foreach (NFTItem item in itemList)
             {
@@ -175,8 +193,35 @@ namespace SuperUltra.Container
             _previousTab = transform;
         }
 
-    }
+        public void UpdateWalletAddress()
+        {
+            if (_walletAddressInput == null)
+            {
+                return;
+            }
+            string address = _walletAddressInput.text;
+            LoadingUI.ShowInstance();
+            NetworkManager.UpdateUserWalletAddress(
+                UserData.playFabId,
+                _walletAddressInput.text,
+                (ResponseData data) =>
+                {
+                    LoadingUI.HideInstance();
+                    if (!data.result)
+                    {
+                        MessagePopUpUI.Show(data.message);
+                        return;
+                    }
+                    // 0x074277bc682e180ead52e48d52ea4633f487370c
+                    MessagePopUpUI.Show("Update Wallet success!", "Reload Page", () =>
+                    {
+                        Initialize();
+                    });
+                }
+            );
+        }
 
+    }
 
 }
 

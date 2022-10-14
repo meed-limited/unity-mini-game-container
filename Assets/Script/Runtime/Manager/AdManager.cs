@@ -49,6 +49,21 @@ namespace SuperUltra.Container
             }
         }
 
+        public async void Initialize()
+        {
+            try
+            {
+                Debug.Log("Initializing...");
+                await UnityServices.InitializeAsync();
+                Debug.Log("Initialized!");
+                InitializationComplete();
+            }
+            catch (Exception e)
+            {
+                InitializationFailed(e);
+            }
+        }
+
         void OnDestroy()
         {
             m_RewardedAd?.Dispose();

@@ -131,7 +131,7 @@ namespace SuperUltra.Container
         {
             foreach (IResourceLocation item in locations)
             {
-                Debug.Log($"{gameName} {item.PrimaryKey}");
+                // Debug.Log($"{gameName} {item.PrimaryKey}");
             }
             Addressables.GetDownloadSizeAsync(locations).Completed += (obj) =>
             {
@@ -197,7 +197,7 @@ namespace SuperUltra.Container
             AsyncOperationHandle operationHandle = Addressables.LoadContentCatalogAsync(
                 $"{Config.RemoteStagingCatalogUrl}/{gameName}/{Config.BuildTarget}/{catalogName}", true
             );
-            Debug.Log($"{Config.RemoteStagingCatalogUrl}/{gameName}/{Config.BuildTarget}/{catalogName}");
+            // Debug.Log($"{Config.RemoteStagingCatalogUrl}/{gameName}/{Config.BuildTarget}/{catalogName}");
             StartCoroutine(UpdateProgress(operationHandle, $"Retrive {gameName} {catalogName} data from aws"));
             operationHandle.Completed += (obj) =>
             {
@@ -227,7 +227,6 @@ namespace SuperUltra.Container
             AsyncOperation operation = SceneManager.LoadSceneAsync("MenuScene");
             operation.completed += (obj) =>
             {
-                Debug.Log("loaded");
                 if (_currentSceneHandle.IsValid())
                 {
                     Debug.Log("unloaded");

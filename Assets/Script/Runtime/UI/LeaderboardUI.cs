@@ -14,6 +14,7 @@ namespace SuperUltra.Container
         [SerializeField] RectTransform _rankingItemContainer;
         [SerializeField] RectTransform _gameBannerPrefab;
         [SerializeField] RectTransform _gameBannerContainer;
+        [SerializeField] RectTransform _emptyLeaderboardMessage;
         [SerializeField] StickyScrollUI _gameBannerStickyScroll;
         [SerializeField] LeaderboardItemUI _userLeaderboardUI;
         [SerializeField] TMP_Text _gameName;
@@ -95,7 +96,6 @@ namespace SuperUltra.Container
             _gameBannerStickyScroll.Initialize();
             _gameBannerStickyScroll.OnItemChange.AddListener(OnGameChange);
         }
-
 
         void SetBannerImage(Image image, int gameId)
         {
@@ -203,11 +203,21 @@ namespace SuperUltra.Container
 
         void LazyLoadLeaderBoard(GetLeaderboardResponseData responseData)
         {
+
+            _emptyLeaderboardMessage.gameObject.SetActive(false);
             if (!responseData.result || responseData.list == null)
             {
+                string message = string.IsNullOrEmpty(responseData.message) ? "ServerError" : responseData.message;
+                MessagePopUpUI.Show(message);
                 return;
             }
-            
+
+            if (_emptyLeaderboardMessage && responseData.list.Length <= 0)
+            {
+                _emptyLeaderboardMessage.gameObject.SetActive(true);
+                return;
+            }
+
             int index = Mathf.Max(0, _rankingItemContainer.childCount - 1);
             foreach (var data in responseData.list)
             {
