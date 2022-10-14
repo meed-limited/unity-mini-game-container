@@ -17,11 +17,11 @@ namespace SuperUltra.Container
         {
             RectTransform gameInfoButton = Instantiate(_gameInfoButtonPrefab, _buttonContainer);
             Button button = gameInfoButton.GetComponentInChildren<Button>();
-            TMP_Text text = gameInfoButton.GetComponentsInChildren<TMP_Text>()[1];
-            SetImage(gameInfoButton.GetComponentInChildren<Image>(), posterImage);
+            TMP_Text downloadSizeText = gameInfoButton.GetComponentsInChildren<TMP_Text>()[1];
+            SetImage(button.GetComponentInChildren<Image>(), posterImage);
             button.GetComponentInChildren<TMP_Text>().text = key;
             button.onClick.AddListener(callback);
-            text.text = $"Download size: {downloadSize} bytes";
+            downloadSizeText.text = $"Download size: {downloadSize} bytes";
         }
 
         void SetImage(Image image, Sprite posterImage)
