@@ -12,7 +12,14 @@ namespace SuperUltra.JungleDrum {
         GameObject _pauseWindow;
         [SerializeField]
         GameObject _gv;
-
+        private void OnEnable()
+        {
+            ContainerInterface.OnPauseMenuHide += ResumeGame;
+        }
+        private void OnDisable()
+        {
+            ContainerInterface.OnPauseMenuHide -= ResumeGame;
+        }
         public void PauseGame()
         {
             ContainerInterface.Pause();
@@ -24,11 +31,11 @@ namespace SuperUltra.JungleDrum {
 
         public void ResumeGame()
         {
-            ContainerInterface.Resume();
+            //ContainerInterface.Resume();
             EffectControl _ef = _gv.GetComponent<EffectControl>();
             _ef.DofOff();
             Time.timeScale = 1;
-            _pauseWindow.SetActive(false);
+            //_pauseWindow.SetActive(false);
         }
     }
 }

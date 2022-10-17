@@ -7,6 +7,8 @@ TagManager:
   - Enemy
   - Banana
   - No
+  - Car
+  - Coin
   layers:
   - Default
   - TransparentFX

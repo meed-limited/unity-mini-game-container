@@ -71,7 +71,7 @@ namespace SuperUltra.JungleDrum
         IEnumerator EndGamee()
         {
             yield return new WaitForSeconds(2.5f);
-            _deadUI.SetActive(true);
+            //_deadUI.SetActive(true);
             ContainerInterface.GameOver();
             EffectControl _ef = _gv.GetComponent<EffectControl>();
             _ef.DofOn();
