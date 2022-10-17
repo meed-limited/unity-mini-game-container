@@ -10,6 +10,7 @@ namespace SuperUltra.Container
         [SerializeField] NavigationButtonUI _gameNavButton;
         [SerializeField] NavigationButtonUI _leaderBoardButton;
         [SerializeField] NavigationButtonUI _walletNavButton;
+        [SerializeField] NavigationButtonUI _seasonPassNavButton;
         NavigationButtonUI _prevActiveButton;
         Dictionary<Page, NavigationButtonUI> pageMap = new Dictionary<Page, NavigationButtonUI>();
 
@@ -18,6 +19,7 @@ namespace SuperUltra.Container
             pageMap.Add(Page.GameList, _gameNavButton);
             pageMap.Add(Page.Leaderboard, _leaderBoardButton);
             pageMap.Add(Page.Wallet, _walletNavButton);
+            pageMap.Add(Page.SeasonPass, _seasonPassNavButton);
         }
 
         public void Enable(NavigationButtonUI button)
