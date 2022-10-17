@@ -62,13 +62,16 @@ namespace SuperUltra.Container
                 (bool isRewarded) =>
                 {
                     float score = isRewarded ? SessionData.currnetGameScore * 2 : SessionData.currnetGameScore;
-                    LoadingUI.ShowInstance();
-                    NetworkManager.UpdateScore(
-                        score,
-                        UserData.playFabId,
-                        SessionData.currentGameId,
-                        OnUpdateScore
-                    );
+                    Hide(() =>
+                    {
+                        LoadingUI.ShowInstance();
+                        NetworkManager.UpdateScore(
+                            score,
+                            UserData.playFabId,
+                            SessionData.currentGameId,
+                            OnUpdateScore
+                        );
+                    });
                 }
             );
         }
