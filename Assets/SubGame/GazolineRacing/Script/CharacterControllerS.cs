@@ -5,6 +5,7 @@ using DG.Tweening;
 using QFSW.MOP2;
 using SuperUltra.GazolineRacing;
 using SuperUltra.Container;
+using System;
 
 namespace SuperUltra.GazolineRacing
 {
@@ -19,7 +20,7 @@ namespace SuperUltra.GazolineRacing
         private float _forwardSpeed;
         private Rigidbody _rb;
 
-        private int _desiredLane; //0= left, 1 , 2, 3=right
+        private int _desiredLane = 2; //0= left, 1 , 2, 3=right
         [SerializeField]
         private float _landeDistance = 5;
         [SerializeField]
@@ -36,6 +37,13 @@ namespace SuperUltra.GazolineRacing
         AudioSource _coinSFX, _expolSFX;
         Animator _ani;
         private bool _moveBlocked;
+        [SerializeField]
+        GameObject _coins, _coinsPos;
+        [SerializeField]
+        GameObject _Firework;
+
+        public delegate void CoinAction();
+        public static event CoinAction OnCoinHit;
 
         private void OnEnable()
         {
@@ -71,7 +79,8 @@ namespace SuperUltra.GazolineRacing
             if (!_blocked)
                 LaneChange();
 
-            CarMovement();
+            if(_gm.isEnd == false)
+                CarMovement();
 
 
         }
@@ -92,24 +101,32 @@ namespace SuperUltra.GazolineRacing
 
         private void FixedUpdate()
         {
-
-            if (_timer._timeRemaining > 45)
+            if (_gm.isEnd == false )
             {
-                _forwardSpeed = 30;
+                if (_timer._timeRemaining > 45)
+                {
+                    _forwardSpeed = 30;
+                }
+                else if (_timer._timeRemaining > 30 && _timer._timeRemaining <= 45)
+                {
+                    _forwardSpeed = 45;
+                }
+                else if (_timer._timeRemaining > 15 && _timer._timeRemaining <= 30)
+                {
+                    _forwardSpeed = 60;
+                }
+                else if (_timer._timeRemaining <= 15)
+                {
+                    _forwardSpeed = 75;
+                }
+                _rb.velocity = new Vector3(0, 0, _forwardSpeed);
             }
-            else if (_timer._timeRemaining > 30 && _timer._timeRemaining <= 45)
+            else
             {
-                _forwardSpeed = 45;
+                if (_forwardSpeed>0)
+                    _forwardSpeed -= 0.4f;
+                _rb.velocity = new Vector3(0, 0, _forwardSpeed);
             }
-            else if (_timer._timeRemaining > 15 && _timer._timeRemaining <= 30)
-            {
-                _forwardSpeed = 60;
-            }
-            else if (_timer._timeRemaining <= 15)
-            {
-                _forwardSpeed = 75;
-            }
-            _rb.velocity = new Vector3(0, 0, _forwardSpeed);
         }
         private void LaneChange()
         {
@@ -185,11 +202,13 @@ namespace SuperUltra.GazolineRacing
             if (collision.gameObject.CompareTag("Enemy"))
             {
                 //Debug.Log("Enemy!");
+                StartCoroutine(_gm.Noise(2.5f, 2.5f));
                 StartCoroutine(PlayExplo());
+                Instantiate(_Firework, _bananaPos);
                 collision.gameObject.GetComponent<AudioSource>().enabled = true;
                 Rigidbody _eRb = collision.gameObject.GetComponent<Rigidbody>();
                 _eRb.constraints = RigidbodyConstraints.None;
-                _eRb.AddForce(transform.up * 300);
+                _eRb.AddForce(transform.up * 400);
                 _gm.ReduceLife();
                 collision.gameObject.tag = "No";
 
@@ -199,20 +218,16 @@ namespace SuperUltra.GazolineRacing
         {
             if (other.gameObject.CompareTag("Banana"))
             {
-                //Debug.Log("Banana!");
-
                 _coinSFX.PlayOneShot(_coinSFX.clip);
-                ParticleSystem BananaFx = Instantiate(_bananaFx, transform.position, Quaternion.Euler(-70f, 0f, 0f));
-                BananaFx.transform.position = new Vector3(_bananaPos.position.x, _bananaPos.position.y, _bananaPos.position.z + 2f);
+                
+                var myNewSmoke = Instantiate(_coins, _coinsPos.transform);
+                myNewSmoke.transform.parent = _coinsPos.transform;
+                //ParticleSystem BananaFx = Instantiate(_bananaFx, transform.position, Quaternion.Euler(-70f, 0f, 0f));
+                //BananaFx.transform.position = new Vector3(_bananaPos.position.x, _bananaPos.position.y, _bananaPos.position.z + 2f);
                 _gm.GetScore(5);
                 _itemGen.Recycle(other.gameObject);
             }
 
-            //else if (other.CompareTag("L3P"))
-            //{
-            //   _gm.GetScore(10);
-            //    Destroy(other);
-            //}
         }
         IEnumerator PlayExplo()
         {

@@ -71,7 +71,7 @@ namespace SuperUltra.JungleDrum
         IEnumerator EndGamee()
         {
             yield return new WaitForSeconds(2.5f);
-            //_deadUI.SetActive(true);
+            _deadUI.SetActive(true);
             ContainerInterface.GameOver();
             EffectControl _ef = _gv.GetComponent<EffectControl>();
             _ef.DofOn();
@@ -107,7 +107,6 @@ namespace SuperUltra.JungleDrum
         {
             _player.GetComponent<Animator>().SetTrigger("Dead");
             gameObject.GetComponent<Button>().interactable = false;
-            ContainerInterface.SetScore(_gs._score);
             //_endSfx.Play();
             _timer.enabled = false;
             _gs._isSwitching = false;
@@ -117,8 +116,9 @@ namespace SuperUltra.JungleDrum
             StartCoroutine(Thunder());
             _shaker.Shake();
 
-
+            
             StartCoroutine(EndGamee());
+
         }
 
         public void PtReduce()

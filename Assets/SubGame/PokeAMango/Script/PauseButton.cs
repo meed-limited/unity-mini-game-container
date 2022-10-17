@@ -13,30 +13,22 @@ namespace SuperUltra.JungleDrum {
         [SerializeField]
         GameObject _gv;
 
-        private void OnEnable()
-        {
-            ContainerInterface.OnReturnMenu += ResumeGame;
-        }
-        private void DisEnable()
-        {
-            ContainerInterface.OnReturnMenu -= ResumeGame;
-        }
         public void PauseGame()
         {
             ContainerInterface.Pause();
             EffectControl _ef = _gv.GetComponent<EffectControl>();
-            _ef.DofOn();
+            //_ef.DofOn();
             Time.timeScale = 0;
             //_pauseWindow.SetActive(true);
         }
 
         public void ResumeGame()
         {
-            //ContainerInterface.Resume();
+            ContainerInterface.Resume();
             EffectControl _ef = _gv.GetComponent<EffectControl>();
             _ef.DofOff();
             Time.timeScale = 1;
-            //_pauseWindow.SetActive(false);
+            _pauseWindow.SetActive(false);
         }
     }
 }

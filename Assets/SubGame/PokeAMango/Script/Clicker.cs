@@ -29,10 +29,11 @@ namespace SuperUltra.JungleDrum
         ParticleSystem _clickeffect, _dustEffect, _sDust;
 
         bool _rotating = true; ///change before launch
-        [SerializeField]
+
         GameObject _runner;
         [SerializeField]
         GameObject _speedLine;
+        [SerializeField]
         Animator _runnerAni;
         [SerializeField]
         private float _stopCount = 0.3f;
@@ -50,7 +51,7 @@ namespace SuperUltra.JungleDrum
         GameObject _rawImage;
         [SerializeField]
         GameObject _dustPoint, _fire;
-
+        [SerializeField] FireFXPool _firePooler;
 
 
 
@@ -62,15 +63,14 @@ namespace SuperUltra.JungleDrum
         {
             _anim = gameObject.GetComponent<Animator>();
             _sfx = gameObject.GetComponent<AudioSource>();
+            _runner = GameObject.FindGameObjectWithTag("Player");
             _runnerAni = _runner.GetComponent<Animator>();
-
 
         }
 
         void Update()
         {
             RotateObject();
-            //ChangeFace();
 
         }
 
@@ -132,7 +132,7 @@ namespace SuperUltra.JungleDrum
             EffectPlay();
             _scroll.MountMove();
             _anim.SetTrigger("AniPlayer");
-            //SpwanCoin();
+            SpwanCoin();
 
             //Debug.Log("Clicked");
 
@@ -146,12 +146,9 @@ namespace SuperUltra.JungleDrum
 
         private void SpwanCoin()
         {
-            var _coin = Instantiate(_clickeffect, transform.position, Quaternion.identity);
-            if (bpm > 300)
-                Instantiate(_dustEffect, _dustPoint.transform.position, _dustPoint.transform.rotation);
-            else
-                Instantiate(_sDust, _dustPoint.transform.position, _dustPoint.transform.rotation);
-            _coin.transform.localScale = new Vector3(0.6f, 0.7f, 1);
+
+            //var _coin = Instantiate(_clickeffect, new Vector3(0f, -2.6f, 1.7f), Quaternion.identity);
+            _firePooler.Spawn();
         }
 
         private void EffectPlay()

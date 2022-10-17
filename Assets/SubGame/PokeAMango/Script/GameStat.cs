@@ -53,6 +53,7 @@ namespace SuperUltra.JungleDrum
         private void Start()
         {
             _switchTimer = Random.Range(2f, 10f);
+            _running = GameObject.FindGameObjectWithTag("Player").GetComponent<Animator>();
         }
 
         private void Update()

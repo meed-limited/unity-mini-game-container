@@ -11,7 +11,7 @@ namespace SuperUltra.JungleDrum
     public class Timer : MonoBehaviour
     {
 
-        public float _timeRemaining;
+        public float _timeRemaining = 120;
         private bool _timerIsRunning = false;
         [SerializeField]
         private TextMeshProUGUI _timeText;

@@ -12,6 +12,16 @@ namespace SuperUltra.JungleDrum
         [SerializeField]
         GameStat _gs;
 
+        private void OnEnable()
+        {
+            gameObject.tag = "Player";
+        }
+
+        private void OnDisable()
+        {
+            gameObject.tag = "Untagged";
+        }
+
         private void OnCollisionEnter(Collision collision)
         {
             if (collision.gameObject.CompareTag("Enemy"))

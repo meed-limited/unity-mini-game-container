@@ -18,7 +18,7 @@ namespace SuperUltra.JungleDrum
             VolumeProfile profile = _volume.sharedProfile;
 
             profile.TryGet<DepthOfField>(out _dof);
-            _dof.active = true;
+            _dof.active = false;
         }
 
 
