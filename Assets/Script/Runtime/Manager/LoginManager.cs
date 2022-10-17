@@ -237,7 +237,7 @@ namespace SuperUltra.Container
                     }
                     else
                     {
-                        MessagePopUpUI.Show("Login fail");
+                        MessagePopUpUI.Show($"Login fail\n {data.message}");
                         LoadingUI.HideInstance();
                     }
                 }

@@ -186,12 +186,12 @@ namespace SuperUltra.Container
         {
             Debug.Log($"User Rewarded! Type: {e.Type} Amount: {e.Amount}");
             _rewardAction?.Invoke(true);
+            _rewardAction = null;
         }
 
         void AdClosed(object sender, EventArgs args)
         {
             Debug.Log("Rewarded Closed! Loading Ad...");
-            _rewardAction?.Invoke(false);
         }
 
         void AdLoaded(object sender, EventArgs e)
@@ -201,8 +201,9 @@ namespace SuperUltra.Container
 
         void AdFailedLoad(object sender, LoadErrorEventArgs e)
         {
-            Debug.Log("Failed to load ad");
-            Debug.Log(e.Message);
+            Debug.Log("Failed to load ad " + e.Message);
+            _rewardAction?.Invoke(false);
+            _rewardAction = null;
         }
 
         void ImpressionEvent(object sender, ImpressionEventArgs args)
