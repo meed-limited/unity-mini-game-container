@@ -7,7 +7,18 @@ namespace SuperUltra.Container
 {
     public class NavigationGroupUI : MonoBehaviour
     {
+        [SerializeField] NavigationButtonUI _gameNavButton;
+        [SerializeField] NavigationButtonUI _leaderBoardButton;
+        [SerializeField] NavigationButtonUI _walletNavButton;
         NavigationButtonUI _prevActiveButton;
+        Dictionary<Page, NavigationButtonUI> pageMap = new Dictionary<Page, NavigationButtonUI>();
+
+        void Start()
+        {
+            pageMap.Add(Page.GameList, _gameNavButton);
+            pageMap.Add(Page.Leaderboard, _leaderBoardButton);
+            pageMap.Add(Page.Wallet, _walletNavButton);
+        }
 
         public void Enable(NavigationButtonUI button)
         {
@@ -22,6 +33,15 @@ namespace SuperUltra.Container
             }
 
             _prevActiveButton = button;
+        }
+
+        public void Enable(Page page)
+        {
+            if (pageMap.TryGetValue(page, out NavigationButtonUI buttonUI))
+            {
+                buttonUI.Enable();
+                Enable(buttonUI);
+            }
         }
 
     }

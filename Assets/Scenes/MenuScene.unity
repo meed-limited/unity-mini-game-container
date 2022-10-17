@@ -1607,6 +1607,7 @@ MonoBehaviour:
   _profileEditPage: {fileID: 424667479}
   _avatarSelectPage: {fileID: 1919807348}
   _navigationPage: {fileID: 546333466}
+  _navigationGroupUI: {fileID: 1489867975}
   _messagePopUpUI: {fileID: 701968377}
 --- !u!4 &195652206
 Transform:
@@ -22563,6 +22564,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 613dc97109cc2b4428b3e1fb1e8631ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gameNavButton: {fileID: 215701437}
+  _leaderBoardButton: {fileID: 2076180940}
+  _walletNavButton: {fileID: 1823070534}
 --- !u!114 &1517328419
 MonoBehaviour:
   m_ObjectHideFlags: 0
