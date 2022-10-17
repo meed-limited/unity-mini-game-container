@@ -116,7 +116,7 @@ namespace SuperUltra.Container
             callback();
         }
 
-        static void GetGameList(Action callback = null)
+        static void GetGameList(Action<ResponseData> callback = null)
         {
             // get all th game list from api from Config.domain
             HTTPRequest request = new HTTPRequest(
@@ -125,8 +125,7 @@ namespace SuperUltra.Container
                 (req, res) =>
                 {
                     Debug.Log("GetGameList response");
-                    OnGameListRequestFinished(req, res);
-                    callback?.Invoke();
+                    OnGameListRequestFinished(req, res, callback);
                 }
             );
             request.AddHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
@@ -304,12 +303,17 @@ namespace SuperUltra.Container
             callback?.Invoke(responseData);
         }
 
-        static void CompleteRequestList(Action<ResponseData> callback)
+        static void CompleteRequestList(Action<ResponseData> callback, ResponseData data)
         {
+            if(!data.result)
+            {
+                callback?.Invoke(data);
+                return;
+            }
             Debug.Log($"{_isUserDataRequested} {_isAvatarImageRequested} {GameData.gameDataList.Count != 0}");
             if (_isUserDataRequested
                 && _isAvatarImageRequested
-                && GameData.gameDataList.Count != 0
+                // && GameData.gameDataList.Count != 0
             )
             {
                 callback?.Invoke(new ResponseData
@@ -319,11 +323,12 @@ namespace SuperUltra.Container
             }
         }
 
-        static void OnGameListRequestFinished(HTTPRequest request, HTTPResponse response)
+        static void OnGameListRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback)
         {
-            if (!ValidateResponse(response).result)
+            ResponseData responseData = ValidateResponse(response); 
+            if (!responseData.result)
             {
-                Debug.Log("Game list request failed");
+                callback?.Invoke(responseData);
                 return;
             }
 
@@ -333,7 +338,9 @@ namespace SuperUltra.Container
 
             if (json["games"] == null || !json["games"].IsArray)
             {
-                Debug.Log("No game list found");
+                responseData.message = "No game list found";
+                responseData.result = false;
+                callback?.Invoke(responseData);
                 return;
             }
 
@@ -354,6 +361,8 @@ namespace SuperUltra.Container
                     }
                 );
             }
+            responseData.result = true;
+            callback?.Invoke(responseData);
         }
 
         public static void LoginRequest(Action<ResponseData> callback)
@@ -369,19 +378,20 @@ namespace SuperUltra.Container
                 () =>
                 {
                     // get game list then get leader board data
-                    GetGameList(() =>
+                    GetGameList((response) =>
                     {
-                        CompleteRequestList(callback);
+                        response.result = true;
+                        CompleteRequestList(callback, response);
                     });
                     // get user data
                     GetUserData((response) =>
                     {
                         _isUserDataRequested = true;
-                        CompleteRequestList(callback);
+                        CompleteRequestList(callback, response);
                     }, (response) =>
                     {
                         _isAvatarImageRequested = true;
-                        CompleteRequestList(callback);
+                        CompleteRequestList(callback, response);
                     });
                 }
             );
