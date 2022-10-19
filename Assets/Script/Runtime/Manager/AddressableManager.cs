@@ -1,8 +1,10 @@
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -12,7 +14,6 @@ namespace SuperUltra.Container
     public class AddressableManager : MonoBehaviour
     {
         [SerializeField] bool _shouldDownload;
-        [SerializeField] bool _deleteCache;
         [SerializeField] GameListUI _gameListUI;
         [SerializeField] GameInfoList _gameInfoListAndroid;
         [SerializeField] GameInfoList _gameInfoListIOS;
@@ -37,14 +38,6 @@ namespace SuperUltra.Container
 
         void Start()
         {
-            Debug.Log($"Caching.cacheCount {Caching.cacheCount}");
-
-            if (Caching.cacheCount > 0 && _deleteCache)
-            {
-                Debug.Log($"deleteing cache");
-                Caching.ClearCache();
-            }
-
             List<GameInfo> gameInfoList = GetGameList();
             SetGameInfoMap(gameInfoList);
 
@@ -94,21 +87,31 @@ namespace SuperUltra.Container
             return gameInfoList;
         }
 
-        void DownloadScene(string gameName, string landingSceneName, int gameId)
+        void DownloadScene(string gameName, string landingSceneName, int gameId, IResourceLocator locator)
         {
             if (!_shouldDownload)
             {
                 return;
             }
 
-            AsyncOperationHandle<IList<IResourceLocation>> operationHandle = Addressables.LoadResourceLocationsAsync("Scene");
-            operationHandle.Completed += (obj) =>
+            bool isLocationLoaded = locator.Locate("Scene", null, out IList<IResourceLocation> locations);
+            List<string> keyList = new List<string>();
+            if (isLocationLoaded)
             {
-                if (obj.Status == AsyncOperationStatus.Succeeded)
+                foreach (var item in locations)
                 {
-                    CreateButtons(gameName, obj.Result, landingSceneName, gameId);
+                    if (!keyList.Contains(item.PrimaryKey))
+                    {
+                        keyList.Add(item.PrimaryKey);
+                    }
                 }
-            };
+            }
+
+            if (isLocationLoaded)
+            {
+                CreateButtons(gameName, locations, landingSceneName, gameId);
+            }
+
         }
 
         void SetGameInfoMap(List<GameInfo> gameInfoList)
@@ -129,22 +132,29 @@ namespace SuperUltra.Container
 
         void CreateButtons(string gameName, IList<IResourceLocation> locations, string landingSceneName, int gameId)
         {
-            foreach (IResourceLocation item in locations)
-            {
-                // Debug.Log($"{gameName} {item.PrimaryKey}");
-            }
+            // Addressables.ClearDependencyCacheAsync(locations);
             Addressables.GetDownloadSizeAsync(locations).Completed += (obj) =>
             {
                 if (obj.Status == AsyncOperationStatus.Succeeded)
                 {
+                    float downloadSize = obj.Result; 
+                    Debug.Log($"{downloadSize}, {gameName}");
                     _gameListUI.CreateButtons(
                         gameName,
                         gameId,
-                        obj.Result,
+                        downloadSize,
                         GetPosterImage(gameId),
                         () =>
                         {
-                            DownloadDependeny(locations, landingSceneName, gameId);
+                            if(downloadSize > 1)
+                            {
+                                Debug.Log(gameName + " download game");
+                                DownloadDependeny(locations, landingSceneName, gameId, downloadSize);
+                            }else
+                            {
+                                Debug.Log(gameName + " enter game");
+                                LoadGameScene(landingSceneName, gameId);
+                            }
                         }
                     );
                 }
@@ -160,16 +170,25 @@ namespace SuperUltra.Container
             return null;
         }
 
-        void DownloadDependeny(IList<IResourceLocation> item, string landingSceneName, int gameId)
+        void DownloadDependeny(IList<IResourceLocation> item, string landingSceneName, int gameId, float downloadSize)
         {
             AsyncOperationHandle operationHandle = Addressables.DownloadDependenciesAsync(item);
-            StartCoroutine(UpdateProgress(operationHandle, "Downloading dependencies..."));
+            if (downloadSize > 1)
+            {
+                ShowDownloadDisplay(gameId);
+                StartCoroutine(UpdateProgress(operationHandle, gameId));
+            }
             operationHandle.Completed += (obj) =>
             {
                 if (obj.Status == AsyncOperationStatus.Succeeded)
                 {
-                    LoadGameScene(landingSceneName, gameId);
-                    _gameListUI.UpdateResult("Downloading dependencies...", true);
+                    // "Downloading dependencies...",
+                    Debug.Log("download complete");
+                    _gameListUI.SetDownloadIconVisible(gameId, true);
+                    _gameListUI.SetButtonCallback(
+                        gameId,
+                        () => LoadGameScene(landingSceneName, gameId)
+                    );
                 }
             };
         }
@@ -177,49 +196,57 @@ namespace SuperUltra.Container
         void LoadGameScene(string landingSceneName, int gameId)
         {
             AsyncOperationHandle operationHandle = Addressables.LoadSceneAsync(landingSceneName);
+            LoadingUI.ShowInstance();
             operationHandle.Completed += (AsyncOperationHandle obj) =>
             {
                 if (obj.Status == AsyncOperationStatus.Succeeded)
                 {
+                    LoadingUI.HideInstance();
                     SessionData.currentGameId = gameId;
                     _currentSceneHandle = obj;
-                    Debug.Log("Load Success");
+                    Debug.Log("LoadGameScene Success");
                 }
                 else
                 {
-                    Debug.Log("Load Failed");
+                    Debug.Log("LoadGameScene Failed");
                 }
             };
         }
 
         void DownloadRemoteCatalog(string gameName, string catalogName, string landingSceneName, int gameId)
         {
-            AsyncOperationHandle operationHandle = Addressables.LoadContentCatalogAsync(
+            AsyncOperationHandle<IResourceLocator> operationHandle = Addressables.LoadContentCatalogAsync(
                 $"{Config.RemoteStagingCatalogUrl}/{gameName}/{Config.BuildTarget}/{catalogName}", true
             );
+
             // Debug.Log($"{Config.RemoteStagingCatalogUrl}/{gameName}/{Config.BuildTarget}/{catalogName}");
-            StartCoroutine(UpdateProgress(operationHandle, $"Retrive {gameName} {catalogName} data from aws"));
+
             operationHandle.Completed += (obj) =>
             {
                 if (obj.Status == AsyncOperationStatus.Succeeded)
                 {
-                    DownloadScene(gameName, landingSceneName, gameId);
-                    _gameListUI.UpdateResult($"Retrive {gameName} {catalogName} data from aws", true);
+                    DownloadScene(gameName, landingSceneName, gameId, obj.Result);
+                    // "Retrive {gameName} {catalogName} data from aws true"
                 }
                 else
                 {
-                    _gameListUI.UpdateResult($"Retrive {gameName} {catalogName} data from aws", false);
+                    // "Retrive {gameName} {catalogName} data from aws false"
                 }
             };
         }
 
-        IEnumerator UpdateProgress(AsyncOperationHandle op, string taskName)
+        IEnumerator UpdateProgress(AsyncOperationHandle op, int gameId)
         {
             while (op.IsValid() && op.PercentComplete < 1)
             {
-                _gameListUI.UpdateProgress(op.PercentComplete, taskName);
+                _gameListUI.UpdateProgress(op.PercentComplete, gameId);
                 yield return null;
             }
+        }
+
+        void ShowDownloadDisplay(int gameId)
+        {
+            _gameListUI.ShowDownloadDisplay(gameId);
         }
 
         void UnloadScene()
