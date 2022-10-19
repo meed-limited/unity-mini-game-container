@@ -19,6 +19,7 @@ namespace SuperUltra.Container
         [SerializeField] Canvas _profileEditPage;
         [SerializeField] Canvas _avatarSelectPage;
         [SerializeField] Canvas _navigationPage;
+        [SerializeField] NavigationGroupUI _navigationGroupUI;
         [SerializeField] MessagePopUpUI _messagePopUpUI;
         RectTransform _prevUI;
         int _prevPagenumber;
@@ -26,19 +27,14 @@ namespace SuperUltra.Container
 
         void Start()
         {
-            _pageToCanvas.Add(_gameListPage, 0);
-            _pageToCanvas.Add(_leaderboardUI, 1);
-            _pageToCanvas.Add(_seasonPassPage, 2);
-            _pageToCanvas.Add(_walletPage, 3);
-
-            _pageToCanvas.Add(_profilePage, 21);
-            _pageToCanvas.Add(_newsPage, 22);
-            _pageToCanvas.Add(_settingPage, 31);
-            _pageToCanvas.Add(_profileEditPage, 32);
-            _pageToCanvas.Add(_avatarSelectPage, 41);
+            AddPageMapData();
+            SetPageInitialState();
             _prevUI = _gameListPage.GetComponent<RectTransform>();
             _prevPagenumber = 0;
+        }
 
+        void SetPageInitialState()
+        {
             _leaderboardUI.gameObject.SetActive(false);
             _seasonPassPage.gameObject.SetActive(false);
             _walletPage.gameObject.SetActive(false);
@@ -50,6 +46,20 @@ namespace SuperUltra.Container
 
             _navigationPage.gameObject.SetActive(true);
             _gameListPage.gameObject.SetActive(true);
+        }
+
+        void AddPageMapData()
+        {
+            _pageToCanvas.Add(_gameListPage, (int)Page.GameList);
+            _pageToCanvas.Add(_leaderboardUI, (int)Page.Leaderboard);
+            _pageToCanvas.Add(_seasonPassPage, (int)Page.SeasonPass);
+            _pageToCanvas.Add(_walletPage, (int)Page.Wallet);
+
+            _pageToCanvas.Add(_profilePage, (int)Page.Profile);
+            _pageToCanvas.Add(_newsPage, (int)Page.News);
+            _pageToCanvas.Add(_settingPage, (int)Page.Setting);
+            _pageToCanvas.Add(_profileEditPage, (int)Page.Profile);
+            _pageToCanvas.Add(_avatarSelectPage, (int)Page.AvatarSelect);
         }
 
         void SwitchRayCastOnOff(Transform transform, bool isOn = true)
@@ -148,6 +158,10 @@ namespace SuperUltra.Container
             {
                 return;
             }
+            if (_navigationGroupUI)
+            {
+                _navigationGroupUI.Enable((Page)targetPageNumber);
+            }
             ISlidable baseSlideUI = _navigationPage.GetComponent<ISlidable>();
             if (baseSlideUI == null) return;
             // if page number is greater smaller than 10, show the navigation
@@ -190,6 +204,7 @@ namespace SuperUltra.Container
                 SlideOutCurrentUI();
                 FadeOutCurrentUI();
             }
+
             ToggelNavigation(target);
             target.gameObject.SetActive(true);
             SetTargetPageDirection(target);
@@ -240,7 +255,7 @@ namespace SuperUltra.Container
 
         public void UpdateAvatar(Texture2D texture2D)
         {
-            
+
 
         }
 
@@ -265,7 +280,8 @@ namespace SuperUltra.Container
             ToPage(_profileEditPage);
         }
         public void ToSeasonPage() => ToPage(_seasonPassPage);
-        public void ToGamePage(){
+        public void ToGamePage()
+        {
             MainGameUI menuUI = _gameListPage.GetComponent<MainGameUI>();
             if (menuUI)
             {

@@ -313,7 +313,7 @@ namespace SuperUltra.Container
             Debug.Log($"{_isUserDataRequested} {_isAvatarImageRequested} {GameData.gameDataList.Count != 0}");
             if (_isUserDataRequested
                 && _isAvatarImageRequested
-                //&& GameData.gameDataList.Count != 0
+                && GameData.gameDataList.Count != 0
             )
             {
                 callback?.Invoke(new ResponseData
@@ -380,7 +380,6 @@ namespace SuperUltra.Container
                     // get game list then get leader board data
                     GetGameList((response) =>
                     {
-                        response.result = true;
                         CompleteRequestList(callback, response);
                     });
                     // get user data
