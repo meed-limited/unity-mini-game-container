@@ -21,13 +21,13 @@ MonoBehaviour:
     bannerImage: {fileID: 21300000, guid: 7773ba3c32322e84299de2df7ebd3124, type: 3}
   - gameId: 1
     remoteFolderName: poke-a-mango
-    catalogName: catalog_2022.10.13.08.24.50.hash
-    mainSceneKey: Assets/Scenes/Tourment.unity
+    catalogName: catalog_2022.10.19.04.58.13.hash
+    mainSceneKey: Assets/Scenes/JungleDrumGameScene.unity
     posterImage: {fileID: 21300000, guid: d5d4e400fff891e488fa4de5c3633190, type: 3}
     bannerImage: {fileID: 21300000, guid: da6f16291c90f12459247e88366247b6, type: 3}
   - gameId: 3
     remoteFolderName: Gazoline-Racing
-    catalogName: catalog_2022.10.13.08.10.56.hash
-    mainSceneKey: Assets/Scenes/SampleScene.unity
+    catalogName: catalog_2022.10.19.04.58.18.hash
+    mainSceneKey: Assets/Scenes/GazolineRacingGameScene.unity
     posterImage: {fileID: 21300000, guid: 72addebf086044f4bb5e0ce611798c3b, type: 3}
     bannerImage: {fileID: 21300000, guid: 97f2274c8cb526e488d89d15ec5f2705, type: 3}

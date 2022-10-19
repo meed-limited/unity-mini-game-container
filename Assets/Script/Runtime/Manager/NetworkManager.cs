@@ -313,7 +313,7 @@ namespace SuperUltra.Container
             Debug.Log($"{_isUserDataRequested} {_isAvatarImageRequested} {GameData.gameDataList.Count != 0}");
             if (_isUserDataRequested
                 && _isAvatarImageRequested
-                // && GameData.gameDataList.Count != 0
+                //&& GameData.gameDataList.Count != 0
             )
             {
                 callback?.Invoke(new ResponseData
