@@ -82,6 +82,10 @@ namespace SuperUltra.Container
             {
                 _progress.fillAmount = percentComplete;
             }
+            if (_downloadSizeText)
+            {
+                _downloadSizeText.text = $"{percentComplete}%\n";
+            }
         }
 
     }
