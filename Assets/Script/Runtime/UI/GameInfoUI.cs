@@ -72,7 +72,7 @@ namespace SuperUltra.Container
             float size = downloadSize / (1000f * 1000f);
             if (_downloadSizeText)
             {
-                _downloadSizeText.text = $"{size.ToString()}MB";
+                _downloadSizeText.text = $"{size.ToString("n2")}MB";
             }
         }
 
@@ -84,7 +84,7 @@ namespace SuperUltra.Container
             }
             if (_downloadSizeText)
             {
-                _downloadSizeText.text = $"{percentComplete}%\n";
+                _downloadSizeText.text = $"{(percentComplete * 100).ToString("n2")}%\n";
             }
         }
 
