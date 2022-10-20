@@ -84,8 +84,8 @@ namespace SuperUltra.Container
         private static void OnRegisterFailure(PlayFabError error)
         {
             Debug.LogWarning("Something went wrong with your first API call");
-            Debug.LogError("Here's some debug information:");
-            Debug.LogError(error.GenerateErrorReport());
+            Debug.LogWarning("Here's some debug information:");
+            Debug.LogWarning(error.GenerateErrorReport());
         }
 
     }

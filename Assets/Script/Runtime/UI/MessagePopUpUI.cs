@@ -15,6 +15,11 @@ namespace SuperUltra.Container
         [SerializeField] RectTransform _contentContainer;
         [SerializeField] TMP_Text _messageText;
         static MessagePopUpUI _instance;
+        public static MessagePopUpUI instance
+        {
+            get { return _instance; }
+            private set { _instance = value; }
+        }
 
         void Awake()
         {
