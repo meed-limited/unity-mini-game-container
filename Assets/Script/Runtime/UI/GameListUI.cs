@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using System.Collections.Generic;
 using TMPro;
 
 namespace SuperUltra.Container
@@ -12,49 +13,58 @@ namespace SuperUltra.Container
         [SerializeField] TMP_Text _progressText;
         [SerializeField] Image _progressBar;
         [SerializeField] RectTransform _buttonContainer;
+        Dictionary<int, GameInfoUI> _gameIdToInfoMap = new Dictionary<int, GameInfoUI>();
 
-        public void CreateButtons(string key, int gameId, float downloadSize, Sprite posterImage, UnityAction callback)
+        public void CreateButtons(string gameName, int gameId, float downloadSize, Sprite posterImage, UnityAction callback)
         {
             RectTransform gameInfoButton = Instantiate(_gameInfoButtonPrefab, _buttonContainer);
-            Button button = gameInfoButton.GetComponentInChildren<Button>();
-            TMP_Text downloadSizeText = gameInfoButton.GetComponentsInChildren<TMP_Text>()[1];
-            SetImage(button.GetComponentInChildren<Image>(), posterImage);
-            button.GetComponentInChildren<TMP_Text>().text = key;
-            button.onClick.AddListener(callback);
-            downloadSizeText.text = $"Download size: {downloadSize} bytes";
+
+            GameInfoUI gameInfoUI = gameInfoButton.GetComponent<GameInfoUI>();
+            if (gameInfoUI)
+            {
+                _gameIdToInfoMap.Add(gameId, gameInfoUI);
+                gameInfoUI.Initialize(
+                    posterImage,
+                    downloadSize,
+                    callback
+                );
+            }
         }
 
-        void SetImage(Image image, Sprite posterImage)
+        public void UpdateProgress(float percentComplete, int gameId)
         {
-            if (image == null || posterImage == null)
+            if (!_gameIdToInfoMap.TryGetValue(gameId, out GameInfoUI gameInfoUI))
             {
                 return;
             }
-            image.sprite = posterImage;
+            gameInfoUI.SetProgress(percentComplete);
         }
 
-        public void UpdateProgress(float percentComplete, string taskName)
+        public void ShowDownloadDisplay(int gameId)
         {
-            if (_progressBar)
+            if (!_gameIdToInfoMap.TryGetValue(gameId, out GameInfoUI gameInfoUI))
             {
-                _progressBar.fillAmount = percentComplete;
+                return;
             }
-            if (_progressText)
-            {
-                _progressText.text = taskName;
-            }
+            gameInfoUI.ShowDownloadProgress();
         }
 
-        public void UpdateResult(string taskName, bool result)
+        public void SetDownloadIconVisible(int gameId, bool isDownloaded)
         {
-            if (_progressBar)
+            if (!_gameIdToInfoMap.TryGetValue(gameId, out GameInfoUI gameInfoUI))
             {
-                _progressBar.fillAmount = 1;
+                return;
             }
-            if (_progressText)
+            gameInfoUI.SetIconVisible(isDownloaded);
+        }
+
+        public void SetButtonCallback(int gameId, UnityAction callback)
+        {
+            if (!_gameIdToInfoMap.TryGetValue(gameId, out GameInfoUI gameInfoUI))
             {
-                _progressText.text = $"{taskName} {(result ? "Success" : "Failed")}";
+                return;
             }
+            gameInfoUI.SetButtonCallback(callback);
         }
 
     }

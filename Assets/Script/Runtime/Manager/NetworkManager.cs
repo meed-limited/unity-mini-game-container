@@ -110,8 +110,13 @@ namespace SuperUltra.Container
             return data;
         }
 
+        /// <summary>
+        /// request token from server, then use the token to request
+        /// game list, user data and season data
+        /// </summary>
         static void GetAuthToken(Action callback)
         {
+            // TODO
             string playFabId = UserData.playFabId;
             callback();
         }
@@ -250,7 +255,7 @@ namespace SuperUltra.Container
                 HTTPMethods.Get,
                 (req, res) =>
                 {
-                    bool result = res.IsSuccess && res.Data != null;
+                    bool result = res != null && res.IsSuccess && res.Data != null;
 
                     if (result)
                     {
@@ -305,15 +310,14 @@ namespace SuperUltra.Container
 
         static void CompleteRequestList(Action<ResponseData> callback, ResponseData data)
         {
-            if(!data.result)
+            if (!data.result)
             {
                 callback?.Invoke(data);
                 return;
             }
-            Debug.Log($"{_isUserDataRequested} {_isAvatarImageRequested} {GameData.gameDataList.Count != 0}");
+            Debug.Log($"{_isUserDataRequested} {_isAvatarImageRequested}");
             if (_isUserDataRequested
                 && _isAvatarImageRequested
-                && GameData.gameDataList.Count != 0
             )
             {
                 callback?.Invoke(new ResponseData
@@ -325,7 +329,7 @@ namespace SuperUltra.Container
 
         static void OnGameListRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback)
         {
-            ResponseData responseData = ValidateResponse(response); 
+            ResponseData responseData = ValidateResponse(response);
             if (!responseData.result)
             {
                 callback?.Invoke(responseData);
@@ -372,17 +376,10 @@ namespace SuperUltra.Container
                 return;
             }
 
-            // request token from server, then use the token to request
-            // game list, user data and season data
             GetAuthToken(
                 () =>
                 {
-                    // get game list then get leader board data
-                    GetGameList((response) =>
-                    {
-                        CompleteRequestList(callback, response);
-                    });
-                    // get user data
+                    GetGameList();
                     GetUserData((response) =>
                     {
                         _isUserDataRequested = true;
