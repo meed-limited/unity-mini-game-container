@@ -80,26 +80,31 @@ namespace SuperUltra.Container
             {
                 return json["message"];
             }
-            return "Response received (json is null or message empty)";
+            // Response received (json is null or message empty)
+            return "";
         }
 
         static ResponseData ValidateResponse(HTTPResponse response)
         {
             ResponseData data = new ResponseData() { result = false };
+            JSONNode json;
             if (response == null || response.IsSuccess == false)
             {
                 Debug.Log("respons is fail ");
+                data.message = "Server error";
                 if (response != null)
                     Debug.Log(response.StatusCode);
-                if (response != null && string.IsNullOrEmpty(response.DataAsText))
+                if (response != null && !string.IsNullOrEmpty(response.DataAsText))
+                {
                     Debug.Log(response.DataAsText);
-                data.message = "Server error";
+                    json = JSON.Parse(response.DataAsText);
+                    data.message = GetDataMessage(json);
+                }
                 return data;
             }
 
-            JSONNode json = JSON.Parse(response.DataAsText);
+            json = JSON.Parse(response.DataAsText);
             Debug.Log("ValidateResponse " + json);
-
             if (json == null || json["success"] == null || json["success"] != true)
             {
                 data.message = GetDataMessage(json);

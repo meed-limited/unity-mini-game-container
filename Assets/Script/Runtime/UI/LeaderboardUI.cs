@@ -25,6 +25,8 @@ namespace SuperUltra.Container
         [SerializeField] ScrollRect _leaderboardScroll;
         [Tooltip("Loading icon in leaderboard list")]
         [SerializeField] LoadingUI _loadingUI;
+        [Tooltip("Shows when there are no game data receive from server")]
+        [SerializeField] RectTransform _emptyGameMessage;
         int _currentGameId = -1;
         int _nextPage = 0;
         bool _isLastPage = false;
@@ -32,14 +34,16 @@ namespace SuperUltra.Container
         int _lazyLoadCount = 10;
         bool _isRequested = false;
 
-        // Start is called before the first frame update
-        void Start()
-        {
-            CreateGameList();
-        }
-
         public void Initialize()
         {
+            if (GameData.gameDataList.Count <= 0)
+            {
+                SetEmptyLeaderboard(true);
+                return;
+            }
+
+            SetEmptyLeaderboard(false);
+            CreateGameList();
             SetDefaultLeaderboard();
         }
 
@@ -85,6 +89,10 @@ namespace SuperUltra.Container
         void CreateGameList()
         {
             int pageCount = 0;
+            ClearGameBanner();
+            _pageToGameIdMap.Clear();
+            _gameBannerStickyScroll.OnItemChange.RemoveAllListeners();
+
             foreach (var game in GameData.gameDataList)
             {
                 GameData gameData = game.Value;
@@ -95,6 +103,19 @@ namespace SuperUltra.Container
             }
             _gameBannerStickyScroll.Initialize();
             _gameBannerStickyScroll.OnItemChange.AddListener(OnGameChange);
+        }
+
+        void SetEmptyLeaderboard(bool shouldShow)
+        {
+            _emptyGameMessage.gameObject.SetActive(shouldShow);
+        }
+
+        void ClearGameBanner()
+        {
+            foreach (Transform item in _gameBannerContainer.transform)
+            {
+                Destroy(item.gameObject);
+            }
         }
 
         void SetBannerImage(Image image, int gameId)
@@ -155,6 +176,10 @@ namespace SuperUltra.Container
                 (GetTournamentResponseData data) =>
                 {
                     LoadingUI.HideInstance();
+                    if (!data.result)
+                    {
+                        MessagePopUpUI.Show(data.message);
+                    }
                     UpdateTournamentInfo(gameId, data);
                 }
             );
