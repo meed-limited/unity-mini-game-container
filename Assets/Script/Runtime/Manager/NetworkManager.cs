@@ -200,7 +200,13 @@ namespace SuperUltra.Container
                     UserData.pointsToNextRank = data["pointsToNextRank"];
                     UserData.rankLevel = data["rankLevel"];
                     UserData.rankTitle = data["rank"];
-                    GetAvatar(data["avatarUrl"], avatarRequestCallback);
+                    if (data["avatarUrl"].IsString && !string.IsNullOrEmpty(data["avatarUrl"]))
+                    {
+                        GetAvatar(data["avatarUrl"], avatarRequestCallback);
+                    }else
+                    {
+                        avatarRequestCallback?.Invoke(new ResponseData{result = false, message = "User has no avatar" });
+                    }
                 }
             }
             else
@@ -392,6 +398,9 @@ namespace SuperUltra.Container
                     }, (response) =>
                     {
                         _isAvatarImageRequested = true;
+                        // player will proceed the menu whether avatar request is success or not
+                        // here just make sure we get the response. 
+                        response.result = true; 
                         CompleteRequestList(callback, response);
                     });
                 }

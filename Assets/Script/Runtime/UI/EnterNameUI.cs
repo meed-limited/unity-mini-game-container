@@ -46,7 +46,7 @@ namespace SuperUltra.Container
 
         public void OnSubmit()
         {
-            if (!(_nameInput.text.Length >= 6 || _nameInput.text.Length < 100))
+            if (!(_nameInput.text.Length >= 6 && _nameInput.text.Length < 100))
             {
                 _statusText.text = "Username must be between 6 and 99 characters";
                 _statusText.color = _errorColor;
