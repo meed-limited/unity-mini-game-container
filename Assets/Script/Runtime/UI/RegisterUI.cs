@@ -20,7 +20,7 @@ namespace SuperUltra.Container
         [SerializeField] LoginManager _loginManager;
         [SerializeField] RectTransform _panel;
         Color _errorColor = new Color(0.96f, 0.4f, 0);
-        Color _normalColor = new Color(0.4f, 0.45f, 0.52f);
+        Color _normalColor = new Color(0.2f, 0.2f, 0.2f);
 
         bool CheckPassword(string password, string confirmPassword)
         {

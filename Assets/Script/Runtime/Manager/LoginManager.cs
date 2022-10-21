@@ -11,9 +11,9 @@ namespace SuperUltra.Container
         [SerializeField] RegisterUI _registerUI;
         [SerializeField] EnterNameUI _enterNameUI;
         [SerializeField] ForgotPasswordUI _forgotPasswordUI;
-        [SerializeField] MessagePopUpUI _messagePopUpUI;
         [SerializeField] AvatarSelectionUI _avatarSelectionUI;
         RectTransform _currentUI;
+        bool _isSelectedAvatar = false;
 
         void Start()
         {
@@ -24,7 +24,7 @@ namespace SuperUltra.Container
             HidePanel(_registerUI.transform);
             HidePanel(_enterNameUI.transform);
             HidePanel(_forgotPasswordUI.transform);
-            HidePanel(_messagePopUpUI.transform);
+            HidePanel(MessagePopUpUI.instance?.transform);
             HidePanel(_avatarSelectionUI.transform);
             if (!CheckInternetConnection())
             {
@@ -68,7 +68,7 @@ namespace SuperUltra.Container
         {
             if (!NetworkManager.CheckConnection())
             {
-                _messagePopUpUI.Show("No Connection", "Retry", () => { CheckInternetConnection(); }, false);
+                MessagePopUpUI.Show("No Connection", "Retry", () => { CheckInternetConnection(); }, false);
                 return false;
             }
             return true;
@@ -105,7 +105,7 @@ namespace SuperUltra.Container
                 (string errorMessage) =>
                 {
                     LoadingUI.HideInstance();
-                    _messagePopUpUI.Show(errorMessage);
+                    MessagePopUpUI.Show(errorMessage);
                 },
                 false
             );
@@ -122,7 +122,7 @@ namespace SuperUltra.Container
                 (string errorMessage) =>
                 {
                     LoadingUI.HideInstance();
-                    _messagePopUpUI.Show(errorMessage);
+                    MessagePopUpUI.Show(errorMessage);
                 },
                 true
             );
@@ -142,7 +142,7 @@ namespace SuperUltra.Container
                     }
                     else
                     {
-                        _messagePopUpUI.Show(response.message);
+                        MessagePopUpUI.Show(response.message);
                     }
                 }
             );
@@ -162,7 +162,7 @@ namespace SuperUltra.Container
                 (string errorMessage) =>
                 {
                     LoadingUI.HideInstance();
-                    _messagePopUpUI.Show(errorMessage);
+                    MessagePopUpUI.Show(errorMessage);
                 }
             );
         }
@@ -177,7 +177,7 @@ namespace SuperUltra.Container
                 (string errorMessage) =>
                 {
                     LoadingUI.HideInstance();
-                    _messagePopUpUI.Show(errorMessage);
+                    MessagePopUpUI.Show(errorMessage);
                 }
             );
         }
@@ -193,7 +193,7 @@ namespace SuperUltra.Container
                 () =>
                 {
                     LoadingUI.HideInstance();
-                    _messagePopUpUI.Show("Register fail");
+                    MessagePopUpUI.Show("Register fail");
                 }
             );
         }
@@ -209,13 +209,9 @@ namespace SuperUltra.Container
         {
             EmailAuthen.ForgotPassword(
                 email,
-                () => {
-                    _messagePopUpUI.Show("Reset password email is sent to your mailbox");
-                    ToPage(_loginUI);
-                },
-                (string errorMessage) =>
-                {
-                    _messagePopUpUI.Show(errorMessage);
+                (result) => {
+                    MessagePopUpUI.Show("Reset password email is sent to your mailbox");
+                    // ToPage(_loginUI);
                 }
             );
         }
@@ -257,6 +253,13 @@ namespace SuperUltra.Container
         public void ToEnterUserName()
         {
             ToPage(_enterNameUI);
+
+            if ( !_isSelectedAvatar && _avatarSelectionUI)
+            {
+                _isSelectedAvatar = true;
+                Sprite avatar = _avatarSelectionUI.GetDefaultAvatar();
+                OnSelectAvatar(avatar);
+            }
         }
 
         public void ToForgotPasword()

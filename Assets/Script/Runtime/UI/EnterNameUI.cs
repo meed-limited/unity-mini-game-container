@@ -18,7 +18,7 @@ namespace SuperUltra.Container
         [SerializeField] LoginManager _loginManager;
         [SerializeField] RectTransform _panel;
         Color _errorColor = new Color(0.96f, 0.4f, 0);
-        Color _normalColor = new Color(0.4f, 0.45f, 0.52f);
+        Color _normalColor = new Color(0.2f, 0.2f, 0.2f);
 
         public void Back()
         {
@@ -46,7 +46,7 @@ namespace SuperUltra.Container
 
         public void OnSubmit()
         {
-            if (!(_nameInput.text.Length >= 6 || _nameInput.text.Length < 100))
+            if (!(_nameInput.text.Length >= 6 && _nameInput.text.Length < 100))
             {
                 _statusText.text = "Username must be between 6 and 99 characters";
                 _statusText.color = _errorColor;

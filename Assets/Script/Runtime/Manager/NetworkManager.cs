@@ -8,6 +8,7 @@ using SimpleJSON;
 namespace SuperUltra.Container
 {
 
+
     public class ResponseData
     {
         public bool result;
@@ -56,7 +57,7 @@ namespace SuperUltra.Container
 
     public static class NetworkManager
     {
-
+        static string _token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE";
         static bool _isUserDataRequested = false;
         static bool _isAvatarImageRequested = false;
         static Action _onCompleteLoginRequest;
@@ -80,26 +81,31 @@ namespace SuperUltra.Container
             {
                 return json["message"];
             }
-            return "Response received (json is null or message empty)";
+            // Response received (json is null or message empty)
+            return "";
         }
 
         static ResponseData ValidateResponse(HTTPResponse response)
         {
             ResponseData data = new ResponseData() { result = false };
+            JSONNode json;
             if (response == null || response.IsSuccess == false)
             {
                 Debug.Log("respons is fail ");
+                data.message = "Server error";
                 if (response != null)
                     Debug.Log(response.StatusCode);
-                if (response != null && string.IsNullOrEmpty(response.DataAsText))
+                if (response != null && !string.IsNullOrEmpty(response.DataAsText))
+                {
                     Debug.Log(response.DataAsText);
-                data.message = "Server error";
+                    json = JSON.Parse(response.DataAsText);
+                    data.message = GetDataMessage(json);
+                }
                 return data;
             }
 
-            JSONNode json = JSON.Parse(response.DataAsText);
+            json = JSON.Parse(response.DataAsText);
             Debug.Log("ValidateResponse " + json);
-
             if (json == null || json["success"] == null || json["success"] != true)
             {
                 data.message = GetDataMessage(json);
@@ -110,8 +116,13 @@ namespace SuperUltra.Container
             return data;
         }
 
+        /// <summary>
+        /// request token from server, then use the token to request
+        /// game list, user data and season data
+        /// </summary>
         static void GetAuthToken(Action callback)
         {
+            // TODO
             string playFabId = UserData.playFabId;
             callback();
         }
@@ -128,7 +139,7 @@ namespace SuperUltra.Container
                     OnGameListRequestFinished(req, res, callback);
                 }
             );
-            request.AddHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.AddHeader("Authorization", "Bearer " + _token);
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.Send();
         }
@@ -149,7 +160,7 @@ namespace SuperUltra.Container
             json.Add("platformId", UserData.playFabId);
             json.Add("count", count);
             json.Add("page", page);
-            request.AddHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.AddHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
@@ -167,7 +178,7 @@ namespace SuperUltra.Container
                     OnUserDataRequestFinished(req, res, callback, avatarRequestCallback);
                 }
             );
-            request.AddHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.AddHeader("Authorization", "Bearer " + _token);
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.Send();
         }
@@ -190,7 +201,13 @@ namespace SuperUltra.Container
                     UserData.pointsToNextRank = data["pointsToNextRank"];
                     UserData.rankLevel = data["rankLevel"];
                     UserData.rankTitle = data["rank"];
-                    GetAvatar(data["avatarUrl"], avatarRequestCallback);
+                    if (data["avatarUrl"].IsString && !string.IsNullOrEmpty(data["avatarUrl"]))
+                    {
+                        GetAvatar(data["avatarUrl"], avatarRequestCallback);
+                    }else
+                    {
+                        avatarRequestCallback?.Invoke(new ResponseData{result = false, message = "User has no avatar" });
+                    }
                 }
             }
             else
@@ -250,7 +267,7 @@ namespace SuperUltra.Container
                 HTTPMethods.Get,
                 (req, res) =>
                 {
-                    bool result = res.IsSuccess && res.Data != null;
+                    bool result = res != null && res.IsSuccess && res.Data != null;
 
                     if (result)
                     {
@@ -305,15 +322,14 @@ namespace SuperUltra.Container
 
         static void CompleteRequestList(Action<ResponseData> callback, ResponseData data)
         {
-            if(!data.result)
+            if (!data.result)
             {
                 callback?.Invoke(data);
                 return;
             }
-            Debug.Log($"{_isUserDataRequested} {_isAvatarImageRequested} {GameData.gameDataList.Count != 0}");
+            Debug.Log($"{_isUserDataRequested} {_isAvatarImageRequested}");
             if (_isUserDataRequested
                 && _isAvatarImageRequested
-                && GameData.gameDataList.Count != 0
             )
             {
                 callback?.Invoke(new ResponseData
@@ -325,7 +341,7 @@ namespace SuperUltra.Container
 
         static void OnGameListRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback)
         {
-            ResponseData responseData = ValidateResponse(response); 
+            ResponseData responseData = ValidateResponse(response);
             if (!responseData.result)
             {
                 callback?.Invoke(responseData);
@@ -372,17 +388,10 @@ namespace SuperUltra.Container
                 return;
             }
 
-            // request token from server, then use the token to request
-            // game list, user data and season data
             GetAuthToken(
                 () =>
                 {
-                    // get game list then get leader board data
-                    GetGameList((response) =>
-                    {
-                        CompleteRequestList(callback, response);
-                    });
-                    // get user data
+                    GetGameList();
                     GetUserData((response) =>
                     {
                         _isUserDataRequested = true;
@@ -390,6 +399,9 @@ namespace SuperUltra.Container
                     }, (response) =>
                     {
                         _isAvatarImageRequested = true;
+                        // player will proceed the menu whether avatar request is success or not
+                        // here just make sure we get the response. 
+                        response.result = true; 
                         CompleteRequestList(callback, response);
                     });
                 }
@@ -403,17 +415,16 @@ namespace SuperUltra.Container
             return new JSONArray();
         }
 
-        public static void ForgetPasswordRequest(string playFabId, Action<ResponseData> callback)
+        public static void ForgetPasswordRequest(string emailAddress, Action<ResponseData> callback)
         {
-            // TODO
             HTTPRequest request = new HTTPRequest(
-                new Uri(Config.Domain + "users"),
+                new Uri(Config.Domain + "users/recoveraccount"),
                 HTTPMethods.Post,
                 (req, res) => OnForgetPasswordRequestFinished(req, res, callback)
             );
             JSONObject json = new JSONObject();
-            json.Add("platformId", playFabId);
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            json.Add("emailAddress", emailAddress);
+            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
@@ -422,13 +433,12 @@ namespace SuperUltra.Container
 
         static void OnForgetPasswordRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback)
         {
-            bool result = ValidateResponse(response).result;
-            string message = "";
-            if (result)
+            ResponseData data = ValidateResponse(response);
+            if (data.result)
             {
                 JSONNode json = JSON.Parse(response.DataAsText);
             }
-            callback?.Invoke(new ResponseData() { result = result, message = message });
+            callback?.Invoke(data);
         }
 
         public static void GetTournament(int gameId, Action<GetTournamentResponseData> callback)
@@ -440,7 +450,7 @@ namespace SuperUltra.Container
             );
             JSONObject json = new JSONObject();
             json.Add("gameId", gameId);
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
@@ -481,7 +491,7 @@ namespace SuperUltra.Container
             );
             JSONObject json = new JSONObject();
             json.Add("platformId", playFabId);
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
@@ -516,7 +526,7 @@ namespace SuperUltra.Container
             json.Add("fabId", playFabId);
             json.Add("gameId", gameId);
             json.Add("score", score);
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
@@ -556,7 +566,6 @@ namespace SuperUltra.Container
 
         static void OnUpdateScoreRequestFinished(HTTPRequest request, HTTPResponse response, Action<UpdateScoreResponseData> callback)
         {
-            // TODO : confirm the data design with backend
             SessionData.currnetGameScore = -1;
             int position = 8;
             int score = 2;
@@ -628,7 +637,7 @@ namespace SuperUltra.Container
                     OnGetUserNFTRequestFinished(req, res, callback);
                 }
             );
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.Send();
@@ -721,7 +730,7 @@ namespace SuperUltra.Container
                     OnUpdateUserRequestFinished(req, res, callback, json);
                 }
             );
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
             request.Timeout = TimeSpan.FromSeconds(_timeOut);

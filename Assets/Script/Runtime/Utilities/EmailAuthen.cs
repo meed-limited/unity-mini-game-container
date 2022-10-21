@@ -54,23 +54,11 @@ namespace SuperUltra.Container
             );
         }
 
-        public static void ForgotPassword(string email, Action successCallback = null, Action<string> errorCallback = null)
+        public static void ForgotPassword(string email, Action<ResponseData> callback = null)
         {
-            // TODO
             NetworkManager.ForgetPasswordRequest(
-                UserData.playFabId,
-                (response) =>
-                {
-                    // if(response.result)
-                    if (true)
-                    {
-                        successCallback?.Invoke();
-                    }
-                    else
-                    {
-                        errorCallback?.Invoke(response.message);
-                    }
-                }
+                email,
+                callback
             );
         }
 
@@ -84,8 +72,8 @@ namespace SuperUltra.Container
         private static void OnRegisterFailure(PlayFabError error)
         {
             Debug.LogWarning("Something went wrong with your first API call");
-            Debug.LogError("Here's some debug information:");
-            Debug.LogError(error.GenerateErrorReport());
+            Debug.LogWarning("Here's some debug information:");
+            Debug.LogWarning(error.GenerateErrorReport());
         }
 
     }

@@ -58,7 +58,7 @@ namespace SuperUltra.Container
             _pageToCanvas.Add(_profilePage, (int)Page.Profile);
             _pageToCanvas.Add(_newsPage, (int)Page.News);
             _pageToCanvas.Add(_settingPage, (int)Page.Setting);
-            _pageToCanvas.Add(_profileEditPage, (int)Page.Profile);
+            _pageToCanvas.Add(_profileEditPage, (int)Page.ProfileEdit);
             _pageToCanvas.Add(_avatarSelectPage, (int)Page.AvatarSelect);
         }
 

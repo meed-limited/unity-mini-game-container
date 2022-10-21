@@ -43,6 +43,16 @@ namespace SuperUltra.Container
             _avatarSelection.sizeDelta = new Vector2(0, _avatarPrefab.sizeDelta.y * rowCount);
         }
 
+        public Sprite GetDefaultAvatar()
+        {
+            if(_avatars.Count > 0)
+            {
+                Sprite sprite = _avatars[0];
+                return sprite;
+            }
+            return null;
+        }
+
         void CreatePrefab(Sprite avatar)
         {
             RectTransform prefab = Instantiate(_avatarPrefab, _avatarSelection);

@@ -13,6 +13,8 @@ namespace SuperUltra.Container
         [SerializeField] TMP_Text _emailErrorText;
         [SerializeField] LoginManager _loginManager;
         [SerializeField] RectTransform _panel;
+        Color _errorColor = new Color(0.96f, 0.4f, 0);
+        Color _normalColor = new Color(0.2f, 0.2f, 0.2f);
 
         bool CheckEmail(string email)
         {
@@ -22,6 +24,8 @@ namespace SuperUltra.Container
             if (!result)
             {
                 _emailErrorText.text = "Email is not valid";
+                _emailErrorText.color = _errorColor;
+                _email.targetGraphic.color = _errorColor;
             }
             return result;
         }
@@ -51,6 +55,8 @@ namespace SuperUltra.Container
             {
                 return;
             }
+            _emailErrorText.text = "";
+            _email.targetGraphic.color = _normalColor;
             _loginManager.OnClickForgotPassword(_email.text);
         }
 
