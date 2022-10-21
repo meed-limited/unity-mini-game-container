@@ -54,23 +54,11 @@ namespace SuperUltra.Container
             );
         }
 
-        public static void ForgotPassword(string email, Action successCallback = null, Action<string> errorCallback = null)
+        public static void ForgotPassword(string email, Action<ResponseData> callback = null)
         {
-            // TODO
             NetworkManager.ForgetPasswordRequest(
-                UserData.playFabId,
-                (response) =>
-                {
-                    // if(response.result)
-                    if (true)
-                    {
-                        successCallback?.Invoke();
-                    }
-                    else
-                    {
-                        errorCallback?.Invoke(response.message);
-                    }
-                }
+                email,
+                callback
             );
         }
 

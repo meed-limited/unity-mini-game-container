@@ -8,6 +8,7 @@ using SimpleJSON;
 namespace SuperUltra.Container
 {
 
+
     public class ResponseData
     {
         public bool result;
@@ -56,7 +57,7 @@ namespace SuperUltra.Container
 
     public static class NetworkManager
     {
-
+        static string _token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE";
         static bool _isUserDataRequested = false;
         static bool _isAvatarImageRequested = false;
         static Action _onCompleteLoginRequest;
@@ -138,7 +139,7 @@ namespace SuperUltra.Container
                     OnGameListRequestFinished(req, res, callback);
                 }
             );
-            request.AddHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.AddHeader("Authorization", "Bearer " + _token);
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.Send();
         }
@@ -159,7 +160,7 @@ namespace SuperUltra.Container
             json.Add("platformId", UserData.playFabId);
             json.Add("count", count);
             json.Add("page", page);
-            request.AddHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.AddHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
@@ -177,7 +178,7 @@ namespace SuperUltra.Container
                     OnUserDataRequestFinished(req, res, callback, avatarRequestCallback);
                 }
             );
-            request.AddHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.AddHeader("Authorization", "Bearer " + _token);
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.Send();
         }
@@ -414,17 +415,16 @@ namespace SuperUltra.Container
             return new JSONArray();
         }
 
-        public static void ForgetPasswordRequest(string playFabId, Action<ResponseData> callback)
+        public static void ForgetPasswordRequest(string emailAddress, Action<ResponseData> callback)
         {
-            // TODO
             HTTPRequest request = new HTTPRequest(
-                new Uri(Config.Domain + "users"),
+                new Uri(Config.Domain + "users/recoveraccount"),
                 HTTPMethods.Post,
                 (req, res) => OnForgetPasswordRequestFinished(req, res, callback)
             );
             JSONObject json = new JSONObject();
-            json.Add("platformId", playFabId);
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            json.Add("emailAddress", emailAddress);
+            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
@@ -433,13 +433,12 @@ namespace SuperUltra.Container
 
         static void OnForgetPasswordRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback)
         {
-            bool result = ValidateResponse(response).result;
-            string message = "";
-            if (result)
+            ResponseData data = ValidateResponse(response);
+            if (data.result)
             {
                 JSONNode json = JSON.Parse(response.DataAsText);
             }
-            callback?.Invoke(new ResponseData() { result = result, message = message });
+            callback?.Invoke(data);
         }
 
         public static void GetTournament(int gameId, Action<GetTournamentResponseData> callback)
@@ -451,7 +450,7 @@ namespace SuperUltra.Container
             );
             JSONObject json = new JSONObject();
             json.Add("gameId", gameId);
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
@@ -492,7 +491,7 @@ namespace SuperUltra.Container
             );
             JSONObject json = new JSONObject();
             json.Add("platformId", playFabId);
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
@@ -527,7 +526,7 @@ namespace SuperUltra.Container
             json.Add("fabId", playFabId);
             json.Add("gameId", gameId);
             json.Add("score", score);
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
@@ -567,7 +566,6 @@ namespace SuperUltra.Container
 
         static void OnUpdateScoreRequestFinished(HTTPRequest request, HTTPResponse response, Action<UpdateScoreResponseData> callback)
         {
-            // TODO : confirm the data design with backend
             SessionData.currnetGameScore = -1;
             int position = 8;
             int score = 2;
@@ -639,7 +637,7 @@ namespace SuperUltra.Container
                     OnGetUserNFTRequestFinished(req, res, callback);
                 }
             );
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.Send();
@@ -732,7 +730,7 @@ namespace SuperUltra.Container
                     OnUpdateUserRequestFinished(req, res, callback, json);
                 }
             );
-            request.SetHeader("Authorization", "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE");
+            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
             request.Timeout = TimeSpan.FromSeconds(_timeOut);

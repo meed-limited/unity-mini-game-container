@@ -5136,6 +5136,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7362610880999026291, guid: ef39445a98c8d6342bbf69c9557b7a68,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.19607843
+      objectReference: {fileID: 0}
+    - target: {fileID: 7362610880999026291, guid: ef39445a98c8d6342bbf69c9557b7a68,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.19607843
+      objectReference: {fileID: 0}
+    - target: {fileID: 7362610880999026291, guid: ef39445a98c8d6342bbf69c9557b7a68,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.19607843
+      objectReference: {fileID: 0}
     - target: {fileID: 7362610880999026293, guid: ef39445a98c8d6342bbf69c9557b7a68,
         type: 3}
       propertyPath: m_Name
@@ -9546,7 +9561,6 @@ MonoBehaviour:
   _registerUI: {fileID: 1067830716}
   _enterNameUI: {fileID: 1998774930}
   _forgotPasswordUI: {fileID: 1059869510}
-  _messagePopUpUI: {fileID: 850467441}
   _avatarSelectionUI: {fileID: 2097616154}
 --- !u!4 &1770948360
 Transform:
