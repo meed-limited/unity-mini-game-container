@@ -209,13 +209,9 @@ namespace SuperUltra.Container
         {
             EmailAuthen.ForgotPassword(
                 email,
-                () => {
+                (result) => {
                     MessagePopUpUI.Show("Reset password email is sent to your mailbox");
-                    ToPage(_loginUI);
-                },
-                (string errorMessage) =>
-                {
-                    MessagePopUpUI.Show(errorMessage);
+                    // ToPage(_loginUI);
                 }
             );
         }
