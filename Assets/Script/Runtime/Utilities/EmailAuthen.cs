@@ -21,10 +21,10 @@ namespace SuperUltra.Container
                 (LoginResult result) =>
                 {
                     UserData.playFabId = result.PlayFabId;
+                    UserData.playFabSessionTicket = result.SessionTicket;
                     successCallback(result);
                 },
                 (result) => { 
-                    
                     Debug.Log("login error " + result.HttpCode + " " + result.HttpStatus + " " + result.ErrorMessage);
                     errorCallback(result.ErrorMessage); 
                 }
@@ -66,6 +66,7 @@ namespace SuperUltra.Container
         {
             Debug.Log($"Register Successful {result.PlayFabId} {result.Username} {result}");
             UserData.playFabId = result.PlayFabId;
+            UserData.playFabSessionTicket = result.SessionTicket;
             Debug.Log("OnRegisterSuccess " + UserData.playFabId);
         }
 
