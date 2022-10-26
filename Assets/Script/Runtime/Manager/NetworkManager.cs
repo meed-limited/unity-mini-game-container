@@ -93,13 +93,12 @@ namespace SuperUltra.Container
             return "";
         }
 
-        static ResponseData  ValidateResponse(HTTPResponse response)
+        static ResponseData ValidateResponse(HTTPResponse response)
         {
             ResponseData data = new ResponseData() { result = false };
             JSONNode json;
             if (response == null || response.IsSuccess == false)
             {
-                Debug.Log("respons is fail ");
                 data.message = "Server error";
                 if (response != null)
                     Debug.Log(response.StatusCode);
@@ -334,7 +333,7 @@ namespace SuperUltra.Container
             request.Send();
         }
 
-        static void OnLeaderboardRequestFinished(HTTPRequest req, HTTPResponse response, int gameID, Action<GetLeaderboardResponseData> callback = null)
+        static void OnLeaderboardRequestFinished(HTTPRequest request, HTTPResponse response, int gameID, Action<GetLeaderboardResponseData> callback = null)
         {
             GetLeaderboardResponseData responseData = new GetLeaderboardResponseData() { result = false };
             if (!GameData.gameDataList.TryGetValue(gameID, out GameData gameData))
@@ -706,7 +705,7 @@ namespace SuperUltra.Container
             request.Send();
         }
 
-        static void OnGetUserNFTRequestFinished(HTTPRequest req, HTTPResponse response, Action<GetUserNFTResponseData> callback)
+        static void OnGetUserNFTRequestFinished(HTTPRequest request, HTTPResponse response, Action<GetUserNFTResponseData> callback)
         {
             bool result = ValidateResponse(response).result;
             NFTItem[] list = new NFTItem[] { };
