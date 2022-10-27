@@ -486,7 +486,6 @@ namespace SuperUltra.Container
             );
             JSONObject json = new JSONObject();
             json.Add("emailAddress", emailAddress);
-            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
@@ -512,7 +511,6 @@ namespace SuperUltra.Container
             );
             JSONObject json = new JSONObject();
             json.Add("gameId", gameId);
-            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
             request.Timeout = TimeSpan.FromSeconds(_timeOut);

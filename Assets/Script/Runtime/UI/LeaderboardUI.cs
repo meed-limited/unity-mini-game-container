@@ -1,22 +1,21 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using BestHTTP;
+using QFSW.MOP2;
 
 namespace SuperUltra.Container
 {
     public class LeaderboardUI : MonoBehaviour
     {
-        [SerializeField] LeaderboardItemUI _leaderboardUIPrefab;
         [SerializeField] RectTransform _rankingItemContainer;
         [SerializeField] RectTransform _gameBannerPrefab;
         [SerializeField] RectTransform _gameBannerContainer;
         [SerializeField] RectTransform _emptyLeaderboardMessage;
         [SerializeField] StickyScrollUI _gameBannerStickyScroll;
         [SerializeField] LeaderboardItemUI _userLeaderboardUI;
+        [SerializeField] ObjectPool _leaderboardItemObjectPool;
         [SerializeField] TMP_Text _gameName;
         [SerializeField] TMP_Text _poolSize;
         [SerializeField] TMP_Text _day;
@@ -45,6 +44,7 @@ namespace SuperUltra.Container
             SetEmptyLeaderboard(false);
             CreateGameList();
             SetDefaultLeaderboard();
+            _leaderboardItemObjectPool.Initialize();
         }
 
         void SetDefaultLeaderboard()
@@ -61,8 +61,18 @@ namespace SuperUltra.Container
 
         void Update()
         {
+            DetectVisibleItem();
             UpdateTimeLeft(_currentGameId);
             DetectScrollLazyLoad();
+        }
+
+        void DetectVisibleItem()
+        {
+            float min = _leaderboardScroll.viewport.rect.height * 0.5f;
+            float max = _rankingItemContainer.rect.height - min;
+            float current = Mathf.Lerp(min, max, _leaderboardScroll.normalizedPosition.y);
+            float upper = current + min;
+            float lower = current - min;
         }
 
         void CreateUserTournamentData(int gameId)
@@ -157,11 +167,7 @@ namespace SuperUltra.Container
 
         void ClearLeaderBoard()
         {
-            foreach (Transform child in _rankingItemContainer)
-            {
-                Destroy(child.gameObject);
-            }
-            _rankingItemContainer.sizeDelta = Vector2.zero;
+            _leaderboardItemObjectPool.ReleaseAll();
         }
 
         void RefreshLeaderboard(int gameId = 0)
@@ -228,7 +234,6 @@ namespace SuperUltra.Container
 
         void LazyLoadLeaderBoard(GetLeaderboardResponseData responseData)
         {
-
             _emptyLeaderboardMessage.gameObject.SetActive(false);
             if (!responseData.result || responseData.list == null)
             {
@@ -237,16 +242,17 @@ namespace SuperUltra.Container
                 return;
             }
 
-            if (_emptyLeaderboardMessage && responseData.list.Length <= 0)
+            if (responseData.list.Length <= 0 && _rankingItemContainer.transform.childCount == 0)
             {
-                _emptyLeaderboardMessage.gameObject.SetActive(true);
+                if (_emptyLeaderboardMessage) _emptyLeaderboardMessage.gameObject.SetActive(true);
                 return;
             }
 
             int index = Mathf.Max(0, _rankingItemContainer.childCount - 1);
             foreach (var data in responseData.list)
             {
-                LeaderboardItemUI item = Instantiate(_leaderboardUIPrefab, _rankingItemContainer);
+                LeaderboardItemUI item = _leaderboardItemObjectPool.GetObjectComponent<LeaderboardItemUI>();
+                item.transform.SetParent(_rankingItemContainer);
                 item.SetData(data);
             }
         }
@@ -268,7 +274,6 @@ namespace SuperUltra.Container
 
         public void UpdateTournamentInfo(int gameId, GetTournamentResponseData responseData)
         {
-
             if (!responseData.result)
             {
                 if (_gameName != null)
