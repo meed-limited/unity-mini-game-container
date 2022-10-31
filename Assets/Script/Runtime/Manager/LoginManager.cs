@@ -101,30 +101,51 @@ namespace SuperUltra.Container
         {
             LoadingUI.ShowInstance();
             FacebookAuthen.Login(
-                () => { ToMenu(); },
+                (bool isCreatingAccount) =>
+                {
+                    Debug.Log(isCreatingAccount ? "creating user" : "login to user");
+                    if (isCreatingAccount)
+                    {
+                        OnFacebookCreatePlayfabUser();
+                    }
+                    else
+                    {
+                        ToMenu();
+                    }
+                },
                 (string errorMessage) =>
                 {
                     LoadingUI.HideInstance();
-                    MessagePopUpUI.Show(errorMessage);
-                },
-                false
+                    MessagePopUpUI.Show($"Facebook Login Failed. {errorMessage}");
+                }
             );
         }
-
-        public void OnClickFacebookRegister()
+        
+        void OnFacebookCreatePlayfabUser()
         {
-            LoadingUI.ShowInstance();
-            FacebookAuthen.Login(
-                () => {
-                    LoadingUI.HideInstance();
-                    ToEnterUserName(); 
-                },
-                (string errorMessage) =>
+            NetworkManager.GetAuthToken(
+                (getAuthResponse) =>
                 {
-                    LoadingUI.HideInstance();
-                    MessagePopUpUI.Show(errorMessage);
-                },
-                true
+                    if (!getAuthResponse.result)
+                    {
+                        LoadingUI.HideInstance();
+                        MessagePopUpUI.Show($"Register fail\n{getAuthResponse.message}");
+                        return;
+                    }
+                    NetworkManager.CreateUser(
+                        UserData.playFabId,
+                        () =>
+                        {
+                            LoadingUI.HideInstance();
+                            ToEnterUserName();
+                        },
+                        (data) =>
+                        {
+                            LoadingUI.HideInstance();
+                            MessagePopUpUI.Show($"Register fail\n{data.message}");
+                        }
+                    );
+                }
             );
         }
 
@@ -184,16 +205,28 @@ namespace SuperUltra.Container
 
         void OnEmailRegisterRequestFinished(string playFabId)
         {
-            NetworkManager.CreateUser(
-                playFabId,
-                () => {
-                    LoadingUI.HideInstance();
-                    ToEnterUserName();
-                },
-                () =>
+            NetworkManager.GetAuthToken(
+                (getAuthResponse) =>
                 {
-                    LoadingUI.HideInstance();
-                    MessagePopUpUI.Show("Register fail");
+                    if (!getAuthResponse.result)
+                    {
+                        LoadingUI.HideInstance();
+                        MessagePopUpUI.Show($"Register fail\n{getAuthResponse.message}");
+                        return;
+                    }
+                    NetworkManager.CreateUser(
+                        playFabId,
+                        () =>
+                        {
+                            LoadingUI.HideInstance();
+                            ToEnterUserName();
+                        },
+                        (ResponseData data) =>
+                        {
+                            LoadingUI.HideInstance();
+                            MessagePopUpUI.Show($"Register fail\n{data.message}");
+                        }
+                    );
                 }
             );
         }
@@ -254,6 +287,7 @@ namespace SuperUltra.Container
         {
             ToPage(_enterNameUI);
 
+            /* select defaultAvatar on the first time user proceed to enterNameUI */
             if ( !_isSelectedAvatar && _avatarSelectionUI)
             {
                 _isSelectedAvatar = true;
