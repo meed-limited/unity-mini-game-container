@@ -134,7 +134,7 @@ namespace SuperUltra.Container
         /// request token from server, then use the token to request
         /// game list, user data and season data
         /// </summary>
-        static void GetAuthToken(Action<ResponseData> callback)
+        public static void GetAuthToken(Action<ResponseData> callback)
         {
             HTTPRequest request = new HTTPRequest(
                 new Uri(Config.Domain + "users/auth"),
@@ -542,7 +542,7 @@ namespace SuperUltra.Container
             callback?.Invoke(responseData);
         }
 
-        public static void CreateUser(string playFabId, Action success, Action failure = null)
+        public static void CreateUser(string playFabId, Action success, Action<ResponseData> failure = null)
         {
             HTTPRequest request = new HTTPRequest(
                 new Uri(Config.Domain + "users"),
@@ -558,16 +558,17 @@ namespace SuperUltra.Container
             request.Send();
         }
 
-        static void OnCreateUserRequestFinished(HTTPRequest request, HTTPResponse response, Action success = null, Action failure = null)
+        static void OnCreateUserRequestFinished(HTTPRequest request, HTTPResponse response, Action success = null, Action<ResponseData> failure = null)
         {
-            if (ValidateResponse(response).result)
+            ResponseData responseData = ValidateResponse(response); 
+            if (responseData.result)
             {
                 JSONNode json = JSON.Parse(response.DataAsText);
                 success?.Invoke();
             }
             else
             {
-                failure?.Invoke();
+                failure?.Invoke(responseData);
             }
         }
 
