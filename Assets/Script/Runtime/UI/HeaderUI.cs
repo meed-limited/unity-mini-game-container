@@ -1,16 +1,15 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using DG.Tweening;
 
 namespace SuperUltra.Container
 {
-
-    public class MainGameUI : MonoBehaviour
+    public class HeaderUI : MonoBehaviour
     {
-        [Header("Header")]
         [SerializeField] Image _levelBar;
-        [SerializeField] TMP_Text _levelText;
+        [SerializeField] TMP_Text _rankText;
         [SerializeField] Image _avatar;
         [SerializeField] TMP_Text _balanceText;
         [SerializeField] TMP_Text _rankTitle;
@@ -23,9 +22,15 @@ namespace SuperUltra.Container
         public void Initialize()
         {
             SetLevelBar(UserData.pointsInCurrentRank, UserData.pointsToNextRank);
+            SetLevel(UserData.rankLevel);
             SetBalance(UserData.totalTokenNumber);
             SetRankTitle(UserData.rankTitle);
             SetAvatar(UserData.profilePic);
+        }
+
+        void SetLevel(int level)
+        {
+            _rankText.text = level.ToString();
         }
 
         void SetAvatar(Texture2D texture)
@@ -33,8 +38,8 @@ namespace SuperUltra.Container
             if (_avatar && texture)
             {
                 _avatar.sprite = Sprite.Create(
-                    texture, 
-                    new Rect(0, 0, texture.width, texture.height), 
+                    texture,
+                    new Rect(0, 0, texture.width, texture.height),
                     new Vector2(0.5f, 0.5f)
                 );
             }
@@ -54,6 +59,7 @@ namespace SuperUltra.Container
         {
             _rankTitle.text = title;
         }
+
     }
 
 }

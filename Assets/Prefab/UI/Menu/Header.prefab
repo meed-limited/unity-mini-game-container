@@ -419,7 +419,7 @@ GameObject:
   - component: {fileID: 6668812746077454460}
   - component: {fileID: 6668812746077454461}
   m_Layer: 5
-  m_Name: Level
+  m_Name: Rank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -569,6 +569,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6668812746552675578}
+  - component: {fileID: 1250519020055116792}
   m_Layer: 5
   m_Name: Header
   m_TagString: Untagged
@@ -599,6 +600,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -75}
   m_SizeDelta: {x: -150, y: 150}
   m_Pivot: {x: 0.5, y: 1}
+--- !u!114 &1250519020055116792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6668812746552675579}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 078e4029c97fc8244ae2d31a17c25407, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _levelBar: {fileID: 6668812747586612125}
+  _rankText: {fileID: 6668812746004385864}
+  _avatar: {fileID: 6668812747763404121}
+  _balanceText: {fileID: 6668812747806134640}
+  _rankTitle: {fileID: 6668812745862027088}
 --- !u!1 &6668812746910892243
 GameObject:
   m_ObjectHideFlags: 0
@@ -1419,3 +1437,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1512888281127597802}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6668812747586612125 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5220439685608316279, guid: c03ce86ec1f99cf4bb80eded51934042,
+    type: 3}
+  m_PrefabInstance: {fileID: 1512888281127597802}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

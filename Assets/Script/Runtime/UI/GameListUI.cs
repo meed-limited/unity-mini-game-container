@@ -13,7 +13,16 @@ namespace SuperUltra.Container
         [SerializeField] TMP_Text _progressText;
         [SerializeField] Image _progressBar;
         [SerializeField] RectTransform _buttonContainer;
+        [SerializeField] HeaderUI _header;
         Dictionary<int, GameInfoUI> _gameIdToInfoMap = new Dictionary<int, GameInfoUI>();
+
+        public void Initialize()
+        {
+            if (_header)
+            {
+                _header.Initialize();
+            }
+        }
 
         public void CreateButtons(string gameName, int gameId, float downloadSize, Sprite posterImage, UnityAction callback)
         {
