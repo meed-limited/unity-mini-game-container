@@ -158,7 +158,6 @@ namespace SuperUltra.Container
         static void OnGetAuthTokenRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback)
         {
             ResponseData data = ValidateResponse(response);
-            if(response == null) { Debug.Log("response is null"); }
             if (data.result)
             {
                 JSONNode json = JSON.Parse(response.DataAsText);
@@ -719,15 +718,14 @@ namespace SuperUltra.Container
                     for (int i = 0; i < nftList.Count; i++)
                     {
                         JSONNode nftItem = nftList[i];
-                        Texture2D texture = new Texture2D(1, 1);
-                        texture.LoadImage(nftItem["avatarTexture"].AsByteArray);
                         list[i] = new NFTItem()
                         {
                             id = nftItem["id"],
-                            name = nftItem["name"].ToString(),
+                            name = nftItem["name"],
                             description = nftItem["description"],
                             texture2DUrl = nftItem["image"],
-                            attribute = nftItem["attributes"].ToString(),
+                            attribute = GetAttributeMap(nftItem["attributes"]),
+                            // TODO : implement GetType() by looping nftItem["attributes"]
                             type = NFTItem.ItemType.Cosmetic,
                             isActive = false,
                         };
@@ -741,6 +739,25 @@ namespace SuperUltra.Container
                 result = result,
                 list = list
             });
+        }
+
+        static Dictionary<string, string> GetAttributeMap(JSONNode data)
+        {
+            Dictionary<string, string> map = new Dictionary<string, string>();
+            if(!data.IsArray)
+            {
+                return map;
+            }
+            foreach (JSONNode item in data.AsArray)
+            {
+                if (item != null 
+                    && item["trait_type"] != null 
+                    && item["value"] != null)
+                {
+                    map.Add(item["trait_type"], item["value"]);
+                }
+            }
+            return map;
         }
 
         #region Update User

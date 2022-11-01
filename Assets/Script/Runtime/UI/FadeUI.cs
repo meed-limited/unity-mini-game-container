@@ -114,17 +114,24 @@ namespace SuperUltra.Container
             {
                 return DOTween.Sequence();
             }
-            _isAnimating = true;
-            ToggleButtonInteraction(true);
 
             Sequence sequence = DOTween.Sequence();
-            sequence.Append(CanvasGroupAnimation(_originAlpha));
-            sequence.Join(ImageAnimation(_originColor));
+            
+            Tween canvasGroupAnimation = CanvasGroupAnimation(_originAlpha);
+            if (canvasGroupAnimation != null)
+                sequence.Append(canvasGroupAnimation);
+
+            Tween imageAniamtion = ImageAnimation(_originColor);
+            if (imageAniamtion != null)
+                sequence.Join(imageAniamtion);
+
             sequence.OnComplete(
                 () => { _isAnimating = false; }
             );
+            ToggleButtonInteraction(true);
             _isVisible = true;
             SetInteraction(_canvasGroup, _image, true);
+            _isAnimating = true;
             _fadeInCallBack?.Invoke();
 
             return sequence;
@@ -139,8 +146,14 @@ namespace SuperUltra.Container
             _isAnimating = true;
             Sequence sequence = DOTween.Sequence();
 
-            sequence.Append(CanvasGroupAnimation(0));
-            sequence.Join(ImageAnimation(_transparentColor));
+            Tween canvasGroupAnimation = CanvasGroupAnimation(0);
+            if (canvasGroupAnimation != null)
+                sequence.Append(canvasGroupAnimation);
+
+            Tween imageAniamtion = ImageAnimation(_transparentColor);
+            if (imageAniamtion != null)
+                sequence.Join(imageAniamtion);
+        
             sequence.OnComplete(
                 () =>
                 {

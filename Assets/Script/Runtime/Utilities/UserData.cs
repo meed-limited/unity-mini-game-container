@@ -37,18 +37,38 @@ namespace SuperUltra.Container
 
         public static void ActivateNFTItem(NFTItem item)
         {
-            if(item.type == NFTItem.ItemType.Cosmetic)
+            if (item.type == NFTItem.ItemType.Cosmetic)
             {
                 for (int i = 0; i < nftItemList.Length; i++)
                 {
                     bool isCosmetic = nftItemList[i].type == NFTItem.ItemType.Cosmetic;
-                    bool isTarget = item.id == nftItemList[i].id; 
-                    if(isCosmetic)
+                    bool isTarget = item.id == nftItemList[i].id;
+                    if (isCosmetic)
                     {
                         nftItemList[i].isActive = isTarget;
                     }
+                    if (isTarget)
+                    {
+                        PlayerPrefs.SetInt(Config.KEY_NFT_ITEM, item.id);
+                    }
                 }
             }
+            // TODO : Non cosmetic items
+        }
+
+        public static NFTItem GetNFTItemById(int id)
+        {
+            if (id < 0)
+                return null;
+            for (int i = 0; i < nftItemList.Length; i++)
+            {
+                bool isTarget = id == nftItemList[i].id;
+                if (isTarget)
+                {
+                    return nftItemList[i];
+                }
+            }
+            return null;
         }
 
         public static void DeactivateNFTItem(NFTItem item)

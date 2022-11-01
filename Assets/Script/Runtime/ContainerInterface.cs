@@ -21,7 +21,10 @@ namespace SuperUltra.Container
         public string name;
         public string description;
         public string texture2DUrl;
-        public string attribute;
+        /// <summary>
+        /// a map represent type (string) to value (string) attribute list 
+        /// </summary>
+        public Dictionary<string, string> attribute;
     }
 
     public static class ContainerInterface

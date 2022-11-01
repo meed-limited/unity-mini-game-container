@@ -100,11 +100,26 @@ namespace SuperUltra.Container
                 NFTItemUI prefab = Instantiate(_nFTItemUIPrefab, _nftItemContainer);
                 prefab.Initialize(item);
                 prefab.SetOnClickAction(OnClickNFTItem);
+                prefab.UpdateIsActive();
                 _nftIdToItemUIMap.Add(item, prefab);
+            }
+            ActivateSavedNFTItem();
+        }
+
+        void ActivateSavedNFTItem()
+        {
+            if (PlayerPrefs.HasKey(Config.KEY_NFT_ITEM))
+            {
+                NFTItem item = UserData.GetNFTItemById(PlayerPrefs.GetInt(Config.KEY_NFT_ITEM, -1));
+                if (item != null)
+                {
+                    UserData.ActivateNFTItem(item);
+                    UpdateNFTItemUIIsActive();
+                }
             }
         }
 
-        public void UpdateNFTItemUIIsActive(NFTItem item)
+        void UpdateNFTItemUIIsActive()
         {
             foreach (var kvp in _nftIdToItemUIMap)
             {
@@ -123,7 +138,7 @@ namespace SuperUltra.Container
                 UserData.ActivateNFTItem(item);
             }
 
-            UpdateNFTItemUIIsActive(item);
+            UpdateNFTItemUIIsActive();
             _nFTItemDetailUI.Initialize(item, sprite);
             _nFTItemDetailUI.Show();
         }

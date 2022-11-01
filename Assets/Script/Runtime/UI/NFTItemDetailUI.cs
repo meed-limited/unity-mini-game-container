@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 
 namespace SuperUltra.Container
 {
@@ -19,7 +20,23 @@ namespace SuperUltra.Container
             _image.sprite = sprite;
             _itemName.text = item.name;
             _itemDescription.text = item.description;
-            _attribute.text = item.attribute.Replace(" ", "");
+            _attribute.text = GetAttributeText(item.attribute);
+        }
+
+        string GetAttributeText(Dictionary<string, string> map)
+        {
+            string text = "";
+            if (map == null)
+            {
+                return text;
+            }
+
+            foreach (var item in map)
+            {
+                text += $"{item.Key}: {item.Value}\n";
+            }
+
+            return text;
         }
 
         public void Show()

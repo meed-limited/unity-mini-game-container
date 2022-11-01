@@ -7,6 +7,7 @@ namespace SuperUltra.Container
         public const string CREDENTIAL_KEY_PLAYFAB_ID = "CREDENTIAL_KEY_PLAYFAB_ID";
         public const string KEY_SOUND = "KEY_SOUND";
         public const string KEY_MUSIC = "KEY_MUSIC";
+        public const string KEY_NFT_ITEM = "KEY_NFT_ITEM";
 
         #region Client
 
