@@ -10,6 +10,9 @@ namespace SuperUltra.Container
 
     public class WalletUI : MonoBehaviour
     {
+        [SerializeField] HeaderUI _header;
+
+        [Header("WithDrawal")]
         [SerializeField] Image _withdrawal;
         [SerializeField] TMP_Text _balanceText;
         [SerializeField] RectTransform _notEnoughFundContent;
@@ -22,22 +25,13 @@ namespace SuperUltra.Container
         [SerializeField] TMP_InputField _walletAddressInput;
         [SerializeField] RectTransform _emptyNFTMessage;
 
-        [Header("Header")]
-        [SerializeField] Image _levelBar;
-        [SerializeField] Image _avatar;
-        [SerializeField] TMP_Text _rankText;
-        [SerializeField] TMP_Text _headerBalanceText;
-        [SerializeField] TMP_Text _rankTitle;
         RectTransform _previousTab;
         Dictionary<NFTItem, NFTItemUI> _nftIdToItemUIMap = new Dictionary<NFTItem, NFTItemUI>();
 
         public void Initialize()
         {
+            _header.Initialize();
             SetWithdrawal(UserData.totalTokenNumber);
-            SetLevel(UserData.rankLevel);
-            SetLevelBar(UserData.pointsInCurrentRank, UserData.pointsToNextRank);
-            SetRankTitle(UserData.rankTitle);
-            SetAvatar(UserData.profilePic);
             SetWalletAddress(UserData.walletAddress);
             RequestNFTItem();
             if (_startUpTab)
@@ -52,18 +46,6 @@ namespace SuperUltra.Container
             {
                 bool isEmpty = string.IsNullOrEmpty(walletAddress);
                 _walletAddress.text = isEmpty ? "No wallet address saved" : walletAddress;
-            }
-        }
-
-        void SetAvatar(Texture2D texture)
-        {
-            if (_avatar && texture)
-            {
-                _avatar.sprite = Sprite.Create(
-                    texture,
-                    new Rect(0, 0, texture.width, texture.height),
-                    new Vector2(0.5f, 0.5f)
-                );
             }
         }
 
@@ -143,21 +125,6 @@ namespace SuperUltra.Container
             _nFTItemDetailUI.Show();
         }
 
-        void SetLevel(int level)
-        {
-            _rankText.text = level.ToString();
-        }
-
-        void SetLevelBar(float experiencePoints, float pointToNextRank)
-        {
-            _levelBar.DOFillAmount(experiencePoints / pointToNextRank, 1f);
-        }
-
-        void SetRankTitle(string title)
-        {
-            _rankTitle.text = title;
-        }
-
         void SetWithdrawal(int totalTokenNumber)
         {
             if (_withdrawal)
@@ -168,10 +135,6 @@ namespace SuperUltra.Container
             if (_balanceText)
             {
                 _balanceText.text = totalTokenNumber.ToString();
-            }
-            if (_headerBalanceText)
-            {
-                _headerBalanceText.text = totalTokenNumber.ToString();
             }
         }
 
