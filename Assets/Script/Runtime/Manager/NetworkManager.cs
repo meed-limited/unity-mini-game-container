@@ -134,7 +134,7 @@ namespace SuperUltra.Container
         /// request token from server, then use the token to request
         /// game list, user data and season data
         /// </summary>
-        public static void GetAuthToken(Action<ResponseData> callback)
+        public static void GetAuthToken(Action<ResponseData> callback, string token = "")
         {
             HTTPRequest request = new HTTPRequest(
                 new Uri(Config.Domain + "users/auth"),
@@ -164,6 +164,7 @@ namespace SuperUltra.Container
                 if(json != null && json["data"] != null)
                 {
                     _token = json["data"]["token"];
+                    PlayerPrefs.SetString(Config.KEY_AUTH_TOKEN, _token);
                 }
             }else
             {
@@ -429,6 +430,12 @@ namespace SuperUltra.Container
             callback?.Invoke(responseData);
         }
 
+        public static void AutoLogin(string token, Action<ResponseData> callback)
+        {
+            _token = token;
+            GetLoginInfomation(callback);
+        }   
+
         public static void LoginRequest(Action<ResponseData> callback)
         {
             if (!CheckConnection())
@@ -451,22 +458,27 @@ namespace SuperUltra.Container
                         callback?.Invoke(getTokenResponse);
                         return;
                     }
-                    GetGameList();
-                    GetUserData((getUserDataResponse) =>
-                    {
-                        // Debug.Log("getUserDataResponse");
-                        _isUserDataRequested = getUserDataResponse.result;
-                        CompleteRequestList(callback, getUserDataResponse);
-                    }, (getAvatarResponse) =>
-                    {
-                        // player will proceed the menu whether avatar request is success or not
-                        // here just make sure we get the response. 
-                        _isAvatarImageRequested = true;
-                        getAvatarResponse.result = true;
-                        CompleteRequestList(callback, getAvatarResponse);
-                    });
+                    GetLoginInfomation(callback);
                 }
             );
+        }
+
+        static void GetLoginInfomation(Action<ResponseData> callback)
+        {
+            GetGameList();
+            GetUserData((getUserDataResponse) =>
+            {
+                // Debug.Log("getUserDataResponse");
+                _isUserDataRequested = getUserDataResponse.result;
+                CompleteRequestList(callback, getUserDataResponse);
+            }, (getAvatarResponse) =>
+            {
+                // player will proceed the menu whether avatar request is success or not
+                // here just make sure we get the response. 
+                _isAvatarImageRequested = true;
+                getAvatarResponse.result = true;
+                CompleteRequestList(callback, getAvatarResponse);
+            });
         }
 
         static JSONArray GetJSONArray(JSONNode node)

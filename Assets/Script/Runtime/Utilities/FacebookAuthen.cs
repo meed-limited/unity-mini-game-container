@@ -104,6 +104,7 @@ namespace SuperUltra.Container
             SetMessage("PlayFab Facebook Auth Complete. Session ticket: " + result.SessionTicket);
             UserData.playFabId = result.PlayFabId;
             UserData.playFabSessionTicket = result.SessionTicket;
+            PlayerPrefs.SetString(Config.KEY_PLAYFAB_ID, result.PlayFabId);
             successCallback(isCreateAccount);
         }
 
