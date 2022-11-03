@@ -12,7 +12,7 @@ namespace SuperUltra.Container
         public void ToMarketPlace() => Application.OpenURL(Config.MarketPlaceUrl);
         public void ToYoutube() => Application.OpenURL(Config.YotubeUrl);
         public void ToTwitter() => Application.OpenURL(Config.TwitterUrl);
-        public void ToDiscord() => Application.OpenURL(Config.DiscordUrl);
+        public void ToInstagram() => Application.OpenURL(Config.InstagramUrl);
 
     }
 

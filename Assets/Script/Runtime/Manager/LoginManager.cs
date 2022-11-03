@@ -14,6 +14,11 @@ namespace SuperUltra.Container
         [SerializeField] AvatarSelectionUI _avatarSelectionUI;
         RectTransform _currentUI;
         bool _isSelectedAvatar = false;
+        /// <summary> 
+        /// a flag to indicate the landing of user open the app.
+        /// It tells whether the user is opening the app, back from the menu or logout
+        /// </summary>
+        static bool _isLanding = true;
 
         void Start()
         {
@@ -33,7 +38,7 @@ namespace SuperUltra.Container
             ToLoginSelection();
             AutoLoginWithToken();
         }
-        
+
         void SwitchRayCastOnOff(Transform transform, bool isOn = true)
         {
             GraphicRaycaster graphicRaycaster = transform.GetComponent<GraphicRaycaster>();
@@ -91,9 +96,30 @@ namespace SuperUltra.Container
 
         public void AutoLoginWithToken()
         {
-            if (PlayerPrefs.HasKey("token"))
+            if (_isLanding
+                && PlayerPrefs.HasKey(Config.KEY_AUTH_TOKEN)
+                && PlayerPrefs.HasKey(Config.KEY_PLAYFAB_ID))
             {
-                string token = PlayerPrefs.GetString("token");
+                UserData.playFabId = PlayerPrefs.GetString(Config.KEY_PLAYFAB_ID); 
+                string token = PlayerPrefs.GetString(Config.KEY_AUTH_TOKEN);
+                LoadingUI.ShowInstance();
+                _isLanding = false;
+                NetworkManager.AutoLogin(
+                    token,
+                    (data) =>
+                    {
+                        if (data.result)
+                        {
+                            SceneLoader.ToMenu();
+                            LoadingUI.HideInstance();
+                        }
+                        else
+                        {
+                            MessagePopUpUI.Show($"Login fail\n {data.message}");
+                            LoadingUI.HideInstance();
+                        }
+                    }
+                );
             }
         }
 
@@ -120,7 +146,7 @@ namespace SuperUltra.Container
                 }
             );
         }
-        
+
         void OnFacebookCreatePlayfabUser()
         {
             NetworkManager.GetAuthToken(
@@ -156,7 +182,7 @@ namespace SuperUltra.Container
                 (ResponseData response) =>
                 {
                     LoadingUI.HideInstance();
-                    if(response.result)
+                    if (response.result)
                     {
                         Debug.Log("asdfasdf");
                         // ToMenu();
@@ -177,13 +203,12 @@ namespace SuperUltra.Container
                 password,
                 (result) =>
                 {
-                    SaveLoginCrdiential(email, password);
                     ToMenu();
                 },
                 (string errorMessage) =>
                 {
                     LoadingUI.HideInstance();
-                    MessagePopUpUI.Show(errorMessage);
+                    MessagePopUpUI.Show("Login fail\n" + errorMessage);
                 }
             );
         }
@@ -231,20 +256,14 @@ namespace SuperUltra.Container
             );
         }
 
-        void SaveLoginCrdiential(string email, string password)
-        {
-            // TODO : save playfab token
-            PlayerPrefs.SetString(Config.CREDENTIAL_KEY_EMAIL, email);
-            PlayerPrefs.SetString(Config.CREDENTIAL_KEY_PASSWORD, password);
-        }
- 
         public void OnClickForgotPassword(string email)
         {
             EmailAuthen.ForgotPassword(
                 email,
-                (result) => {
+                (result) =>
+                {
                     MessagePopUpUI.Show("Reset password email is sent to your mailbox");
-                    // ToPage(_loginUI);
+                    ToPage(_loginUI);
                 }
             );
         }
@@ -253,13 +272,13 @@ namespace SuperUltra.Container
         {
             _enterNameUI.SetAvatar(avatar);
         }
-        
+
         public void ToMenu()
         {
             NetworkManager.LoginRequest(
                 (ResponseData data) =>
                 {
-                    if(data.result)
+                    if (data.result)
                     {
                         SceneLoader.ToMenu();
                         LoadingUI.HideInstance();
@@ -288,7 +307,7 @@ namespace SuperUltra.Container
             ToPage(_enterNameUI);
 
             /* select defaultAvatar on the first time user proceed to enterNameUI */
-            if ( !_isSelectedAvatar && _avatarSelectionUI)
+            if (!_isSelectedAvatar && _avatarSelectionUI)
             {
                 _isSelectedAvatar = true;
                 Sprite avatar = _avatarSelectionUI.GetDefaultAvatar();
