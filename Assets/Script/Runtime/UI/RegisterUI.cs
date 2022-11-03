@@ -83,6 +83,28 @@ namespace SuperUltra.Container
             return true;
         }
 
+        public void OnInputSelect(float offset)
+        {
+            Vector2 endValue = _panel.anchoredPosition + new Vector2(0, offset);
+            DOTween.To(
+                () => _panel.anchoredPosition,
+                (value) => _panel.anchoredPosition = value,
+                endValue,
+                0.3f
+            );
+        }
+
+        public void OnInputDeselect(float offset)
+        {
+            Vector2 endValue = _panel.anchoredPosition - new Vector2(0, offset);
+            DOTween.To(
+                () => _panel.anchoredPosition,
+                (value) => _panel.anchoredPosition = value,
+                endValue,
+                0.3f
+            );
+        }
+
         public void ToLoginPage()
         {
             _loginManager.ToLoginSelection();
