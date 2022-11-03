@@ -399,8 +399,8 @@ namespace SuperUltra.Container
 
             string data = response.DataAsText;
             JSONNode json = JSON.Parse(data);
-            Debug.Log("data " + data);
-
+            GameData.gameDataList.Clear();
+            
             if (json["games"] == null || !json["games"].IsArray)
             {
                 responseData.message = "No game list found";
