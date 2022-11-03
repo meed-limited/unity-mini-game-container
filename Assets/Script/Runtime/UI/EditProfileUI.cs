@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using DG.Tweening;
 
 namespace SuperUltra.Container
 {
@@ -12,6 +13,7 @@ namespace SuperUltra.Container
         [SerializeField] Image _avatarPreview;
         [SerializeField] TMP_InputField _userName;
         [SerializeField] MenuManager _menuManager;
+        [SerializeField] RectTransform _panel;
         Texture2D _previewTexture;
 
         // Start is called before the first frame update
@@ -44,6 +46,28 @@ namespace SuperUltra.Container
                     new Vector2(0.5f, 0.5f)
                 );
             }
+        }
+
+        public void OnInputSelect(float offset)
+        {
+            Vector2 endValue = _panel.anchoredPosition + new Vector2(0, offset);
+            DOTween.To(
+                () => _panel.anchoredPosition,
+                (value) => _panel.anchoredPosition = value,
+                endValue,
+                0.3f
+            );
+        }
+
+        public void OnInputDeselect(float offset)
+        {
+            Vector2 endValue = _panel.anchoredPosition - new Vector2(0, offset);
+            DOTween.To(
+                () => _panel.anchoredPosition,
+                (value) => _panel.anchoredPosition = value,
+                endValue,
+                0.3f
+            );
         }
 
         public void Back()

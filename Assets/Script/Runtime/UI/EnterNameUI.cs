@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -38,6 +37,28 @@ namespace SuperUltra.Container
         }
 
         public void ChangeSlideDirection(SlideDirection direction) { }
+
+        public void OnInputSelect()
+        {
+            Vector2 endValue = _panel.anchoredPosition + new Vector2(0, 400f);
+            DOTween.To(
+                () => _panel.anchoredPosition,
+                (value) => _panel.anchoredPosition = value,
+                endValue,
+                0.3f
+            );
+        }
+
+        public void OnInputDeselect()
+        {
+            Vector2 endValue = _panel.anchoredPosition - new Vector2(0, 400f);
+            DOTween.To(
+                () => _panel.anchoredPosition,
+                (value) => _panel.anchoredPosition = value,
+                endValue,
+                0.3f
+            );
+        }
 
         public void SetAvatar(Sprite avatar)
         {
