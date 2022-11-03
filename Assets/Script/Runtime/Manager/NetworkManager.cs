@@ -134,7 +134,7 @@ namespace SuperUltra.Container
         /// request token from server, then use the token to request
         /// game list, user data and season data
         /// </summary>
-        public static void GetAuthToken(Action<ResponseData> callback)
+        public static void GetAuthToken(Action<ResponseData> callback, string token = "")
         {
             HTTPRequest request = new HTTPRequest(
                 new Uri(Config.Domain + "users/auth"),
@@ -158,13 +158,13 @@ namespace SuperUltra.Container
         static void OnGetAuthTokenRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback)
         {
             ResponseData data = ValidateResponse(response);
-            if(response == null) { Debug.Log("response is null"); }
             if (data.result)
             {
                 JSONNode json = JSON.Parse(response.DataAsText);
                 if(json != null && json["data"] != null)
                 {
                     _token = json["data"]["token"];
+                    PlayerPrefs.SetString(Config.KEY_AUTH_TOKEN, _token);
                 }
             }else
             {
@@ -430,6 +430,12 @@ namespace SuperUltra.Container
             callback?.Invoke(responseData);
         }
 
+        public static void AutoLogin(string token, Action<ResponseData> callback)
+        {
+            _token = token;
+            GetLoginInfomation(callback);
+        }   
+
         public static void LoginRequest(Action<ResponseData> callback)
         {
             if (!CheckConnection())
@@ -452,22 +458,27 @@ namespace SuperUltra.Container
                         callback?.Invoke(getTokenResponse);
                         return;
                     }
-                    GetGameList();
-                    GetUserData((getUserDataResponse) =>
-                    {
-                        // Debug.Log("getUserDataResponse");
-                        _isUserDataRequested = getUserDataResponse.result;
-                        CompleteRequestList(callback, getUserDataResponse);
-                    }, (getAvatarResponse) =>
-                    {
-                        // player will proceed the menu whether avatar request is success or not
-                        // here just make sure we get the response. 
-                        _isAvatarImageRequested = true;
-                        getAvatarResponse.result = true;
-                        CompleteRequestList(callback, getAvatarResponse);
-                    });
+                    GetLoginInfomation(callback);
                 }
             );
+        }
+
+        static void GetLoginInfomation(Action<ResponseData> callback)
+        {
+            GetGameList();
+            GetUserData((getUserDataResponse) =>
+            {
+                // Debug.Log("getUserDataResponse");
+                _isUserDataRequested = getUserDataResponse.result;
+                CompleteRequestList(callback, getUserDataResponse);
+            }, (getAvatarResponse) =>
+            {
+                // player will proceed the menu whether avatar request is success or not
+                // here just make sure we get the response. 
+                _isAvatarImageRequested = true;
+                getAvatarResponse.result = true;
+                CompleteRequestList(callback, getAvatarResponse);
+            });
         }
 
         static JSONArray GetJSONArray(JSONNode node)
@@ -719,15 +730,14 @@ namespace SuperUltra.Container
                     for (int i = 0; i < nftList.Count; i++)
                     {
                         JSONNode nftItem = nftList[i];
-                        Texture2D texture = new Texture2D(1, 1);
-                        texture.LoadImage(nftItem["avatarTexture"].AsByteArray);
                         list[i] = new NFTItem()
                         {
                             id = nftItem["id"],
-                            name = nftItem["name"].ToString(),
+                            name = nftItem["name"],
                             description = nftItem["description"],
                             texture2DUrl = nftItem["image"],
-                            attribute = nftItem["attributes"].ToString(),
+                            attribute = GetAttributeMap(nftItem["attributes"]),
+                            // TODO : implement GetType() by looping nftItem["attributes"]
                             type = NFTItem.ItemType.Cosmetic,
                             isActive = false,
                         };
@@ -741,6 +751,25 @@ namespace SuperUltra.Container
                 result = result,
                 list = list
             });
+        }
+
+        static Dictionary<string, string> GetAttributeMap(JSONNode data)
+        {
+            Dictionary<string, string> map = new Dictionary<string, string>();
+            if(!data.IsArray)
+            {
+                return map;
+            }
+            foreach (JSONNode item in data.AsArray)
+            {
+                if (item != null 
+                    && item["trait_type"] != null 
+                    && item["value"] != null)
+                {
+                    map.Add(item["trait_type"], item["value"]);
+                }
+            }
+            return map;
         }
 
         #region Update User

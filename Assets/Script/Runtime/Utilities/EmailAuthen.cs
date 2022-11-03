@@ -22,6 +22,8 @@ namespace SuperUltra.Container
                 {
                     UserData.playFabId = result.PlayFabId;
                     UserData.playFabSessionTicket = result.SessionTicket;
+                    PlayerPrefs.SetString(Config.CREDENTIAL_KEY_EMAIL, email);
+                    PlayerPrefs.SetString(Config.KEY_PLAYFAB_ID, result.PlayFabId);
                     successCallback(result);
                 },
                 (result) => { 
@@ -67,6 +69,7 @@ namespace SuperUltra.Container
             Debug.Log($"Register Successful {result.PlayFabId} {result.Username} {result}");
             UserData.playFabId = result.PlayFabId;
             UserData.playFabSessionTicket = result.SessionTicket;
+            PlayerPrefs.SetString(Config.KEY_PLAYFAB_ID, result.PlayFabId);
             Debug.Log("OnRegisterSuccess " + UserData.playFabId);
         }
 

@@ -282,10 +282,10 @@ namespace SuperUltra.Container
         public void ToSeasonPage() => ToPage(_seasonPassPage);
         public void ToGamePage()
         {
-            MainGameUI menuUI = _gameListPage.GetComponent<MainGameUI>();
-            if (menuUI)
+            GameListUI gameListUI = _gameListPage.GetComponent<GameListUI>();
+            if (gameListUI)
             {
-                menuUI.Initialize();
+                gameListUI.Initialize();
             }
             ToPage(_gameListPage);
         }

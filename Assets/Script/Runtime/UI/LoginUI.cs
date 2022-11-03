@@ -31,10 +31,10 @@ namespace SuperUltra.Container
             {
                 _emailInput.text = PlayerPrefs.GetString(Config.CREDENTIAL_KEY_EMAIL);
             }
-            if (PlayerPrefs.HasKey(Config.CREDENTIAL_KEY_PASSWORD))
-            {
-                _passwordInput.text = PlayerPrefs.GetString(Config.CREDENTIAL_KEY_PASSWORD);
-            }
+            // if (PlayerPrefs.HasKey(Config.CREDENTIAL_KEY_PASSWORD))
+            // {
+            //     _passwordInput.text = PlayerPrefs.GetString(Config.CREDENTIAL_KEY_PASSWORD);
+            // }
         }
 
         bool CheckValidInput()
