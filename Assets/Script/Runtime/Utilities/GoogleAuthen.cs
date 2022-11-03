@@ -57,6 +57,7 @@ namespace SuperUltra.Container
                         {
                             // GoogleStatusText.text = "Signed In as " + result.PlayFabId;
                             data.message = "Signed In as " + result.PlayFabId;
+                            UserData.playFabSessionTicket = result.SessionTicket;
                             callback?.Invoke(data);
                         }, 
                         (PlayFabError error) => {

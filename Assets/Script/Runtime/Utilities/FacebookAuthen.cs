@@ -19,9 +19,8 @@ namespace SuperUltra.Container
         }
 
         public static void Login(
-            Action successCallback,
-            Action<string> failureCallback, 
-            bool isCreateAccount = true
+            Action<bool> successCallback,
+            Action<string> failureCallback
         )
         {
             // We invoke basic login procedure and pass in the callback to process the result
@@ -29,7 +28,7 @@ namespace SuperUltra.Container
                 new List<string>() { "gaming_profile", "email" },
                 (result) =>
                 {
-                    OnFacebookLoggedIn(result, successCallback, failureCallback, isCreateAccount);
+                    OnFacebookLoggedIn(result, successCallback, failureCallback);
                 }
             );
         }
@@ -40,54 +39,77 @@ namespace SuperUltra.Container
         }
 
         private static void OnFacebookLoggedIn(
-            ILoginResult result, 
-            Action successCallback, 
-            Action<string> failureCallback,
-            bool isCreateAccount = true
+            ILoginResult fbLoginResult, 
+            Action<bool> successCallback, 
+            Action<string> failureCallback
         )
         {
+            if (fbLoginResult == null)
+            {
+                SetMessage("fbLoginResult is null");
+                failureCallback?.Invoke("");
+                return;
+            }
+
             // If result has no errors, it means we have authenticated in Facebook successfully
-            if (result == null || string.IsNullOrEmpty(result.Error))
+            if (string.IsNullOrEmpty(fbLoginResult.Error) && AccessToken.CurrentAccessToken != null)
             {
                 SetMessage("Facebook Auth Complete! Access Token: " + AccessToken.CurrentAccessToken.TokenString + "\nLogging into PlayFab...");
-                foreach (var item in result.ResultDictionary)
-                {
-                    Debug.Log(item);
-                }
                 /*
                  * We proceed with making a call to PlayFab API. We pass in current Facebook AccessToken and let it create
                  * and account using CreateAccount flag set to true. We also pass the callback for Success and Failure results
                  */
-                PlayFabClientAPI.LoginWithFacebook(
-                    new LoginWithFacebookRequest { CreateAccount = isCreateAccount, AccessToken = AccessToken.CurrentAccessToken.TokenString },
-                    (result) => {
-                        OnPlayfabFacebookAuthComplete(result);
-                        successCallback();
-                    }, 
-                    (result) => {
-                        OnPlayfabFacebookAuthFailed(result);
-                        failureCallback(result.Error.ToString());
-                    }
-                );
+                LoginPlayfabWithFacebook(successCallback, failureCallback);
             }
             else
             {
+                if (AccessToken.CurrentAccessToken == null)
+                {
+                    SetMessage("Access Token is null");
+                }
+
                 // If Facebook authentication failed, we stop the cycle with the message
-                SetMessage("Facebook Auth Failed: " + result.Error + "\n" + result.RawResult, true);
-                failureCallback(result.Error);
+                SetMessage("Facebook Auth Failed: " + fbLoginResult.Error + "\n" + fbLoginResult.RawResult, true);
+                failureCallback?.Invoke(fbLoginResult.Error);
             }
         }
 
-        // When processing both results, we just set the message, explaining what's going on.
-        private static void OnPlayfabFacebookAuthComplete(LoginResult result)
+        static void LoginPlayfabWithFacebook(Action<bool> successCallback, Action<string> failureCallback, bool isCreateAccount = false)
+        {
+            /*
+            * We proceed with making a call to PlayFab API. We pass in current Facebook AccessToken and let it create
+            * and account using CreateAccount flag set to true. We also pass the callback for Success and Failure results
+            */
+            PlayFabClientAPI.LoginWithFacebook(
+                new LoginWithFacebookRequest { CreateAccount = isCreateAccount, AccessToken = AccessToken.CurrentAccessToken.TokenString },
+                (result) =>
+                {
+                    OnPlayfabFacebookAuthComplete(result, isCreateAccount, successCallback, failureCallback);
+                },
+                (result) =>
+                {
+                    if (result.Error == PlayFabErrorCode.AccountNotFound)
+                    {
+                        LoginPlayfabWithFacebook(successCallback, failureCallback, true);
+                        return;
+                    }
+                    OnPlayfabFacebookAuthFailed(result);
+                    failureCallback(result.Error.ToString());
+                }
+            );
+        }
+
+        private static void OnPlayfabFacebookAuthComplete(LoginResult result, bool isCreateAccount, Action<bool> successCallback, Action<string> failureCallback)
         {
             SetMessage("PlayFab Facebook Auth Complete. Session ticket: " + result.SessionTicket);
             UserData.playFabId = result.PlayFabId;
+            UserData.playFabSessionTicket = result.SessionTicket;
+            successCallback(isCreateAccount);
         }
 
         private static void OnPlayfabFacebookAuthFailed(PlayFabError error)
         {
-            SetMessage("PlayFab Facebook Auth Failed: " + error.GenerateErrorReport(), true);
+            SetMessage($"PlayFab Facebook Auth Failed: {error.Error}" + error.GenerateErrorReport(), true);
         }
 
         public static void SetMessage(string message, bool error = false)
@@ -97,7 +119,6 @@ namespace SuperUltra.Container
             else
                 Debug.Log(message);
         }
-
 
     }
 

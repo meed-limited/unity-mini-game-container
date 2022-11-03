@@ -57,7 +57,7 @@ namespace SuperUltra.Container
 
     public static class NetworkManager
     {
-        static string _token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2FtaWZpZWRQbGF0Zm9ybSIsImlhdCI6MTY1OTc3NDMzMywiZXhwIjoxNzQ2MTc0MzMzfQ.BtSPOnqfGKdI3j1g7EMm_vdZFkQwxUNF8uzX_jOqGDE";
+        static string _token = "";
         static bool _isUserDataRequested = false;
         static bool _isAvatarImageRequested = false;
         static Action _onCompleteLoginRequest;
@@ -77,9 +77,17 @@ namespace SuperUltra.Container
 
         static string GetDataMessage(JSONNode json)
         {
-            if (json != null && !string.IsNullOrEmpty(json["message"]))
+            if (json != null)
             {
-                return json["message"];
+                if (json["message"].IsString && !string.IsNullOrEmpty(json["message"]))
+                {
+                    return json["message"];
+                }
+
+                if (json["error"].IsString && !string.IsNullOrEmpty(json["error"]))
+                {
+                    return json["error"];
+                }
             }
             // Response received (json is null or message empty)
             return "";
@@ -91,15 +99,21 @@ namespace SuperUltra.Container
             JSONNode json;
             if (response == null || response.IsSuccess == false)
             {
-                Debug.Log("respons is fail ");
                 data.message = "Server error";
                 if (response != null)
                     Debug.Log(response.StatusCode);
                 if (response != null && !string.IsNullOrEmpty(response.DataAsText))
                 {
                     Debug.Log(response.DataAsText);
-                    json = JSON.Parse(response.DataAsText);
-                    data.message = GetDataMessage(json);
+                    try
+                    {
+                        json = JSON.Parse(response.DataAsText);
+                        data.message = GetDataMessage(json);
+                    }
+                    catch (System.Exception e)
+                    {
+                        throw e;
+                    }
                 }
                 return data;
             }
@@ -120,11 +134,43 @@ namespace SuperUltra.Container
         /// request token from server, then use the token to request
         /// game list, user data and season data
         /// </summary>
-        static void GetAuthToken(Action callback)
+        public static void GetAuthToken(Action<ResponseData> callback)
         {
-            // TODO
-            string playFabId = UserData.playFabId;
-            callback();
+            HTTPRequest request = new HTTPRequest(
+                new Uri(Config.Domain + "users/auth"),
+                HTTPMethods.Post,
+                (req, res) =>
+                {
+                    Debug.Log("GetAuthToken response");
+                    OnGetAuthTokenRequestFinished(req, res, callback);
+                }
+            );
+            JSONObject json = new JSONObject();
+            Debug.Log($"p {UserData.playFabId}\nat {UserData.playFabSessionTicket}");
+            json.Add("platformId", UserData.playFabId);
+            json.Add("accessId", UserData.playFabSessionTicket);
+            request.AddHeader("Content-Type", "application/json");
+            request.RawData = Encoding.ASCII.GetBytes(json.ToString());
+            request.Timeout = TimeSpan.FromSeconds(_timeOut);
+            request.Send();
+        }
+
+        static void OnGetAuthTokenRequestFinished(HTTPRequest request, HTTPResponse response, Action<ResponseData> callback)
+        {
+            ResponseData data = ValidateResponse(response);
+            if(response == null) { Debug.Log("response is null"); }
+            if (data.result)
+            {
+                JSONNode json = JSON.Parse(response.DataAsText);
+                if(json != null && json["data"] != null)
+                {
+                    _token = json["data"]["token"];
+                }
+            }else
+            {
+                data.message = MessageConst.GetAuthenFailed;
+            }
+            callback?.Invoke(data);
         }
 
         static void GetGameList(Action<ResponseData> callback = null)
@@ -140,6 +186,7 @@ namespace SuperUltra.Container
                 }
             );
             request.AddHeader("Authorization", "Bearer " + _token);
+            request.AddHeader("Content-Type", "application/json");
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.Send();
         }
@@ -179,6 +226,7 @@ namespace SuperUltra.Container
                 }
             );
             request.AddHeader("Authorization", "Bearer " + _token);
+            request.AddHeader("Content-Type", "application/json");
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.Send();
         }
@@ -204,9 +252,10 @@ namespace SuperUltra.Container
                     if (data["avatarUrl"].IsString && !string.IsNullOrEmpty(data["avatarUrl"]))
                     {
                         GetAvatar(data["avatarUrl"], avatarRequestCallback);
-                    }else
+                    }
+                    else
                     {
-                        avatarRequestCallback?.Invoke(new ResponseData{result = false, message = "User has no avatar" });
+                        avatarRequestCallback?.Invoke(new ResponseData { result = false, message = "User has no avatar" });
                     }
                 }
             }
@@ -284,7 +333,7 @@ namespace SuperUltra.Container
             request.Send();
         }
 
-        static void OnLeaderboardRequestFinished(HTTPRequest req, HTTPResponse response, int gameID, Action<GetLeaderboardResponseData> callback = null)
+        static void OnLeaderboardRequestFinished(HTTPRequest request, HTTPResponse response, int gameID, Action<GetLeaderboardResponseData> callback = null)
         {
             GetLeaderboardResponseData responseData = new GetLeaderboardResponseData() { result = false };
             if (!GameData.gameDataList.TryGetValue(gameID, out GameData gameData))
@@ -385,24 +434,37 @@ namespace SuperUltra.Container
         {
             if (!CheckConnection())
             {
+                callback?.Invoke(new ResponseData{result = false, message = MessageConst.ConnectionFail});
+                return;
+            }
+
+            if (string.IsNullOrEmpty(UserData.playFabSessionTicket))
+            {
+                callback?.Invoke(new ResponseData { result = false, message = MessageConst.LoginPlayFabFailure });
                 return;
             }
 
             GetAuthToken(
-                () =>
+                (getTokenResponse) =>
                 {
+                    if (!getTokenResponse.result)
+                    {
+                        callback?.Invoke(getTokenResponse);
+                        return;
+                    }
                     GetGameList();
-                    GetUserData((response) =>
+                    GetUserData((getUserDataResponse) =>
                     {
-                        _isUserDataRequested = true;
-                        CompleteRequestList(callback, response);
-                    }, (response) =>
+                        // Debug.Log("getUserDataResponse");
+                        _isUserDataRequested = getUserDataResponse.result;
+                        CompleteRequestList(callback, getUserDataResponse);
+                    }, (getAvatarResponse) =>
                     {
-                        _isAvatarImageRequested = true;
                         // player will proceed the menu whether avatar request is success or not
                         // here just make sure we get the response. 
-                        response.result = true; 
-                        CompleteRequestList(callback, response);
+                        _isAvatarImageRequested = true;
+                        getAvatarResponse.result = true;
+                        CompleteRequestList(callback, getAvatarResponse);
                     });
                 }
             );
@@ -424,7 +486,6 @@ namespace SuperUltra.Container
             );
             JSONObject json = new JSONObject();
             json.Add("emailAddress", emailAddress);
-            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
@@ -450,7 +511,6 @@ namespace SuperUltra.Container
             );
             JSONObject json = new JSONObject();
             json.Add("gameId", gameId);
-            request.SetHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.RawData = Encoding.ASCII.GetBytes(json.ToString());
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
@@ -482,7 +542,7 @@ namespace SuperUltra.Container
             callback?.Invoke(responseData);
         }
 
-        public static void CreateUser(string playFabId, Action success, Action failure = null)
+        public static void CreateUser(string playFabId, Action success, Action<ResponseData> failure = null)
         {
             HTTPRequest request = new HTTPRequest(
                 new Uri(Config.Domain + "users"),
@@ -498,16 +558,17 @@ namespace SuperUltra.Container
             request.Send();
         }
 
-        static void OnCreateUserRequestFinished(HTTPRequest request, HTTPResponse response, Action success = null, Action failure = null)
+        static void OnCreateUserRequestFinished(HTTPRequest request, HTTPResponse response, Action success = null, Action<ResponseData> failure = null)
         {
-            if (ValidateResponse(response).result)
+            ResponseData responseData = ValidateResponse(response); 
+            if (responseData.result)
             {
                 JSONNode json = JSON.Parse(response.DataAsText);
                 success?.Invoke();
             }
             else
             {
-                failure?.Invoke();
+                failure?.Invoke(responseData);
             }
         }
 
@@ -643,7 +704,7 @@ namespace SuperUltra.Container
             request.Send();
         }
 
-        static void OnGetUserNFTRequestFinished(HTTPRequest req, HTTPResponse response, Action<GetUserNFTResponseData> callback)
+        static void OnGetUserNFTRequestFinished(HTTPRequest request, HTTPResponse response, Action<GetUserNFTResponseData> callback)
         {
             bool result = ValidateResponse(response).result;
             NFTItem[] list = new NFTItem[] { };

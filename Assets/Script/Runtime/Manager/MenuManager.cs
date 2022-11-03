@@ -179,7 +179,7 @@ namespace SuperUltra.Container
         {
             if (!NetworkManager.CheckConnection())
             {
-                MessagePopUpUI.Show("No Connection", "Retry", () => { ToPage(target); }, false);
+                MessagePopUpUI.Show(MessageConst.ConnectionFail, "Retry", () => { ToPage(target); }, false);
                 return;
             }
 

@@ -28,7 +28,7 @@ namespace SuperUltra.Container
             bool result = validatePasswordRegex.IsMatch(password);
             if (!result)
             {
-                _passwordErrorText.text = "Use 8 or more characters with mix of leters & numbers";
+                _passwordErrorText.text = "Use 8 or more characters with mix of letters & numbers";
                 _passwordErrorText.color = _errorColor;
                 _passwordInput.targetGraphic.color = _errorColor;
                 return false;
@@ -115,9 +115,6 @@ namespace SuperUltra.Container
                 _loginManager.OnClickEmailRegister(_emailInput.text, _passwordInput.text);
             }
         }
-
-        public void OnClickFacebookRegister() => _loginManager.OnClickFacebookRegister();
-
 
     }
 

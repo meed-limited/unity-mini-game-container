@@ -84,6 +84,12 @@ namespace SuperUltra.Container
                 _nameInput.text,
                 _iconPreview.sprite.texture,
                 (ResponseData data) => {
+                    if (!data.result)
+                    {
+                        LoadingUI.HideInstance();
+                        MessagePopUpUI.Show($"Update user data failed\n{data.message}\nMark your user id\n{UserData.playFabId}");
+                        return;
+                    }
                     _loginManager.ToMenu();
                 }
             );
