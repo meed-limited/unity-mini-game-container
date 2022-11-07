@@ -1,0 +1,69 @@
+In Login
+    Login to account using Email (p)
+    Get error message when 
+        type in wrong email address (p)
+        type in wrong password (p)
+    Login to account using Facebook (p)
+    To Register page (p)
+In Register
+    Create account using Email (p)
+    Get error message when 
+        type in existed email address (p)
+        not check T&C (p)
+        password and confirm password not the same (p)
+    To Login page (p)
+In Account set up page ( after register )
+    Pick avatar (p)
+    change user name (p)
+    Proceed to menu page (p)
+In Menu
+    Header ( wallet and main )
+        check avatar (p)
+        title (p)
+        exp point (p)
+        balance (p)
+        Proceed to Profile Page (p)
+    Leaderboard ( as set in backend )
+        check price pool (p)
+        check end time (p)
+        check others players attend the game
+            icon (p)
+            score (p)
+            rank (p)
+            rewards (p)
+        check user ranking
+            icon (p)
+            score (p)
+            rank (p)
+            rewards (p)
+    Wallet 
+        check NFT ( skins only ) (p)
+        check wallet address (p)
+        check balance (p)
+        Link to how to withdrawal (p)
+        Link to withdrawal web page (p)
+    Profile 
+        check player name (p)
+        check title (p)
+        check exp point (p)
+        check balance (p)
+        Proceed to menu (p)
+        Proceed setting page (p)
+        Proceed to social media ( YT, Discord, twitter ) (p)
+    Setting Page
+        Link to FAQ web page (p)
+        Link to HELP web page (p)
+        Sign out and Proceed login page (p)
+In Game
+    Before Game
+        Watch Tutorial ( How to play ) (p)
+        return to menu (p)
+        turn off music and sound (p)
+    After Complete Game
+        Submit score (p)
+        See Leaderboard and players around them   (p) 
+    Watch Ads To
+        Get extra lifes (p)
+        Get extra time (p)
+        Get double point (p)
+    

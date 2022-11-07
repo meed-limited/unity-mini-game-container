@@ -15,8 +15,19 @@ namespace SuperUltra.Container
         [SerializeField] MenuManager _menuManager;
         [SerializeField] RectTransform _panel;
         Texture2D _previewTexture;
+        Vector2 _originPosition = Vector2.zero;
 
-        // Start is called before the first frame update
+        void OnEnable()
+        {
+            _userName.onTouchScreenKeyboardStatusChanged.AddListener(OnTouchScreenKeyboardStatusChanged);
+        }
+
+        void OnDisable()
+        {
+            _userName.onTouchScreenKeyboardStatusChanged.RemoveListener(OnTouchScreenKeyboardStatusChanged);
+        }
+
+
         void Start()
         {
             Initialize();
@@ -48,8 +59,17 @@ namespace SuperUltra.Container
             }
         }
 
+        void OnTouchScreenKeyboardStatusChanged(TouchScreenKeyboard.Status status)
+        {
+            if (status != TouchScreenKeyboard.Status.Visible)
+            {
+                OnInputDeselect();
+            }
+        }
+
         public void OnInputSelect(float offset)
         {
+            _panel.anchoredPosition = _originPosition;
             Vector2 endValue = _panel.anchoredPosition + new Vector2(0, offset);
             DOTween.To(
                 () => _panel.anchoredPosition,
@@ -59,13 +79,12 @@ namespace SuperUltra.Container
             );
         }
 
-        public void OnInputDeselect(float offset)
+        void OnInputDeselect()
         {
-            Vector2 endValue = _panel.anchoredPosition - new Vector2(0, offset);
             DOTween.To(
                 () => _panel.anchoredPosition,
                 (value) => _panel.anchoredPosition = value,
-                endValue,
+                _originPosition,
                 0.3f
             );
         }
