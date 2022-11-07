@@ -5518,7 +5518,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &461009950
 RectTransform:
   m_ObjectHideFlags: 0
@@ -20233,7 +20233,7 @@ PrefabInstance:
     - target: {fileID: 7362610880999026289, guid: ef39445a98c8d6342bbf69c9557b7a68,
         type: 3}
       propertyPath: m_OnDeselect.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7362610880999026289, guid: ef39445a98c8d6342bbf69c9557b7a68,
         type: 3}
@@ -20243,7 +20243,7 @@ PrefabInstance:
     - target: {fileID: 7362610880999026289, guid: ef39445a98c8d6342bbf69c9557b7a68,
         type: 3}
       propertyPath: m_OnDeselect.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7362610880999026289, guid: ef39445a98c8d6342bbf69c9557b7a68,
         type: 3}
@@ -20288,7 +20288,7 @@ PrefabInstance:
     - target: {fileID: 7362610880999026289, guid: ef39445a98c8d6342bbf69c9557b7a68,
         type: 3}
       propertyPath: m_OnSelect.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_FloatArgument
-      value: 380
+      value: 240
       objectReference: {fileID: 0}
     - target: {fileID: 7362610880999026289, guid: ef39445a98c8d6342bbf69c9557b7a68,
         type: 3}
@@ -20348,7 +20348,7 @@ PrefabInstance:
     - target: {fileID: 7362610880999026290, guid: ef39445a98c8d6342bbf69c9557b7a68,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 120
+      value: 127.1859
       objectReference: {fileID: 0}
     - target: {fileID: 7362610880999026290, guid: ef39445a98c8d6342bbf69c9557b7a68,
         type: 3}
@@ -20393,7 +20393,7 @@ PrefabInstance:
     - target: {fileID: 7362610880999026290, guid: ef39445a98c8d6342bbf69c9557b7a68,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -230
+      value: -233.5929
       objectReference: {fileID: 0}
     - target: {fileID: 7362610880999026290, guid: ef39445a98c8d6342bbf69c9557b7a68,
         type: 3}
