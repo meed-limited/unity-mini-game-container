@@ -22,7 +22,6 @@ namespace SuperUltra.Container
 
         void OnEnable()
         {
-            _originPosition = _panel.anchoredPosition;
             _nameInput.onTouchScreenKeyboardStatusChanged.AddListener(OnTouchScreenKeyboardStatusChanged);
         }
 
