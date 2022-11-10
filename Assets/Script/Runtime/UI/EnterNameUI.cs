@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -19,6 +18,17 @@ namespace SuperUltra.Container
         [SerializeField] RectTransform _panel;
         Color _errorColor = new Color(0.96f, 0.4f, 0);
         Color _normalColor = new Color(0.2f, 0.2f, 0.2f);
+        Vector2 _originPosition = Vector2.zero;
+
+        void OnEnable()
+        {
+            _nameInput.onTouchScreenKeyboardStatusChanged.AddListener(OnTouchScreenKeyboardStatusChanged);
+        }
+
+        void OnDisable()
+        {
+            _nameInput.onTouchScreenKeyboardStatusChanged.RemoveListener(OnTouchScreenKeyboardStatusChanged);
+        }
 
         public void Back()
         {
@@ -38,6 +48,36 @@ namespace SuperUltra.Container
         }
 
         public void ChangeSlideDirection(SlideDirection direction) { }
+
+        void OnTouchScreenKeyboardStatusChanged(TouchScreenKeyboard.Status status)
+        {
+            if (status != TouchScreenKeyboard.Status.Visible)
+            {
+                OnInputDeselect();
+            }
+        }
+
+        public void OnInputSelect()
+        {
+            _panel.anchoredPosition = _originPosition;
+            Vector2 endValue = _panel.anchoredPosition + new Vector2(0, 260f);
+            DOTween.To(
+                () => _panel.anchoredPosition,
+                (value) => _panel.anchoredPosition = value,
+                endValue,
+                0.3f
+            );
+        }
+
+        void OnInputDeselect()
+        {
+            DOTween.To(
+                () => _panel.anchoredPosition,
+                (value) => _panel.anchoredPosition = value,
+                _originPosition,
+                0.3f
+            );
+        }
 
         public void SetAvatar(Sprite avatar)
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using DG.Tweening;
 
 namespace SuperUltra.Container
 {
@@ -12,9 +13,21 @@ namespace SuperUltra.Container
         [SerializeField] Image _avatarPreview;
         [SerializeField] TMP_InputField _userName;
         [SerializeField] MenuManager _menuManager;
+        [SerializeField] RectTransform _panel;
         Texture2D _previewTexture;
+        Vector2 _originPosition = Vector2.zero;
 
-        // Start is called before the first frame update
+        void OnEnable()
+        {
+            _userName.onTouchScreenKeyboardStatusChanged.AddListener(OnTouchScreenKeyboardStatusChanged);
+        }
+
+        void OnDisable()
+        {
+            _userName.onTouchScreenKeyboardStatusChanged.RemoveListener(OnTouchScreenKeyboardStatusChanged);
+        }
+
+
         void Start()
         {
             Initialize();
@@ -44,6 +57,36 @@ namespace SuperUltra.Container
                     new Vector2(0.5f, 0.5f)
                 );
             }
+        }
+
+        void OnTouchScreenKeyboardStatusChanged(TouchScreenKeyboard.Status status)
+        {
+            if (status != TouchScreenKeyboard.Status.Visible)
+            {
+                OnInputDeselect();
+            }
+        }
+
+        public void OnInputSelect(float offset)
+        {
+            _panel.anchoredPosition = _originPosition;
+            Vector2 endValue = _panel.anchoredPosition + new Vector2(0, offset);
+            DOTween.To(
+                () => _panel.anchoredPosition,
+                (value) => _panel.anchoredPosition = value,
+                endValue,
+                0.3f
+            );
+        }
+
+        void OnInputDeselect()
+        {
+            DOTween.To(
+                () => _panel.anchoredPosition,
+                (value) => _panel.anchoredPosition = value,
+                _originPosition,
+                0.3f
+            );
         }
 
         public void Back()
