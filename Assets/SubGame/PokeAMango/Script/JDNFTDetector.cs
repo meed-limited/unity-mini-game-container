@@ -13,7 +13,7 @@ public class JDNFTDetector : MonoBehaviour
 
     private void Awake()
     {
-        ApplySkinChange(5);
+        ApplySkinChange(0);
         //GetActiveNFT();
     }
 
@@ -27,22 +27,20 @@ public class JDNFTDetector : MonoBehaviour
                 
                 switch (nftList[i].id)
                 {
-                    case 21:
-                        _skinId = 0; break;
-                    case 22:
-                        _skinId = 1; break;
-                    case 23:
-                        _skinId = 2; break;
-                    case 24:
-                        _skinId = 3; break;
-                    case 25:
-                        _skinId = 4; break;
-                    case 26:
-                        _skinId = 5; break;
-                    case 27:
+                    case 6:
                         _skinId = 6; break;
+                    case 5:
+                        _skinId = 4; break;
+                    case 4:
+                        _skinId = 3; break;
+                    case 3:
+                        _skinId = 2; break;
+                    case 2:
+                        _skinId = 5; break;
+                    case 1:
+                        _skinId = 1; break;
                     default:
-                        Debug.Log("Wrong NTF id"); break;
+                        _skinId = 0; break;
                 }
                 ApplySkinChange(_skinId);
             }

@@ -79,11 +79,11 @@ namespace SuperUltra.JungleDrum
 
         public void OnClick()
         {
-            if (SceneManager.GetActiveScene().name == "Tourment")
+            if (SceneManager.GetActiveScene().name == "JungleDrumGameScene")
             {
                 HapticController.Play(_vir);
                 PtReduce();
-                if(_gs._life == 0)
+                if (_gs._life == 0)
                 {
                     GameEnd();
                 }
@@ -106,6 +106,7 @@ namespace SuperUltra.JungleDrum
         public void GameEnd()
         {
             _player.GetComponent<Animator>().SetTrigger("Dead");
+            Debug.Log("Death animation played");
             gameObject.GetComponent<Button>().interactable = false;
             //_endSfx.Play();
             _timer.enabled = false;
@@ -116,7 +117,7 @@ namespace SuperUltra.JungleDrum
             StartCoroutine(Thunder());
             _shaker.Shake();
 
-            
+
             StartCoroutine(EndGamee());
 
         }

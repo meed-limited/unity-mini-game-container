@@ -27,21 +27,21 @@ namespace SuperUltra.GazolineRacing
                 if (nftList[i].type == 0 && nftList[i].isActive)
                 {
 
-                    switch (nftList[i].id)
+                    switch (nftList[i].name)
                     {
-                        case 21:
+                        case "Samourai":
                             _skinId = 0; break;
-                        case 22:
+                        case "Ninja":
                             _skinId = 1; break;
-                        case 23:
+                        case "Geisha":
                             _skinId = 2; break;
-                        case 24:
+                        case "Knight":
                             _skinId = 3; break;
-                        case 25:
+                        case "Black Farmer Girl":
                             _skinId = 4; break;
-                        case 26:
+                        case "Salary men":
                             _skinId = 5; break;
-                        case 27:
+                        case "":
                             _skinId = 6; break;
                         default:
                             Debug.Log("Wrong NTF id"); break;
