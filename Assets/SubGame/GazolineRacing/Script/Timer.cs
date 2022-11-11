@@ -30,6 +30,10 @@ namespace SuperUltra.GazolineRacing
         }
         void Update()
         {
+
+            if (_gm.isEnd == true)
+                _timerIsRunning = false;
+
             if (_timerIsRunning)
             {
                 if (_timeRemaining > 0)

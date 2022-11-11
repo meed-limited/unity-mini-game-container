@@ -10,7 +10,6 @@ public class SFXToggle : MonoBehaviour
     GameObject _clicker;
     [SerializeField]
     GameObject _badClicker;
-    private Toggle _toggle;
     AudioSource _sfx;
     AudioSource _badSfx;
 
@@ -19,9 +18,13 @@ public class SFXToggle : MonoBehaviour
     {
         ContainerInterface.OnEffectVolumeChange += SFXOnOff;
     }
+
+    private void OnDisable()
+    {
+        ContainerInterface.OnEffectVolumeChange -= SFXOnOff;
+    }
     private void Start()
     {
-        _toggle = gameObject.GetComponent<Toggle>();
         _sfx = _clicker.GetComponent<AudioSource>();
         _badSfx = _badClicker.GetComponent<AudioSource>();
 
@@ -32,13 +35,16 @@ public class SFXToggle : MonoBehaviour
         {
             if (_sfx != null || _badSfx != null)
             {
-            _sfx.enabled = true;
-            _badSfx.enabled = true;
+                _sfx.enabled = true;
+                _badSfx.enabled = true;
 
             }
         }
         else
+        {
             _sfx.enabled = false;
             _badSfx.enabled = false;
+
+        }
     }
 }

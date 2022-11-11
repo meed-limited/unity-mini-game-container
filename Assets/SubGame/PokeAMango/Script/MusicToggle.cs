@@ -15,19 +15,14 @@ namespace SuperUltra.JungleDrum
         private void OnEnable()
         {
             ContainerInterface.OnMusicVolumeChange += MusicOnOff;
-            ContainerInterface.OnPauseMenuHide += Resume;
         }
 
         private void OnDisable()
         {
             ContainerInterface.OnMusicVolumeChange -= MusicOnOff;
-            ContainerInterface.OnPauseMenuHide -= Resume;
         }
 
-        private void Resume()
-        {
-            Time.timeScale = 1;
-        }
+
         public void MusicOnOff(bool isOn)
         {
             if (isOn)
@@ -40,7 +35,7 @@ namespace SuperUltra.JungleDrum
             {
                 _music.SetActive(false);
                 //ContainerInterface.MusicVolumeChange(false);
-                Debug.Log("IsOn");  
+                Debug.Log("IsOn");
 
             }
         }

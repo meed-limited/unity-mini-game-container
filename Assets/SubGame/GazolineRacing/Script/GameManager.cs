@@ -2,10 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System;
 using UnityEngine.UI;
 using DG.Tweening;
 using SuperUltra.GazolineRacing;
 using SuperUltra.Container;
+using Cinemachine;
+using DG.Tweening;
 
 namespace SuperUltra.GazolineRacing
 {
@@ -26,26 +29,57 @@ namespace SuperUltra.GazolineRacing
         [SerializeField] Slider _bananaBar;
         [SerializeField] GameObject[] _lifeBar;
         [SerializeField] GameObject _endSfx, _engineSfx;
+        [SerializeField] GameObject _car;
+        CinemachineVirtualCamera vcam;
+        CinemachineBasicMultiChannelPerlin noise;
+        public bool isEnd = false;
+        public bool isStart = false;
+        GameObject _carSkin;
+
 
         private void Awake()
         {
+            vcam = GameObject.Find("CM vcam1").GetComponent<CinemachineVirtualCamera>();
+            noise = vcam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             for (int i = 0; i < 3; i++)
             {
                 _lifeBar[i].SetActive(true);
             }
         }
+
+        private void Start()
+        {
+            _carSkin = GameObject.FindGameObjectWithTag("Car");
+        }
         private void Update()
         {
-
-            _score += _timeMulti * Time.deltaTime;
-            _scoreText.text = _score.ToString("F0");
-            //Debug.Log(_score);
-            if (_life == 0)
+            if (isEnd == false)
             {
-                Invoke("GameEnd", 0.3f);
+                _score += _timeMulti * Time.deltaTime;
+                _scoreText.text = _score.ToString("F0");
+
+            }
+
+            //Debug.Log(_score);
+            if (_life == 0 && isEnd == false)
+            {
+                StartCoroutine(Noise(10f, 10f));
+                _carSkin.SetActive(false);
+                _car.transform.GetChild(4).transform.GetChild(18).gameObject.GetComponent<ParticleSystem>().Play();
+                _car.transform.GetChild(4).GetComponent<Animator>().SetTrigger("Dead");
+                _car.transform.DOMoveY(1f, 0.5f);
+                Invoke("GameEnd", 1.5f);
+                isEnd = true;
             }
         }
-
+        public IEnumerator Noise(float amplitudeGain, float frequencyGain)
+        {
+            noise.m_AmplitudeGain = amplitudeGain;
+            noise.m_FrequencyGain = frequencyGain;
+            yield return new WaitForSeconds(0.5f);
+            noise.m_AmplitudeGain = 0;
+            noise.m_FrequencyGain = 0;
+        }
         public void GetScore(int score)
         {
             _score += score;
@@ -114,16 +148,10 @@ namespace SuperUltra.GazolineRacing
             _engineSfx.SetActive(false);
             _endSfx.SetActive(true);
             ContainerInterface.GameOver();
-            ContainerInterface.SetScore(Mathf.Round(_score));
+            ContainerInterface.SetScore(_score);
             //_endMenu.SetActive(true);
             _finalScoreText.text = _score.ToString("F0");
-            StartCoroutine(GameStop());
-        }
-
-        IEnumerator GameStop()
-        {
-            yield return new WaitForSeconds(0.5f);
-            Time.timeScale = 0;
+            //Time.timeScale = 0;
         }
     }
 }

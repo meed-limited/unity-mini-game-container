@@ -39,6 +39,13 @@ namespace SuperUltra.GazolineRacing
             if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Enemy"))
             {
                 StartCoroutine(Explosion());
+                int dice = Random.Range(0, 2);
+                Vector3 dir;
+                if (dice == 0)
+                    dir = new Vector3(-1, 0, 0);
+                else
+                    dir = new Vector3(1, 0, 0);
+                _rb.AddForce(dir * 100f);
                 Destroy(gameObject, 3f);
                 _lv._spawnedObject.Remove(gameObject);
 

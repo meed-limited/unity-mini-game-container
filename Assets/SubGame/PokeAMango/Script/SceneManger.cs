@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using SuperUltra.Container;
 using SuperUltra.JungleDrum;
+using UnityEngine.Rendering;
 
 namespace SuperUltra.JungleDrum
 {
@@ -16,11 +17,13 @@ namespace SuperUltra.JungleDrum
         private EffectControl _ev;
         [SerializeField]
         private GameObject _start;
-
+        [SerializeField]
+        private RenderPipelineAsset _URP;
 
         private void Awake()
         {
             Debug.Log("awake");
+            GraphicsSettings.renderPipelineAsset = _URP;
             Time.timeScale = 0;
         }
 
@@ -47,6 +50,11 @@ namespace SuperUltra.JungleDrum
             //SceneManager.LoadScene(0);
             ContainerInterface.PlayAgain();
             Time.timeScale = 1;
+        }
+
+        public void BackToMenu()
+        {
+            ContainerInterface.ReturnToMenu();
         }
 
         public void Tourment()

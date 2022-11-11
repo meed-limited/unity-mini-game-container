@@ -15,10 +15,12 @@ namespace SuperUltra.GazolineRacing
 
         private bool exited = false;
         LevelPooker _lvPooker;
+        GameManager _gm;
 
         private void Awake()
         {
             _lvPooker = GameObject.FindGameObjectWithTag("GameController").GetComponent<LevelPooker>();
+            _gm = _lvPooker.gameObject.GetComponent<GameManager>();
         }
 
 
@@ -48,7 +50,8 @@ namespace SuperUltra.GazolineRacing
         IEnumerator WaitAndDeactivate()
         {
             yield return new WaitForSeconds(delay);
-            _lvPooker.Recycle(transform.parent.gameObject);
+            if(_gm.isEnd == false)
+                _lvPooker.Recycle(transform.parent.gameObject);
             //transform.parent.gameObject.SetActive(false);
             //Debug.Log("InActive");
 

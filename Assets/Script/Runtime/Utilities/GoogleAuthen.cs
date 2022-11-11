@@ -5,6 +5,7 @@ using PlayFab;
 using PlayFab.ClientModels;
 using System;
 
+
 namespace SuperUltra.Container
 {
 
@@ -15,6 +16,7 @@ namespace SuperUltra.Container
 
         public static void Initialize()
         {
+#if UNITY_ANDROID
             // The following grants profile access to the Google Play Games SDK.
             // Note: If you also want to capture the player's Google email, be sure to add
             // .RequestEmail() to the PlayGamesClientConfiguration
@@ -29,11 +31,14 @@ namespace SuperUltra.Container
 
             // Activate the Google Play Games platform
             PlayGamesPlatform.Activate();
+
+#endif
         }
 
         public static void Login(Action<ResponseData> callback)
         {
             ResponseData data = new ResponseData { result = false };
+#if UNITY_ANDROID
             PlayGamesPlatform.Instance.Authenticate((bool success) =>
             {
 
@@ -71,7 +76,7 @@ namespace SuperUltra.Container
                 }
 
             });
-
+#endif
         }
 
     }
