@@ -8,6 +8,8 @@ using System;
 namespace SuperUltra.Container
 {
 
+    #if UNITY_ANDROID
+
     public static class GoogleAuthen
     {
 
@@ -73,6 +75,8 @@ namespace SuperUltra.Container
         }
 
     }
+
+    #endif
 
 }
 

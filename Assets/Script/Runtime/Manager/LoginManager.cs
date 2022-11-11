@@ -23,7 +23,9 @@ namespace SuperUltra.Container
         void Start()
         {
             FacebookAuthen.Initialize();
+#if UNITY_ANDROID
             GoogleAuthen.Initialize();
+#endif
             Application.targetFrameRate = 60;
             // HidePanel(_loginUI.transform);
             HidePanel(_registerUI.transform);
@@ -177,6 +179,7 @@ namespace SuperUltra.Container
 
         public void OnClickGoogleLogin()
         {
+#if UNITY_ANDROID
             LoadingUI.ShowInstance();
             GoogleAuthen.Login(
                 (ResponseData response) =>
@@ -193,6 +196,7 @@ namespace SuperUltra.Container
                     }
                 }
             );
+#endif
         }
 
         public void OnClickEmailLogin(string email, string password)
