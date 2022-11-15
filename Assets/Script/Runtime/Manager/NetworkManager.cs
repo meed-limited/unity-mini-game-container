@@ -185,7 +185,6 @@ namespace SuperUltra.Container
                     OnGameListRequestFinished(req, res, callback);
                 }
             );
-            request.AddHeader("Authorization", "Bearer " + _token);
             request.AddHeader("Content-Type", "application/json");
             request.Timeout = TimeSpan.FromSeconds(_timeOut);
             request.Send();
@@ -595,7 +594,7 @@ namespace SuperUltra.Container
                 }
             );
             JSONObject json = new JSONObject();
-            json.Add("fabId", playFabId);
+            json.Add("platformId", playFabId);
             json.Add("gameId", gameId);
             json.Add("score", score);
             request.SetHeader("Authorization", "Bearer " + _token);
