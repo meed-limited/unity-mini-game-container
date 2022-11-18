@@ -345,7 +345,6 @@ namespace SuperUltra.Container
             {
                 responseData.result = true;
                 JSONNode json = JSON.Parse(response.DataAsText);
-                Debug.Log("OnLeaderboardRequestFinished " + response.DataAsText);
                 gameData.tournament.prizePool = json["bonus"];
                 if (json["users"] != null && json["users"].IsArray)
                 {

@@ -1,3 +1,4 @@
+using UnityEngine;
 namespace SuperUltra.Container
 {
     public static class SessionData
@@ -22,7 +23,7 @@ namespace SuperUltra.Container
 
         static void OnSetScore(float score)
         {
-            SessionData.currnetGameScore = score;
+            SessionData.currnetGameScore = Mathf.Round(score);
         }
 
         public static void ClearData()

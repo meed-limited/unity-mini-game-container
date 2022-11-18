@@ -251,6 +251,8 @@ namespace SuperUltra.Container
             int index = Mathf.Max(0, _rankingItemContainer.childCount - 1);
             foreach (var data in responseData.list)
             {
+                // transform rank position starting from 0 to starting from 1
+                data.rankPosition++;
                 LeaderboardItemUI item = _leaderboardItemObjectPool.GetObjectComponent<LeaderboardItemUI>();
                 item.transform.SetParent(_rankingItemContainer);
                 item.SetData(data);
